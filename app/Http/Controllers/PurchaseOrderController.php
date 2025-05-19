@@ -7,6 +7,7 @@ use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
 use App\Models\Design;
 use App\Models\Finish;
+use App\Models\PurchaseOrderBatch;
 use App\Models\Size;
 use App\Models\PurchaseOrderItem;
 
@@ -150,7 +151,26 @@ class PurchaseOrderController extends Controller
         }
         $item->remark = $request->remark;
         $item->save();
+        
+        $batchNo = $request->batch_no;
+        if (strtolower($type) == 'production' && $batchNo) {
+            $batch = PurchaseOrderBatch::where('purchase_order_id', $item->purchase_order_id)
+                ->where('purchase_order_item_id', $item->id)
+                ->where('batch_no', $batchNo)
+                ->first();
 
+            if ($batch) {
+                $batch->qty += $qty;
+                $batch->save();
+            } else {
+                PurchaseOrderBatch::create([
+                    'purchase_order_id' => $item->purchase_order_id,
+                    'purchase_order_item_id' => $item->id,
+                    'batch_no' => $batchNo,
+                    'qty' => $qty,
+                ]);
+            }
+        }
         return response()->json(['success' => true]);
     }
 
