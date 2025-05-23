@@ -8,6 +8,7 @@ use App\Http\Controllers\FinishController;
 use App\Http\Controllers\SizeController;
 use App\Http\Controllers\PalletController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\PurchaseOrderPalletController;
 
 
 Route::get('/', function () {
@@ -25,6 +26,12 @@ Route::resource('pallet', PalletController::class)->middleware('auth');
 Route::resource('orders', PurchaseOrderController::class)->middleware('auth');
 Route::get('orders/order-item-data/{id}', [PurchaseOrderController::class, 'getItemData']);
 Route::patch('orders/update-order-item/{id}', [PurchaseOrderController::class, 'updateOrderItem']);
+Route::get('/purchase-order-pallets/index', [PurchaseOrderPalletController::class, 'index'])->name('purchase_order_pallets.index');
+Route::get('/purchase-order-pallets/create', [PurchaseOrderPalletController::class, 'create'])->name('purchase_order_pallets.create');
+Route::post('/purchase-order-pallets', [PurchaseOrderPalletController::class, 'store'])->name('purchase_order_pallets.store');
+Route::get('/get-order', [PurchaseOrderPalletController::class, 'getOrder']);
+Route::get('/get-order-items', [PurchaseOrderPalletController::class, 'getOrderItems']);
+Route::get('/get-batches', [PurchaseOrderPalletController::class, 'getBatches']);
 
 // Profile management
 Route::middleware('auth')->group(function () {

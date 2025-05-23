@@ -11,11 +11,17 @@ class PurchaseOrderPallet extends Model
 
     protected $fillable = [
         'purchase_order_id',
+        'po',
         'purchase_order_item_id',
+        'design',
+        'size',
+        'finish',
         'batch_id',
         'pallet_size',
         'pallet_no',
         'total_qty',
+        'packing_date',
+        'remark',
     ];
 
     public function purchaseOrder()

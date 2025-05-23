@@ -85,11 +85,17 @@
     <a href="{{ route('sizes.index') }}" class="{{ request()->routeIs('sizes.index') ? 'active' : '' }}">
         <i class="fas fa-ruler"></i> Size
     </a>
-    <a href="{{ route('pallet.index') }}" class="{{ request()->routeIs('pallet.index') ? 'active' : '' }}">
-        <i class="fas fa-pallet"></i> Pallet
-    </a>
      <a class="nav-link {{ request()->routeIs('orders.index') ? 'active' : '' }}" href="{{ route('orders.index') }}">
         <i class="fas fa-shopping-cart"></i> Orders
+    </a>
+    <a class="nav-link {{ request()->routeIs('purchase_order_item.index') ? 'active' : '' }}" href="{{ route('purchase_order_pallets.index') }}">
+        <i class="fas fa-pallet"></i> Planning
+    </a>
+    <a class="nav-link {{ request()->routeIs('purchase_order_item.index') ? 'active' : '' }}" href="{{ route('purchase_order_pallets.index') }}">
+        <i class="fas fa-pallet"></i> Production
+    </a>
+    <a class="nav-link {{ request()->routeIs('purchase_order_pallets.index') ? 'active' : '' }}" href="{{ route('purchase_order_pallets.index') }}">
+        <i class="fas fa-pallet"></i> Pallet Packing
     </a>
     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
         @csrf

@@ -11,7 +11,7 @@ use App\Models\PurchaseOrderBatch;
 use App\Models\Size;
 use App\Models\PurchaseOrderItem;
 
-class PurchaseOrderController extends Controller
+class PurchaseOrderItemController extends Controller
 {
     public function create()
     {
@@ -26,17 +26,12 @@ class PurchaseOrderController extends Controller
     {
         $request->validate([
             'po' => 'required|unique:purchase_orders,po',
-            'order_items' => 'required|array',
-            'order_items.*.design' => 'nullable|string',
-            'order_items.*.size' => 'nullable|string',
-            'order_items.*.finish' => 'nullable|string',
-            'order_items.*.order_qty' => 'required|integer|min:0',
-            'order_items.*.pending_qty' => 'nullable|integer|min:0',
-            'order_items.*.planning_qty' => 'nullable|integer|min:0',
-            'order_items.*.production_qty' => 'nullable|integer|min:0',
-            'order_items.*.short_qty' => 'nullable|integer|min:0',
-            'order_items.*.remark' => 'nullable|string',
-            'order_items.*.status' => 'nullable|string',
+            'design' => 'nullable|string',
+            'size' => 'nullable|string',
+            'finish' => 'nullable|string',
+            'planning_qty' => 'nullable|integer|min:0',
+            'production_qty' => 'nullable|integer|min:0',
+            'remark' => 'nullable|string',
         ]);
 
         $purchaseOrder = PurchaseOrder::create([
