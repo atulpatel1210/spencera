@@ -16,7 +16,8 @@
             <thead>
                 <tr>
                     <th>PO</th>
-                    <th>Created At</th>
+                    <th>Party Name</th>
+                    <th>Order Date</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -24,7 +25,10 @@
                 @forelse ($orders as $order)
                     <tr>
                         <td>{{ $order->po }}</td>
-                        <td>{{ $order->created_at }}</td>
+                        <td>
+                            {{ $order->party?->party_name ?? 'N/A' }}
+                        </td>
+                        <td>{{ $order->order_date }}</td>
                         <td>
                             <a href="{{ route('orders.show', $order) }}" class="btn btn-info btn-sm">View</a>
                             <a href="{{ route('orders.edit', $order) }}" class="btn btn-primary btn-sm ms-2">Edit</a>

@@ -76,6 +76,9 @@
     <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
         <i class="fas fa-chart-bar"></i> Dashboard
     </a>
+    <a href="{{ route('parties.index') }}" class="{{ request()->routeIs('parties.index') ? 'active' : '' }}">
+        <i class="fas fa-palette"></i> Party
+    </a>
     <a href="{{ route('designs.index') }}" class="{{ request()->routeIs('designs.index') ? 'active' : '' }}">
         <i class="fas fa-palette"></i> Design
     </a>
@@ -88,11 +91,11 @@
      <a class="nav-link {{ request()->routeIs('orders.index') ? 'active' : '' }}" href="{{ route('orders.index') }}">
         <i class="fas fa-shopping-cart"></i> Orders
     </a>
-    <a class="nav-link {{ request()->routeIs('purchase_order_item.index') ? 'active' : '' }}" href="{{ route('purchase_order_pallets.index') }}">
+    <!-- <a class="nav-link {{ request()->routeIs('purchase_order_item.index') ? 'active' : '' }}" href="{{ route('purchase_order_pallets.index') }}">
         <i class="fas fa-pallet"></i> Planning
-    </a>
-    <a class="nav-link {{ request()->routeIs('purchase_order_item.index') ? 'active' : '' }}" href="{{ route('purchase_order_pallets.index') }}">
-        <i class="fas fa-pallet"></i> Production
+    </a> -->
+    <a class="nav-link {{ request()->routeIs('purchase_order_item.list') ? 'active' : '' }}" href="{{ route('purchase_order_item.list') }}">
+        <i class="fas fa-pallet"></i> Production & Planning
     </a>
     <a class="nav-link {{ request()->routeIs('purchase_order_pallets.index') ? 'active' : '' }}" href="{{ route('purchase_order_pallets.index') }}">
         <i class="fas fa-pallet"></i> Pallet Packing

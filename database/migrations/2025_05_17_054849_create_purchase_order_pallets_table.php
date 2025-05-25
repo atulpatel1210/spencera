@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('purchase_order_pallets', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('party_id');
             $table->unsignedBigInteger('purchase_order_id');
             $table->string('po')->nullable();
             $table->unsignedBigInteger('purchase_order_item_id');
@@ -28,7 +29,7 @@ return new class extends Migration
             $table->date('packing_date');
             $table->text('remark')->nullable();
             $table->timestamps();
-
+            $table->foreign('party_id')->references('id')->on('parties')->onDelete('cascade');
             $table->foreign('purchase_order_id')->references('id')->on('purchase_orders')->onDelete('cascade');
             $table->foreign('purchase_order_item_id')->references('id')->on('purchase_order_items')->onDelete('cascade');
             $table->foreign('batch_id')->references('id')->on('purchase_order_batches')->onDelete('cascade');

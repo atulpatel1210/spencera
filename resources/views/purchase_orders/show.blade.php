@@ -18,7 +18,7 @@
                         <th>Pending</th>
                         <th>Planning</th>
                         <th>Production</th>
-                        <th>Short</th>
+                        <th>Short/Excess</th>
                         <th>Remark</th>
                         <th>Actions</th>
                     </tr>

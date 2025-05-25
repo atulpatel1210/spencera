@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\OrderItem;
 use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
 use App\Models\Design;
 use App\Models\Finish;
+use App\Models\Party;
 use App\Models\PurchaseOrderBatch;
 use App\Models\Size;
 use App\Models\PurchaseOrderItem;
+use Yajra\DataTables\Facades\DataTables;
+use Exception;
 
 class PurchaseOrderController extends Controller
 {
@@ -18,14 +20,17 @@ class PurchaseOrderController extends Controller
         $designs = Design::all();
         $sizes = Size::all();
         $finishes = Finish::all();
+        $parties = Party::all();
 
-        return view('purchase_orders.create', compact('designs', 'sizes', 'finishes'));
+        return view('purchase_orders.create', compact('designs', 'sizes', 'finishes', 'parties'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'po' => 'required|unique:purchase_orders,po',
+            'party_id' => 'required',
+            'order_date' => 'required',
             'order_items' => 'required|array',
             'order_items.*.design' => 'nullable|string',
             'order_items.*.size' => 'nullable|string',
@@ -41,13 +46,16 @@ class PurchaseOrderController extends Controller
 
         $purchaseOrder = PurchaseOrder::create([
             'po' => $request->input('po'),
+            'party_id' => $request->input('party_id'),
+            'order_date' => $request->input('order_date'),
         ]);
 
         if ($request->has('order_items')) {
             foreach ($request->input('order_items') as $itemData) {
                 $purchaseOrder->orderItems()->create(array_merge($itemData, [
                     'purchase_order_id' => $purchaseOrder->id,
-                    'po' => $purchaseOrder->po, // Include 'po' here
+                    'po' => $purchaseOrder->po,
+                    'party_id' => $purchaseOrder->party_id,
                 ]));
             }
         }
@@ -74,13 +82,16 @@ class PurchaseOrderController extends Controller
         $designs = Design::all();
         $sizes = Size::all();
         $finishes = Finish::all();
-        return view('purchase_orders.edit', compact('order', 'designs', 'sizes', 'finishes'));
+        $parties = Party::all();
+        return view('purchase_orders.edit', compact('order', 'designs', 'sizes', 'finishes', 'parties'));
     }
 
     public function update(Request $request, PurchaseOrder $order)
     {
         $request->validate([
             'po' => 'required|unique:purchase_orders,po,' . $order->id,
+            'party_id' => 'required',
+            'order_date' => 'required',
             'order_items' => 'required|array',
             'order_items.*.design' => 'nullable|string',
             'order_items.*.size' => 'nullable|string',
@@ -100,7 +111,7 @@ class PurchaseOrderController extends Controller
         $newItems = [];
         if ($request->has('order_items')) {
             foreach ($request->input('order_items') as $itemData) {
-                $newItems[] = array_merge($itemData, ['purchase_order_id' => $order->id, 'po' => $order->po]); // Include 'po' here
+                $newItems[] = array_merge($itemData, ['purchase_order_id' => $order->id, 'po' => $order->po, 'party_id' => $order->party_id]);
             }
             $order->orderItems()->createMany($newItems);
         }
@@ -114,11 +125,90 @@ class PurchaseOrderController extends Controller
         return redirect()->route('orders.index')->with('success', 'Order deleted successfully!');
     }
 
-    public function getItemData($id)
+    public function getAllItem()
+    {
+        return view('purchase_orders.order_item_list');
+    }
+
+    /**
+     * Returns data for Yajra Datatables for Purchase Order Items.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getOrderItemData()
+    {
+        try {
+            // Corrected: Include foreign keys in the select statement for relationships to work
+            $query = PurchaseOrderItem::select([
+                'id', // Always good to select ID
+                'purchase_order_id', // Foreign key for orderMaster
+                'design', // Foreign key for designDetail
+                'size',   // Foreign key for sizeDetail
+                'finish', // Foreign key for finishDetail
+                'po', // Directly select 'po' if it's a column in PurchaseOrderItem
+                'order_qty',
+                'planning_qty',
+                'production_qty',
+                'short_qty',
+                'remark'
+            ])->with(['orderMaster', 'designDetail', 'sizeDetail', 'finishDetail']);
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                // Corrected: Use 'orderMaster.po' to match the relationship name in the model
+                ->addColumn('purchase_order.po', function (PurchaseOrderItem $item) {
+                    return $item->orderMaster->po ?? 'N/A';
+                })
+                ->addColumn('design_detail.name', function (PurchaseOrderItem $item) {
+                    // Removed dd() for production
+                    return $item->designDetail->name ?? 'N/A';
+                })
+                ->addColumn('size_detail.size_name', function (PurchaseOrderItem $item) {
+                    return $item->sizeDetail->size_name ?? 'N/A';
+                })
+                ->addColumn('finish_detail.finish_name', function (PurchaseOrderItem $item) {
+                    return $item->finishDetail->finish_name ?? 'N/A';
+                })
+                // The 'actions' column is commented out in your provided code,
+                // so rawColumns() is no longer needed.
+                // If you uncomment the 'actions' column later, remember to add 'actions' back to rawColumns.
+                // ->addColumn('actions', function (PurchaseOrderItem $item) {
+                //     $editUrl = route('purchase_order_items.edit', $item->id);
+                //     $deleteUrl = route('purchase_order_items.destroy', $item->id);
+                //     $csrf = csrf_field();
+                //     $method = method_field('DELETE');
+
+                //     return "
+                //         <a href='{$editUrl}' class='btn btn-sm btn-warning'>Edit</a>
+                //         <form action='{$deleteUrl}' method='POST' style='display:inline;'>
+                //             {$csrf}
+                //             {$method}
+                //             <button type='submit' onclick=\"return confirm('Are you sure?')\" class='btn btn-sm btn-danger'>Del</button>
+                //         </form>
+                //     ";
+                // })
+                ->toJson();
+        } catch (Exception $e) {
+            \Log::error("Yajra DataTables error in getOrderItemData: " . $e->getMessage(), ['exception' => $e]);
+
+            return response()->json([
+                'draw' => 0,
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => [],
+                'error' => 'An error occurred while fetching order item data. Please check logs for details.'
+            ], 500);
+        }
+    }
+
+
+
+    public function getItem($id)
     {
         $item = PurchaseOrderItem::findOrFail($id);
 
         return response()->json([
+            'item' => $item,
             'order_qty' => $item->order_qty,
             'planning_qty' => $item->planning_qty,
             'production_qty' => $item->production_qty,

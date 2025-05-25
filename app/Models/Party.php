@@ -5,22 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class PurchaseOrder extends Model
+class Party extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
-        'po',
-        'party_id',
-        'order_date'
+        'party_name',
+        'party_type',
+        'contact_person',
+        'email',
+        'contact_no',
+        'mobile_no', 
+        'address',   
+        'gst_no',    
     ];
 
-    public function orderItems(): HasMany
-    {
-        return $this->hasMany(PurchaseOrderItem::class, 'purchase_order_id', 'id');
-    }
     public function party(): BelongsTo
     {
         return $this->belongsTo(Party::class, 'party_id', 'id');

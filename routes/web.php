@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PartyController; 
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\FinishController;
 use App\Http\Controllers\SizeController;
@@ -18,15 +19,21 @@ Route::get('/', function () {
 // Dashboard
 Route::get('/dashboard', [HomeController::class, 'index'])->middleware('auth')->name('dashboard');
 
-// Design, Finish, Size, Pallet
+Route::get('parties/data', [PartyController::class, 'getPartiesData'])->name('parties.data');
+Route::resource('parties', PartyController::class);
 Route::resource('designs', DesignController::class)->middleware('auth');
 Route::resource('finishes', FinishController::class)->middleware('auth');
 Route::resource('sizes', SizeController::class)->middleware('auth');
 Route::resource('pallet', PalletController::class)->middleware('auth');
+Route::get('orders/order-item-list', [PurchaseOrderController::class, 'getAllItem'])->name('purchase_order_item.list');
+// Route::get('orders/order-item-list', [PurchaseOrderController::class, 'getAllItem'])->name('purchase_order_item.list');
+Route::get('orders/order-item-data', [PurchaseOrderController::class, 'getOrderItemData'])->name('purchase_order_item.data');
 Route::resource('orders', PurchaseOrderController::class)->middleware('auth');
-Route::get('orders/order-item-data/{id}', [PurchaseOrderController::class, 'getItemData']);
+
+Route::get('orders/order-item-data/{id}', [PurchaseOrderController::class, 'getItem']);
 Route::patch('orders/update-order-item/{id}', [PurchaseOrderController::class, 'updateOrderItem']);
 Route::get('/purchase-order-pallets/index', [PurchaseOrderPalletController::class, 'index'])->name('purchase_order_pallets.index');
+Route::get('purchase-order-pallets/data', [PurchaseOrderPalletController::class, 'getPalletsData'])->name('purchase_order_pallets.data');
 Route::get('/purchase-order-pallets/create', [PurchaseOrderPalletController::class, 'create'])->name('purchase_order_pallets.create');
 Route::post('/purchase-order-pallets', [PurchaseOrderPalletController::class, 'store'])->name('purchase_order_pallets.store');
 Route::get('/get-order', [PurchaseOrderPalletController::class, 'getOrder']);

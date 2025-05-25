@@ -10,15 +10,55 @@ use App\Models\PurchaseOrderItem;
 use App\Models\PurchaseOrderPallet;
 use App\Models\Size;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables; 
 
 class PurchaseOrderPalletController extends Controller
 {
 
     public function index()
     {
-        $pallets = PurchaseOrderPallet::latest()->paginate(10);
-        return view('purchase_order_pallets.index', compact('pallets'));
+        return view('purchase_order_pallets.index');
     }
+
+    /**
+     * Returns data for Yajra Datatables.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getPalletsData()
+    {
+        $query = PurchaseOrderPallet::with(['designDetail', 'sizeDetail', 'finishDetail']);
+
+        return DataTables::of($query)
+            ->addIndexColumn()
+            ->addColumn('design_detail.name', function(PurchaseOrderPallet $pallet) {
+                return $pallet->designDetail->name ?? 'N/A';
+            })
+            ->addColumn('size_detail.size_name', function(PurchaseOrderPallet $pallet) {
+                return $pallet->sizeDetail->size_name ?? 'N/A';
+            })
+            ->addColumn('finish_detail.finish_name', function(PurchaseOrderPallet $pallet) {
+                return $pallet->finishDetail->finish_name ?? 'N/A';
+            })
+            // ->addColumn('actions', function(PurchaseOrderPallet $pallet) {
+            //     $editUrl = route('purchase_order_pallets.edit', $pallet->id);
+            //     $deleteUrl = route('purchase_order_pallets.destroy', $pallet->id);
+            //     $csrf = csrf_field();
+            //     $method = method_field('DELETE');
+
+            //     return "
+            //         <a href='{$editUrl}' class='btn btn-sm btn-warning'>Edit</a>
+            //         <form action='{$deleteUrl}' method='POST' style='display:inline;'>
+            //             {$csrf}
+            //             {$method}
+            //             <button type='submit' onclick=\"return confirm('Are you sure?')\" class='btn btn-sm btn-danger'>Del</button>
+            //         </form>
+            //     ";
+            // })
+            // ->rawColumns(['actions']) // Important: tells Datatables to render 'actions' as raw HTML
+            ->toJson();
+    }
+
     /**
      * Show the form for creating a new resource.
      *

@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('purchase_order_items', function (Blueprint $table) {
             $table->id();
+            $table->integer('party_id')->constrained('parties')->onDelete('cascade');;
             $table->foreignId('purchase_order_id')->constrained('purchase_orders')->onDelete('cascade');
             $table->string('po')->constrained('purchase_orders')->onDelete('cascade');
             $table->string('design')->nullable();

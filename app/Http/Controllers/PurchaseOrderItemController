@@ -42,7 +42,7 @@ class PurchaseOrderItemController extends Controller
             foreach ($request->input('order_items') as $itemData) {
                 $purchaseOrder->orderItems()->create(array_merge($itemData, [
                     'purchase_order_id' => $purchaseOrder->id,
-                    'po' => $purchaseOrder->po, // Include 'po' here
+                    'po' => $purchaseOrder->po,
                 ]));
             }
         }
@@ -59,7 +59,6 @@ class PurchaseOrderItemController extends Controller
     public function show(PurchaseOrder $order)
     {
         $order->load('orderItems.sizeDetail','orderItems.designDetail','orderItems.finishDetail');
-        // dd($order);
         return view('purchase_orders.show', compact('order'));
     }
 
