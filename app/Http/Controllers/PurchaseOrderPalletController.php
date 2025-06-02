@@ -148,10 +148,18 @@ class PurchaseOrderPalletController extends Controller
             'pallets.*.total_qty' => 'required|integer|min:1',
             'pallets.*.remark' => 'nullable|string',
         ]);
+
+        $purchaseOrder = \App\Models\PurchaseOrder::find($request->purchase_order_id);
+        if (!$purchaseOrder) {
+            return redirect()->back()->withErrors(['purchase_order_id' => 'Invalid Purchase Order']);
+        }
+        $partyId = $purchaseOrder->party_id;
+
         foreach ($request->pallets as $palletData) {
             $createData = [
                 'purchase_order_id' => $request->purchase_order_id,
                 'purchase_order_item_id' => $request->purchase_order_item_id,
+                'party_id' => $partyId,
                 'po' => $palletData['po'],
                 'design' => $request->design,
                 'size' => $request->size,
@@ -165,7 +173,7 @@ class PurchaseOrderPalletController extends Controller
             ];
             PurchaseOrderPallet::create($createData);
         }
-
-        return redirect()->route('purchase_order_pallets.create')->with('success', 'Pallets added successfully!');
+        return redirect()->route('purchase_order_pallets.index')->with('success', 'Pallets added successfully!');
+        // return redirect()->route('purchase_order_pallets.create')->with('success', 'Pallets added successfully!');
     }
 }

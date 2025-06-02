@@ -65,8 +65,50 @@ class PurchaseOrderController extends Controller
 
     public function index()
     {
-        $orders = PurchaseOrder::with('orderItems')->latest()->paginate(10);
-        return view('purchase_orders.index', compact('orders'));
+        return view('purchase_orders.index');
+    }
+
+    public function getOrdersData()
+    {
+        try {
+            $query = PurchaseOrder::select(['id', 'po', 'party_id', 'order_date'])
+                                ->with('party');
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->addColumn('party_name', function (PurchaseOrder $order) {
+                    return $order->party->party_name ?? 'N/A';
+                })
+                ->addColumn('actions', function (PurchaseOrder $order) {
+                    $viewUrl = route('orders.show', $order->id);
+                    $editUrl = route('orders.edit', $order->id);
+                    $deleteUrl = route('orders.destroy', $order->id);
+                    $csrf = csrf_field();
+                    $method = method_field('DELETE');
+
+                    return "
+                        <a href='{$viewUrl}' class='btn btn-info btn-sm'>View</a>
+                        <a href='{$editUrl}' class='btn btn-primary btn-sm ms-2'>Edit</a>
+                        <form action='{$deleteUrl}' method='POST' class='d-inline'>
+                            {$csrf}
+                            {$method}
+                            <button type='submit' class='btn btn-danger btn-sm ms-2' onclick=\"return confirm('Are you sure?')\">Delete</button>
+                        </form>
+                    ";
+                })
+                ->rawColumns(['actions'])
+                ->toJson();
+        } catch (Exception $e) {
+            \Log::error("Yajra DataTables error in getOrdersData: " . $e->getMessage(), ['exception' => $e]);
+
+            return response()->json([
+                'draw' => 0,
+                'recordsTotal' => 0,
+                'recordsFiltered' => 0,
+                'data' => [],
+                'error' => 'An error occurred while fetching order data. Please check logs for details.'
+            ], 500);
+        }
     }
 
     public function show(PurchaseOrder $order)
@@ -147,6 +189,7 @@ class PurchaseOrderController extends Controller
                 'finish', // Foreign key for finishDetail
                 'po', // Directly select 'po' if it's a column in PurchaseOrderItem
                 'order_qty',
+                'pending_qty',
                 'planning_qty',
                 'production_qty',
                 'short_qty',
@@ -169,24 +212,18 @@ class PurchaseOrderController extends Controller
                 ->addColumn('finish_detail.finish_name', function (PurchaseOrderItem $item) {
                     return $item->finishDetail->finish_name ?? 'N/A';
                 })
-                // The 'actions' column is commented out in your provided code,
-                // so rawColumns() is no longer needed.
-                // If you uncomment the 'actions' column later, remember to add 'actions' back to rawColumns.
-                // ->addColumn('actions', function (PurchaseOrderItem $item) {
-                //     $editUrl = route('purchase_order_items.edit', $item->id);
-                //     $deleteUrl = route('purchase_order_items.destroy', $item->id);
-                //     $csrf = csrf_field();
-                //     $method = method_field('DELETE');
+                ->addColumn('actions', function (PurchaseOrderItem $item) {
+                    $planningBtn = $item->pending_qty > 0
+                        ? "<button class='btn btn-sm btn-outline-info openModal' data-id='{$item->id}' data-type='planning'>Planning</button>"
+                        : "<button class='btn btn-sm btn-outline-info disabled' disabled>Planning</button>";
 
-                //     return "
-                //         <a href='{$editUrl}' class='btn btn-sm btn-warning'>Edit</a>
-                //         <form action='{$deleteUrl}' method='POST' style='display:inline;'>
-                //             {$csrf}
-                //             {$method}
-                //             <button type='submit' onclick=\"return confirm('Are you sure?')\" class='btn btn-sm btn-danger'>Del</button>
-                //         </form>
-                //     ";
-                // })
+                    $productionBtn = $item->planning_qty > 0
+                        ? "<button class='btn btn-sm btn-outline-primary openModal' data-id='{$item->id}' data-type='production'>Production</button>"
+                        : "<button class='btn btn-sm btn-outline-primary disabled' disabled>Production</button>";
+
+                    return "<div class='btn-group'>{$planningBtn}{$productionBtn}</div>";
+                })
+                ->rawColumns(['actions'])
                 ->toJson();
         } catch (Exception $e) {
             \Log::error("Yajra DataTables error in getOrderItemData: " . $e->getMessage(), ['exception' => $e]);
@@ -257,6 +294,7 @@ class PurchaseOrderController extends Controller
                     'purchase_order_item_id' => $item->id,
                     'batch_no' => $batchNo,
                     'qty' => $qty,
+                    'party_id' => $item->party_id
                 ]);
             }
         }

@@ -1,13 +1,20 @@
 @extends('layouts.app')
+
 @section('content')
+
 <div class="card">
-    <div class="card-header d-flex justify-content-between">
+    <div class="card-header d-flex justify-content-between align-items-center">
         <h4>Designs</h4>
-        <a href="{{ route('designs.create') }}" class="btn btn-primary btn-sm">+ Add Design</a>
+        <a href="{{ route('designs.create') }}" class="btn btn-primary">+ Add Design</a>
     </div>
     <div class="card-body">
         @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
-        <table class="table table-bordered">
+
+        {{-- Datatables CSS --}}
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
+
+        <table class="table table-bordered" id="designs-table">
             <thead>
                 <tr>
                     <th>#</th>
@@ -16,23 +23,39 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($designs as $design)
-                    <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ $design->name }}</td>
-                        <td>
-                            <a href="{{ route('designs.edit', $design) }}" class="btn btn-sm btn-warning">Edit</a>
-                            <form action="{{ route('designs.destroy', $design) }}" method="POST" style="display:inline;">
-                                @csrf @method('DELETE')
-                                <button onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger">Del</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
+                {{-- Data will be loaded by Yajra Datatables --}}
             </tbody>
         </table>
-
-        {{ $designs->links() }}
     </div>
 </div>
+
+{{-- jQuery (if not already loaded by layouts.app) --}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+{{-- Datatables JS --}}
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+
+<script>
+$(function() {
+    $('#designs-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: '{{ route('designs.data') }}',
+        columns: [
+            { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+            { data: 'name', name: 'name' },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ],
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    });
+});
+</script>
 @endsection

@@ -18,6 +18,7 @@ class PurchaseOrderPallet extends Model
         'size',
         'finish',
         'batch_id',
+        'party_id',
         'pallet_size',
         'pallet_no',
         'total_qty',

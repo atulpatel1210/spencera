@@ -21,13 +21,17 @@ Route::get('/dashboard', [HomeController::class, 'index'])->middleware('auth')->
 
 Route::get('parties/data', [PartyController::class, 'getPartiesData'])->name('parties.data');
 Route::resource('parties', PartyController::class);
+Route::get('designs/data', [DesignController::class, 'getDesignsData'])->name('designs.data');
 Route::resource('designs', DesignController::class)->middleware('auth');
+Route::get('finishes/data', [FinishController::class, 'getFinishesData'])->name('finishes.data');
 Route::resource('finishes', FinishController::class)->middleware('auth');
+Route::get('sizes/data', [SizeController::class, 'getSizesData'])->name('sizes.data');
 Route::resource('sizes', SizeController::class)->middleware('auth');
 Route::resource('pallet', PalletController::class)->middleware('auth');
 Route::get('orders/order-item-list', [PurchaseOrderController::class, 'getAllItem'])->name('purchase_order_item.list');
 // Route::get('orders/order-item-list', [PurchaseOrderController::class, 'getAllItem'])->name('purchase_order_item.list');
 Route::get('orders/order-item-data', [PurchaseOrderController::class, 'getOrderItemData'])->name('purchase_order_item.data');
+Route::get('orders/data', [PurchaseOrderController::class, 'getOrdersData'])->name('orders.data');
 Route::resource('orders', PurchaseOrderController::class)->middleware('auth');
 
 Route::get('orders/order-item-data/{id}', [PurchaseOrderController::class, 'getItem']);

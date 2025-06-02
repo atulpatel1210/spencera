@@ -4,13 +4,38 @@ namespace App\Http\Controllers;
 
 use App\Models\Finish;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class FinishController extends Controller
 {
     public function index()
     {
-        $finishes = Finish::latest()->paginate(10);
-        return view('finishes.index', compact('finishes'));
+        return view('finishes.index');
+    }
+
+    public function getFinishesData()
+    {
+        $query = Finish::select(['id', 'finish_name']);
+
+        return DataTables::of($query)
+            ->addIndexColumn()
+            ->addColumn('actions', function(Finish $finish) {
+                $editUrl = route('finishes.edit', $finish->id);
+                $deleteUrl = route('finishes.destroy', $finish->id);
+                $csrf = csrf_field();
+                $method = method_field('DELETE');
+
+                return "
+                    <a href='{$editUrl}' class='btn btn-sm btn-warning'>Edit</a>
+                    <form action='{$deleteUrl}' method='POST' style='display:inline;'>
+                        {$csrf}
+                        {$method}
+                        <button type='submit' onclick=\"return confirm('Are you sure you want to delete this finish?')\" class='btn btn-sm btn-danger'>Del</button>
+                    </form>
+                ";
+            })
+            ->rawColumns(['actions'])
+            ->toJson();
     }
 
     public function create()

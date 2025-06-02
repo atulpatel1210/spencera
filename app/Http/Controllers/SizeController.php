@@ -5,13 +5,38 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Size;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class SizeController extends Controller
 {
     public function index()
     {
-        $sizes = Size::latest()->paginate(10);
-        return view('size.index', compact('sizes'));
+        return view('size.index');
+    }
+
+    public function getSizesData()
+    {
+        $query = Size::select(['id', 'size_name']);
+
+        return DataTables::of($query)
+            ->addIndexColumn() 
+            ->addColumn('actions', function(Size $size) {
+                $editUrl = route('sizes.edit', $size->id);
+                $deleteUrl = route('sizes.destroy', $size->id);
+                $csrf = csrf_field();
+                $method = method_field('DELETE');
+
+                return "
+                    <a href='{$editUrl}' class='btn btn-sm btn-warning'>Edit</a>
+                    <form action='{$deleteUrl}' method='POST' style='display:inline;'>
+                        {$csrf}
+                        {$method}
+                        <button type='submit' onclick=\"return confirm('Are you sure you want to delete this size?')\" class='btn btn-sm btn-danger'>Del</button>
+                    </form>
+                ";
+            })
+            ->rawColumns(['actions'])
+            ->toJson();
     }
 
     public function create()
