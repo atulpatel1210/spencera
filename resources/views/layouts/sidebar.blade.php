@@ -27,6 +27,9 @@
     <a class="nav-link {{ request()->routeIs('purchase_order_pallets.index') ? 'active' : '' }}" href="{{ route('purchase_order_pallets.index') }}">
         <i class="fas fa-pallet"></i> Pallet Packing
     </a>
+    <a class="nav-link {{ request()->routeIs('dispatches.index') ? 'active' : '' }}" href="{{ route('dispatches.index') }}">
+        <i class="fas fa-truck"></i> Dispatch
+    </a>
     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
         @csrf
     </form>

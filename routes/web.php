@@ -10,6 +10,7 @@ use App\Http\Controllers\SizeController;
 use App\Http\Controllers\PalletController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseOrderPalletController;
+use App\Http\Controllers\DispatchController;
 
 
 Route::get('/', function () {
@@ -43,6 +44,11 @@ Route::post('/purchase-order-pallets', [PurchaseOrderPalletController::class, 's
 Route::get('/get-order', [PurchaseOrderPalletController::class, 'getOrder']);
 Route::get('/get-order-items', [PurchaseOrderPalletController::class, 'getOrderItems']);
 Route::get('/get-batches', [PurchaseOrderPalletController::class, 'getBatches']);
+Route::get('/get-order-items-for-dispatch', [DispatchController::class, 'getOrderItemsForDispatch']);
+Route::get('/get-batches-for-dispatch', [DispatchController::class, 'getBatchesForDispatch']);
+Route::get('/get-pallets-for-dispatch', [DispatchController::class, 'getPalletsForDispatch']);
+Route::get('dispatches/data', [DispatchController::class, 'getDispatchesData'])->name('dispatches.data');
+Route::resource('dispatches', DispatchController::class);
 
 // Profile management
 Route::middleware('auth')->group(function () {
