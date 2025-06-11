@@ -44,9 +44,14 @@ Route::post('/purchase-order-pallets', [PurchaseOrderPalletController::class, 's
 Route::get('/get-order', [PurchaseOrderPalletController::class, 'getOrder']);
 Route::get('/get-order-items', [PurchaseOrderPalletController::class, 'getOrderItems']);
 Route::get('/get-batches', [PurchaseOrderPalletController::class, 'getBatches']);
-Route::get('/get-order-items-for-dispatch', [DispatchController::class, 'getOrderItemsForDispatch']);
-Route::get('/get-batches-for-dispatch', [DispatchController::class, 'getBatchesForDispatch']);
-Route::get('/get-pallets-for-dispatch', [DispatchController::class, 'getPalletsForDispatch']);
+
+Route::post('get-purchases-for-dispatch', [DispatchController::class, 'getPurchasesForDispatch']);
+Route::post('get-designs-for-dispatch', [DispatchController::class, 'getDesignsForDispatch']);
+Route::post('get-sizes-for-dispatch', [DispatchController::class, 'getSizesForDispatch']);
+Route::post('get-finishs-for-dispatch', [DispatchController::class, 'getFinishsForDispatch']);
+Route::post('get-order-items-for-dispatch', [DispatchController::class, 'getOrderItemsForDispatch']);
+Route::post('get-batches-for-dispatch', [DispatchController::class, 'getBatchesForDispatch']);
+Route::post('get-pallets-for-dispatch', [DispatchController::class, 'getPalletsForDispatch']);
 Route::get('dispatches/data', [DispatchController::class, 'getDispatchesData'])->name('dispatches.data');
 Route::resource('dispatches', DispatchController::class);
 

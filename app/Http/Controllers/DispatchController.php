@@ -105,17 +105,72 @@ class DispatchController extends Controller
     public function create()
     {
         $parties = Party::all();
-        $purchaseOrders = PurchaseOrder::all();
-        $designs = Design::all();   // Pass all master designs
-        $sizes = Size::all();       // Pass all master sizes
-        $finishes = Finish::all();  // Pass all master finishes
+        return view('dispatches.create', compact('parties'));
+    }
 
-        // Initial load for dropdowns (can be empty, filled via AJAX)
-        $purchaseOrderItems = [];
-        $batches = [];
-        $stockPallets = [];
+    public function getPurchasesForDispatch(Request $request) {
+        $partyId = $request->input('party_id');
+        $purchaseOrders = PurchaseOrder::where('party_id', $partyId)
+            ->select('id','po')
+            ->distinct()
+            ->get();
+        return response()->json([
+            'orderItems' => $purchaseOrders,
+        ]);
+    }
 
-        return view('dispatches.create', compact('parties', 'purchaseOrders', 'purchaseOrderItems', 'batches', 'stockPallets', 'designs', 'sizes', 'finishes'));
+    public function getDesignsForDispatch(Request $request) {
+        $partyId = $request->input('party_id');
+        $purchaseOrderId = $request->input('purchase_order_id');
+
+        $purchaseOrders = PurchaseOrderItem::where('party_id', $partyId)
+            ->where('purchase_order_id', $purchaseOrderId)
+            ->join('designs', 'purchase_order_items.design', '=', 'designs.id')
+            ->select('designs.id', 'designs.name')
+            ->distinct()
+            ->get();
+
+        return response()->json([
+            'orderItems' => $purchaseOrders,
+        ]);
+    }
+
+    public function getSizesForDispatch(Request $request) {
+        $partyId = $request->input('party_id');
+        $purchaseOrderId = $request->input('purchase_order_id');
+        $designId = $request->input('design_id');
+
+        $purchaseOrders = PurchaseOrderItem::where('party_id', $partyId)
+            ->where('purchase_order_id', $purchaseOrderId)
+            ->where('design', $designId)
+            ->join('sizes', 'purchase_order_items.size', '=', 'sizes.id')
+            ->select('sizes.id', 'sizes.size_name')
+            ->distinct()
+            ->get();
+
+        return response()->json([
+            'orderItems' => $purchaseOrders,
+        ]);
+    }
+
+    public function getFinishsForDispatch(Request $request) {
+        $partyId = $request->input('party_id');
+        $purchaseOrderId = $request->input('purchase_order_id');
+        $designId = $request->input('design_id');
+        $sizeId = $request->input('size_id');
+
+        $purchaseOrders = PurchaseOrderItem::where('party_id', $partyId)
+            ->where('purchase_order_id', $purchaseOrderId)
+            ->where('design', $designId)
+            ->where('size', $sizeId)
+            ->join('finishes', 'purchase_order_items.finish', '=', 'finishes.id')
+            ->select('finishes.id', 'finishes.finish_name')
+            ->distinct()
+            ->get();
+
+        return response()->json([
+            'orderItems' => $purchaseOrders,
+        ]);
     }
 
     /**
@@ -147,24 +202,8 @@ class DispatchController extends Controller
 
         $orderItems = $query->get();
 
-        // Collect unique designs, sizes, finishes from the filtered order items
-        $uniqueDesigns = $orderItems->map(function($item) {
-            return ['id' => $item->design, 'name' => $item->designDetail->name ?? 'N/A'];
-        })->unique('id')->values();
-
-        $uniqueSizes = $orderItems->map(function($item) {
-            return ['id' => $item->size, 'size_name' => $item->sizeDetail->size_name ?? 'N/A'];
-        })->unique('id')->values();
-
-        $uniqueFinishes = $orderItems->map(function($item) {
-            return ['id' => $item->finish, 'finish_name' => $item->finishDetail->finish_name ?? 'N/A'];
-        })->unique('id')->values();
-
         return response()->json([
             'orderItems' => $orderItems,
-            'designs' => $uniqueDesigns,
-            'sizes' => $uniqueSizes,
-            'finishes' => $uniqueFinishes,
         ]);
     }
 
@@ -194,10 +233,21 @@ class DispatchController extends Controller
 
         $pallets = StockPallet::where('purchase_order_item_id', $purchaseOrderItemId)
                                 ->where('batch_id', $batchId)
-                                ->where('current_qty', '>', 0) // Only show pallets with available stock
+                                ->where('current_qty', '>', 0)
                                 ->get();
         return response()->json($pallets);
     }
+    // public function getPalletsForDispatch(Request $request)
+    // {
+    //     $purchaseOrderItemId = $request->input('purchase_order_item_id');
+    //     $batchId = $request->input('batch_id');
+
+    //     $pallets = StockPallet::where('purchase_order_item_id', $purchaseOrderItemId)
+    //                             ->where('batch_id', $batchId)
+    //                             ->where('current_qty', '>', 0)
+    //                             ->get();
+    //     return response()->json($pallets);
+    // }
 
 
     /**
