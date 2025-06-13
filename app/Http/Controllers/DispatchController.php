@@ -8,9 +8,10 @@ use App\Models\PurchaseOrderItem;
 use App\Models\PurchaseOrderBatch;
 use App\Models\StockPallet;
 use App\Models\Party;
-use App\Models\Design; // Import Design model
-use App\Models\Size;   // Import Size model
-use App\Models\Finish; // Import Finish model
+use App\Models\Design;
+use App\Models\Size;
+use App\Models\Finish;
+use App\Models\PurchaseOrderPallet;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Exception;
@@ -97,17 +98,6 @@ class DispatchController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new dispatch.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $parties = Party::all();
-        return view('dispatches.create', compact('parties'));
-    }
-
     public function getPurchasesForDispatch(Request $request) {
         $partyId = $request->input('party_id');
         $purchaseOrders = PurchaseOrder::where('party_id', $partyId)
@@ -182,6 +172,7 @@ class DispatchController extends Controller
      */
     public function getOrderItemsForDispatch(Request $request)
     {
+        $partyId = $request->input('party_id');
         $purchaseOrderId = $request->input('purchase_order_id');
         $designId = $request->input('design_id');
         $sizeId = $request->input('size_id');
@@ -190,6 +181,9 @@ class DispatchController extends Controller
         $query = PurchaseOrderItem::where('purchase_order_id', $purchaseOrderId)
                                 ->with(['designDetail', 'sizeDetail', 'finishDetail']);
 
+        if ($partyId) {
+            $query->where('party_id', $partyId);
+        }
         if ($designId) {
             $query->where('design', $designId);
         }
@@ -216,7 +210,18 @@ class DispatchController extends Controller
     public function getBatchesForDispatch(Request $request)
     {
         $purchaseOrderItemId = $request->input('purchase_order_item_id');
-        $batches = PurchaseOrderBatch::where('purchase_order_item_id', $purchaseOrderItemId)->get();
+        $partyId = $request->input('party_id');
+        $purchaseOrderId = $request->input('purchase_order_id');
+
+        $query = PurchaseOrderBatch::where('purchase_order_item_id', $purchaseOrderItemId);
+        if ($partyId) {
+            $query->where('party_id', $partyId);
+        }
+        if ($purchaseOrderId) {
+            $query->where('purchase_order_id', $purchaseOrderId);
+        }
+
+        $batches = $query->get();
         return response()->json($batches);
     }
 
@@ -228,27 +233,51 @@ class DispatchController extends Controller
      */
     public function getPalletsForDispatch(Request $request)
     {
+        $partyId = $request->input('party_id');
+        $purchaseOrderId = $request->input('purchase_order_id');
+        $designId = $request->input('design_id');
+        $sizeId = $request->input('size_id');
+        $finishId = $request->input('finish_id');
         $purchaseOrderItemId = $request->input('purchase_order_item_id');
         $batchId = $request->input('batch_id');
 
-        $pallets = StockPallet::where('purchase_order_item_id', $purchaseOrderItemId)
-                                ->where('batch_id', $batchId)
-                                ->where('current_qty', '>', 0)
-                                ->get();
+        $query = PurchaseOrderPallet::where('purchase_order_id', $purchaseOrderId)
+                                ->with(['designDetail', 'sizeDetail', 'finishDetail']);
+
+        if ($partyId) {
+            $query->where('party_id', $partyId);
+        }
+        if ($purchaseOrderItemId) {
+            $query->where('purchase_order_item_id', $purchaseOrderItemId);
+        }
+        if ($batchId) {
+            $query->where('batch_id', $batchId);
+        }
+        if ($designId) {
+            $query->where('design', $designId);
+        }
+        if ($sizeId) {
+            $query->where('size', $sizeId);
+        }
+        if ($finishId) {
+            $query->where('finish', $finishId);
+        }
+
+        $pallets = $query->get();
+
         return response()->json($pallets);
     }
-    // public function getPalletsForDispatch(Request $request)
-    // {
-    //     $purchaseOrderItemId = $request->input('purchase_order_item_id');
-    //     $batchId = $request->input('batch_id');
 
-    //     $pallets = StockPallet::where('purchase_order_item_id', $purchaseOrderItemId)
-    //                             ->where('batch_id', $batchId)
-    //                             ->where('current_qty', '>', 0)
-    //                             ->get();
-    //     return response()->json($pallets);
-    // }
-
+    /**
+     * Show the form for creating a new dispatch.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $parties = Party::all();
+        return view('dispatches.create', compact('parties'));
+    }
 
     /**
      * Store a newly created dispatch in storage.
@@ -261,32 +290,66 @@ class DispatchController extends Controller
         $request->validate([
             'party_id' => 'required|exists:parties,id',
             'purchase_order_id' => 'required|exists:purchase_orders,id',
+            'design' => 'required|exists:designs,id',
+            'size' => 'required|exists:sizes,id',
+            'finish' => 'required|exists:finishes,id',
             'purchase_order_item_id' => 'required|exists:purchase_order_items,id',
-            'pallet_id' => 'required|exists:stock_pallets,id',
-            'batch_id' => 'nullable|exists:purchase_order_batches,id', // Can be null
-            'dispatched_qty' => 'required|integer|min:1', // Must dispatch at least 1 item
+            'pallet_id' => 'required|exists:purchase_order_pallets,id',
+            'batch_id' => 'required|exists:purchase_order_batches,id',
+            'pallet_no' => 'required|integer|min:1',
+            'dispatched_qty' => 'required|integer|min:1',
             'dispatch_date' => 'required|date',
-            'vehicle_no' => 'nullable|string|max:255',
-            'container_no' => 'nullable|string|max:255',
+            'vehicle_no' => 'required|string|max:255',
+            'container_no' => 'required|string|max:255',
             'remark' => 'nullable|string',
         ]);
 
-        $pallet = StockPallet::find($request->pallet_id);
+        $pallet = PurchaseOrderPallet::where('id', $request->pallet_id)->first();
 
-        if (!$pallet) {
-            return back()->withErrors(['pallet_id' => 'Selected pallet not found.'])->withInput();
+        $stock = StockPallet::where('party_id', $request->party_id)
+            ->where('purchase_order_id', $request->purchase_order_id)
+            ->where('purchase_order_item_id', $request->purchase_order_item_id)
+            ->where('design', $request->design)
+            ->where('size', $request->size)
+            ->where('finish', $request->finish)
+            ->where('batch_id', $request->batch_id)
+            ->first();
+
+        if ($stock) {
+            if ($request->pallet_no > $stock->pallet_no) {
+                return back()->withErrors([
+                    'pallet_no' => "Pallent no cannot exceed available pallet no of ({$stock->pallet_no})."
+                ])->withInput();
+            }
+            $stock->pallet_no = $stock->pallet_no - $request->pallet_no;
+            $stock->current_qty = $stock->pallet_no * $stock->pallet_size;
+            $stock->save();
+
+        } else {
+            $newStock = new StockPallet();
+            $newStock->party_id = $request->party_id;
+            $newStock->purchase_order_id = $request->purchase_order_id;
+            $newStock->po = $request->po;
+            $newStock->purchase_order_item_id = $request->purchase_order_item_id;
+            $newStock->design = $request->design;
+            $newStock->size = $request->size;
+            $newStock->finish = $request->finish;
+            $newStock->batch_id = $request->batch_id;
+            $newStock->pallet_size = $pallet->pallet_size;
+            $newStock->pallet_no = $request->pallet_no;
+            $newStock->current_qty = $newStock->pallet_size * $newStock->pallet_no;
+            $newStock->save();
+            
+            $stock = $newStock;
         }
 
-        if ($request->dispatched_qty > $pallet->current_qty) {
-            return back()->withErrors(['dispatched_qty' => 'Dispatched quantity cannot exceed available pallet quantity (' . $pallet->current_qty . ').'])->withInput();
-        }
-
-        // Create the dispatch record
         Dispatch::create([
             'party_id' => $request->party_id,
             'purchase_order_id' => $request->purchase_order_id,
+            'po' => $request->po,
             'purchase_order_item_id' => $request->purchase_order_item_id,
             'pallet_id' => $request->pallet_id,
+            'stock_id' => $stock->id,
             'batch_id' => $request->batch_id,
             'dispatched_qty' => $request->dispatched_qty,
             'dispatch_date' => $request->dispatch_date,
@@ -295,12 +358,9 @@ class DispatchController extends Controller
             'remark' => $request->remark,
         ]);
 
-        // Deduct quantity from the stock pallet
-        $pallet->current_qty -= $request->dispatched_qty;
-        $pallet->save();
-
-        return redirect()->route('dispatches.index')->with('success', 'ડિસ્પેચ સફળતાપૂર્વક બનાવવામાં આવ્યું અને સ્ટોક અપડેટ થયો!');
+        return redirect()->route('dispatches.index')->with('success', 'Dispatch created successfully and pallet stock updated!');
     }
+
 
     /**
      * Display the specified resource.

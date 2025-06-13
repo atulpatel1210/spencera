@@ -10,15 +10,17 @@ class StockPallet extends Model
     use HasFactory;
 
     protected $fillable = [
+        'party_id',
         'purchase_order_id',
         'purchase_order_item_id',
+        'po',
         'batch_id',
-        'design_id',
-        'size_id',
-        'finish_id',
+        'design',
+        'size',
+        'finish',
         'pallet_size',
         'pallet_no',
-        'current_qty', // Changed from total_qty
+        'current_qty',
         'remark',
     ];
 
@@ -51,7 +53,7 @@ class StockPallet extends Model
      */
     public function designDetail()
     {
-        return $this->belongsTo(Design::class, 'design_id');
+        return $this->belongsTo(Design::class, 'design');
     }
 
     /**
@@ -59,7 +61,7 @@ class StockPallet extends Model
      */
     public function sizeDetail()
     {
-        return $this->belongsTo(Size::class, 'size_id');
+        return $this->belongsTo(Size::class, 'size');
     }
 
     /**
@@ -67,6 +69,6 @@ class StockPallet extends Model
      */
     public function finishDetail()
     {
-        return $this->belongsTo(Finish::class, 'finish_id');
+        return $this->belongsTo(Finish::class, 'finish');
     }
 }

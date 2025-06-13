@@ -117,7 +117,8 @@
         </form>
     </div>
 </div>
-
+@endsection
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const purchaseOrderIdSelect = document.getElementById('purchase_order_id');
@@ -285,3 +286,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+@endpush

@@ -30,6 +30,9 @@
     <a class="nav-link {{ request()->routeIs('dispatches.index') ? 'active' : '' }}" href="{{ route('dispatches.index') }}">
         <i class="fas fa-truck"></i> Dispatch
     </a>
+    <a class="nav-link {{ request()->routeIs('stock-pallets.report') ? 'active' : '' }}" href="{{ route('stock-pallets.report') }}">
+        <i class="nav-icon fas fa-boxes"></i> Stock Pallet Report
+    </a>
     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
         @csrf
     </form>

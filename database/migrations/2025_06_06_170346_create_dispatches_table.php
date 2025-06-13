@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('pallet_id')->constrained('purchase_order_pallets')->onDelete('restrict');
             $table->foreignId('batch_id')->nullable()->constrained('purchase_order_batches')->onDelete('set null');
             $table->string('po');
+            $table->integer('stock_id');
             $table->integer('dispatched_qty');
             $table->date('dispatch_date');
             $table->string('vehicle_no')->nullable();

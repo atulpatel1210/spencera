@@ -13,16 +13,14 @@ return new class extends Migration
     {
         Schema::create('stock_pallets', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('party_id')->constrained('parties')->onDelete('cascade');
             $table->string('po')->nullable();
             $table->foreignId('purchase_order_id')->constrained('purchase_orders')->onDelete('cascade');
             $table->foreignId('purchase_order_item_id')->constrained('purchase_order_items')->onDelete('cascade');
             $table->foreignId('batch_id')->constrained('purchase_order_batches')->onDelete('cascade');
-            $table->foreignId('design_id')->nullable()->constrained('designs')->onDelete('set null');
-            $table->foreignId('size_id')->nullable()->constrained('sizes')->onDelete('set null');
-            $table->foreignId('finish_id')->nullable()->constrained('finishes')->onDelete('set null');
-            $table->string('design')->nullable();
-            $table->string('size')->nullable();
-            $table->string('finish')->nullable();
+            $table->foreignId('design')->nullable()->constrained('designs')->onDelete('set null');
+            $table->foreignId('size')->nullable()->constrained('sizes')->onDelete('set null');
+            $table->foreignId('finish')->nullable()->constrained('finishes')->onDelete('set null');
             $table->string('pallet_size');
             $table->string('pallet_no');
             $table->integer('current_qty');

@@ -11,7 +11,7 @@ use App\Http\Controllers\PalletController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseOrderPalletController;
 use App\Http\Controllers\DispatchController;
-
+use App\Http\Controllers\StockPalletController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -54,6 +54,10 @@ Route::post('get-batches-for-dispatch', [DispatchController::class, 'getBatchesF
 Route::post('get-pallets-for-dispatch', [DispatchController::class, 'getPalletsForDispatch']);
 Route::get('dispatches/data', [DispatchController::class, 'getDispatchesData'])->name('dispatches.data');
 Route::resource('dispatches', DispatchController::class);
+
+Route::get('stock-pallets/report', [StockPalletController::class, 'showStockPalletReport'])->name('stock-pallets.report');
+Route::get('stock-pallets/report-data', [StockPalletController::class, 'reportData'])->name('stock-pallets.report.data');
+
 
 // Profile management
 Route::middleware('auth')->group(function () {
