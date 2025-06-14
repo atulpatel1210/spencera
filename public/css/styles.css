@@ -30,17 +30,17 @@
     .sidebar a.active {
         background-color: #495057;
         color: #fff;
-        border-left-color: #007bff; /* Highlight with a blue border on hover/active */
+        border-left-color: #ef7c1b;
     }
 
     .sidebar a i {
-        margin-right: 8px; /* Add some space between icon and text */
-        width: 1em; /* Ensure icons have a fixed width for alignment */
+        margin-right: 8px;
+        width: 1em;
         text-align: center;
     }
 
     .sidebar form {
-        margin-top: auto; /* Push the logout form to the bottom */
+        margin-top: auto;
         padding: 10px;
         border-top: 1px solid #495057;
     }
@@ -64,9 +64,9 @@
     /* Optional: Style for active link (if you have a way to determine the current page) */
     /* For example, if you add an 'active' class to the current link */
     .sidebar a.active {
-        background-color: #007bff;
-        color: #fff;
-        border-left-color: #007bff;
+        /* background-color: #ef7c1b; */
+        color: #ef7c1b;
+        border-left-color: #ef7c1b;
     }
     
     /* General Card Styling */
@@ -126,8 +126,8 @@
 
     /* Action Buttons Styling */
     .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
+        background-color: #ef7c1b;
+        border-color: #ef7c1b;
         transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
         border-radius: 0.5rem; /* Rounded buttons */
         padding: 0.5rem 1.25rem; /* More padding */
@@ -193,18 +193,18 @@
         margin: 0 5px;
         border: 1px solid #dee2e6 !important;
         background-color: #fff !important;
-        color: #007bff !important;
+        color: #ef7c1b !important;
         transition: all 0.2s ease;
     }
     .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        background-color: #007bff !important;
+        background-color: #ef7c1b !important;
         color: #fff !important;
-        border-color: #007bff !important;
+        border-color: #ef7c1b !important;
     }
     .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-        background-color: #007bff !important;
+        background-color: #ef7c1b !important;
         color: #fff !important;
-        border-color: #007bff !important;
+        border-color: #ef7c1b !important;
     }
     .dataTables_wrapper .dataTables_info,
     .dataTables_wrapper .dataTables_filter,
@@ -213,4 +213,9 @@
         padding-bottom: 0.85em;
         font-size: 0.875rem;
         color: #6c757d;
+    }
+    .active>.page-link, .page-link.active {
+        background-color: #ef7c1b !important;
+        color: #fff !important;
+        border-color: #ef7c1b !important;
     }

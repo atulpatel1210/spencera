@@ -1,5 +1,5 @@
 <div class="sidebar">
-    <h4 class="text-center py-3">Spencera Admin</h4>
+    <h4 class="text-center py-3"><img src="https://spenceraceramica.com/images/logo/white.svg" alt=""></h4>
     <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
         <i class="fas fa-chart-bar"></i> Dashboard
     </a>

@@ -74,16 +74,19 @@ class DispatchController extends Controller
                     return $dispatch->batch->batch_no ?? 'N/A';
                 })
                 ->addColumn('actions', function (Dispatch $dispatch) {
-                    // You can add edit/delete actions here if needed
-                    return "
-                        <a href='" . route('dispatches.show', $dispatch->id) . "' class='btn btn-sm btn-info'>View</a>
-                        <a href='" . route('dispatches.edit', $dispatch->id) . "' class='btn btn-sm btn-warning'>Edit</a>
-                        <form action='" . route('dispatches.destroy', $dispatch->id) . "' method='POST' style='display:inline-block;'>
-                            " . csrf_field() . method_field('DELETE') . "
-                            <button type='submit' class='btn btn-sm btn-danger' onclick=\"return confirm('Are you sure?')\">Delete</button>
-                        </form>
-                    ";
+                    return "<a href='" . route('dispatches.show', $dispatch->id) . "' class='btn btn-sm btn-info'>View</a>";
                 })
+                // ->addColumn('actions', function (Dispatch $dispatch) {
+                //     // You can add edit/delete actions here if needed
+                //     return "
+                //         <a href='" . route('dispatches.show', $dispatch->id) . "' class='btn btn-sm btn-info'>View</a>
+                //         <a href='" . route('dispatches.edit', $dispatch->id) . "' class='btn btn-sm btn-warning'>Edit</a>
+                //         <form action='" . route('dispatches.destroy', $dispatch->id) . "' method='POST' style='display:inline-block;'>
+                //             " . csrf_field() . method_field('DELETE') . "
+                //             <button type='submit' class='btn btn-sm btn-danger' onclick=\"return confirm('Are you sure?')\">Delete</button>
+                //         </form>
+                //     ";
+                // })
                 ->rawColumns(['actions'])
                 ->toJson();
         } catch (Exception $e) {
