@@ -12,7 +12,7 @@
     <style>
         body { background-color: #f8f9fa; }
         .sidebar {
-            background-color: #343a40;
+            background-color: #000;
             color: #fff;
         }
         .sidebar a { color: #adb5bd; display: block; padding: 10px; text-decoration: none; }
