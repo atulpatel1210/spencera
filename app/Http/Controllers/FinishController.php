@@ -2,15 +2,43 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SampleFinishExport;
+use App\Imports\FinishesImport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Finish;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class FinishController extends Controller
 {
     public function index()
     {
-        $finishes = Finish::latest()->paginate(10);
-        return view('finishes.index', compact('finishes'));
+        return view('finishes.index');
+    }
+
+    public function getFinishesData()
+    {
+        $query = Finish::select(['id', 'finish_name']);
+
+        return DataTables::of($query)
+            ->addIndexColumn()
+            ->addColumn('actions', function(Finish $finish) {
+                $editUrl = route('finishes.edit', $finish->id);
+                $deleteUrl = route('finishes.destroy', $finish->id);
+                $csrf = csrf_field();
+                $method = method_field('DELETE');
+
+                return "
+                    <a href='{$editUrl}' class='btn btn-sm btn-warning'>Edit</a>
+                    <form action='{$deleteUrl}' method='POST' style='display:inline;'>
+                        {$csrf}
+                        {$method}
+                        <button type='submit' onclick=\"return confirm('Are you sure you want to delete this finish?')\" class='btn btn-sm btn-danger'>Del</button>
+                    </form>
+                ";
+            })
+            ->rawColumns(['actions'])
+            ->toJson();
     }
 
     public function create()
@@ -47,5 +75,30 @@ class FinishController extends Controller
     {
         $finish->delete();
         return redirect()->route('finishes.index')->with('success', 'Finish deleted successfully.');
+    }
+
+    public function downloadSampleFile()
+    {
+        return Excel::download(new SampleFinishExport, 'sample_finish_import.xlsx');
+    }
+
+    public function showImportForm()
+    {
+        return view('finishes.import');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|mimes:xlsx,xls,csv'
+        ]);
+
+        $import = new FinishesImport();
+        Excel::import($import, $request->file('import_file'));
+
+        return back()->with([
+            'successCount' => $import->successCount,
+            'errors' => $import->customFailures,
+        ]);
     }
 }

@@ -16,7 +16,25 @@
                         <div class="alert alert-danger mt-2">{{ $message }}</div>
                     @enderror
                 </div>
-
+                <div class="mb-3">
+                    <label for="party_id" class="form-label">Party</label>
+                    <select class="form-select" id="party_id" name="party_id" required>
+                        <option value="">Select Party</option>
+                        @foreach ($parties as $p)
+                            <option value="{{ $p->id }}" data-po-number="{{ $p->party_name }}">{{ $p->party_name }}</option>
+                        @endforeach
+                    </select>
+                    @error('party_id')
+                        <div class="alert alert-danger mt-2">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="mb-3">
+                    <label for="order_date" class="form-label">Order Date</label>
+                    <input type="date" class="form-control" id="order_date" name="order_date" value="{{ old('order_date', date('Y-m-d')) }}" required autofocus>
+                    @error('order_date')
+                        <div class="alert alert-danger mt-2">{{ $message }}</div>
+                    @enderror
+                </div>
                 <div>
                     <label for="order_items" class="form-label">Order Items</label>
                     <div id="order_items_container">

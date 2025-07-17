@@ -1,13 +1,18 @@
 @extends('layouts.app')
+
 @section('content')
+
 <div class="card">
-    <div class="card-header d-flex justify-content-between">
+    <div class="card-header d-flex justify-content-between align-items-center">
         <h4>Designs</h4>
-        <a href="{{ route('designs.create') }}" class="btn btn-primary btn-sm">+ Add Design</a>
+        <div>
+            <a href="{{ route('designs.create') }}" class="btn btn-primary">+ Add Design</a>
+            <a href="{{ route('designs.import.form') }}" class="btn btn-primary">Import Design</a>
+        </div>
     </div>
     <div class="card-body">
         @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
-        <table class="table table-bordered">
+        <table class="table table-bordered" id="designs-table">
             <thead>
                 <tr>
                     <th>#</th>
@@ -16,23 +21,29 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($designs as $design)
-                    <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ $design->name }}</td>
-                        <td>
-                            <a href="{{ route('designs.edit', $design) }}" class="btn btn-sm btn-warning">Edit</a>
-                            <form action="{{ route('designs.destroy', $design) }}" method="POST" style="display:inline;">
-                                @csrf @method('DELETE')
-                                <button onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger">Del</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
+                {{-- Data will be loaded by Yajra Datatables --}}
             </tbody>
         </table>
-
-        {{ $designs->links() }}
     </div>
 </div>
 @endsection
+@push('scripts')
+<script>
+$(function() {
+    $('#designs-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: '{{ route('designs.data') }}',
+        columns: [
+            { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+            { data: 'name', name: 'name' },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ],
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    });
+});
+</script>
+@endpush

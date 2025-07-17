@@ -1,0 +1,10 @@
+.bg-btn-login {
+    padding: 5px;
+    border: 1px solid;
+    border-radius: 5px;
+}
+
+.focus\:ring-indigo-500:focus {
+    --tw-ring-opacity: 1;
+    --tw-ring-color: #000;
+}

@@ -18,7 +18,7 @@
                         <th>Pending</th>
                         <th>Planning</th>
                         <th>Production</th>
-                        <th>Short</th>
+                        <th>Short/Excess</th>
                         <th>Remark</th>
                         <th>Actions</th>
                     </tr>
@@ -26,9 +26,9 @@
                 <tbody>
                     @foreach ($order->orderItems as $item)
                     <tr>
-                        <td>{{ $item->design }}</td>
-                        <td>{{ $item->size }}</td>
-                        <td>{{ $item->finish }}</td>
+                        <td>{{ $item->designDetail->name }}</td>
+                        <td>{{ $item->sizeDetail->size_name }}</td>
+                        <td>{{ $item->finishDetail->finish_name }}</td>
                         <td>{{ $item->order_qty }}</td>
                         <td>{{ $item->pending_qty }}</td>
                         <td>{{ $item->planning_qty }}</td>

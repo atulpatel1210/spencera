@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('purchase_orders', function (Blueprint $table) {
             $table->id();
             $table->string('po')->nullable();
-            $table->string('party_name')->nullable();
+            $table->integer('party_id')->constrained('parties')->onDelete('cascade');;
             $table->date('order_date')->nullable();
             $table->timestamps();
         });
