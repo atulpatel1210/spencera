@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SampleDesignExport;
+use App\Imports\DesignsImport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Design;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -72,5 +75,30 @@ class DesignController extends Controller
     {
         $design->delete();
         return redirect()->route('designs.index')->with('success', 'Design deleted successfully.');
+    }
+
+    public function downloadSampleFile()
+    {
+        return Excel::download(new SampleDesignExport, 'sample_design_import.xlsx');
+    }
+
+    public function showImportForm()
+    {
+        return view('designs.import');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|mimes:xlsx,xls,csv'
+        ]);
+
+        $import = new DesignsImport();
+        Excel::import($import, $request->file('import_file'));
+
+        return back()->with([
+            'successCount' => $import->successCount,
+            'errors' => $import->customFailures,
+        ]);
     }
 }

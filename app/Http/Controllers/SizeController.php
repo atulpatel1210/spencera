@@ -7,6 +7,10 @@ use App\Models\Size;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\SizesImport;
+use App\Exports\SampleSizeExport;
+
 class SizeController extends Controller
 {
     public function index()
@@ -79,5 +83,30 @@ class SizeController extends Controller
     {
         $size->delete();
         return redirect()->route('sizes.index')->with('success', 'Size deleted successfully.');
+    }
+
+    public function downloadSampleFile()
+    {
+        return Excel::download(new SampleSizeExport, 'sample_size_import.xlsx');
+    }
+
+    public function showImportForm()
+    {
+        return view('size.import');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|mimes:xlsx,xls,csv'
+        ]);
+
+        $import = new SizesImport();
+        Excel::import($import, $request->file('import_file'));
+
+        return back()->with([
+            'successCount' => $import->successCount,
+            'errors' => $import->customFailures,
+        ]);
     }
 }

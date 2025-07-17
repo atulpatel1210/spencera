@@ -5,7 +5,10 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h4>Finishes</h4>
-        <a href="{{ route('finishes.create') }}" class="btn btn-primary">+ Add Finish</a>
+        <div>
+            <a href="{{ route('finishes.create') }}" class="btn btn-primary">+ Add Finish</a>
+            <a href="{{ route('finishes.import.form') }}" class="btn btn-primary">Import Design</a>
+        </div>
     </div>
     <div class="card-body">
         @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif

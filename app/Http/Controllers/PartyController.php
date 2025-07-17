@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SamplePartyExport;
+use App\Imports\PartiesImport;
 use App\Models\Party;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Exception;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PartyController extends Controller
 {
@@ -143,5 +146,30 @@ class PartyController extends Controller
         $party->delete();
 
         return redirect()->route('parties.index')->with('success', 'Party deleted successfully.');
+    }
+
+    public function downloadSampleFile()
+    {
+        return Excel::download(new SamplePartyExport, 'sample_party_import.xlsx');
+    }
+
+    public function showImportForm()
+    {
+        return view('parties.import');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|mimes:xlsx,xls,csv'
+        ]);
+
+        $import = new PartiesImport();
+        Excel::import($import, $request->file('import_file'));
+
+        return back()->with([
+            'successCount' => $import->successCount,
+            'errors' => $import->customFailures,
+        ]);
     }
 }

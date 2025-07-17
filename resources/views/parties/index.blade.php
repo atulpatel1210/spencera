@@ -4,7 +4,10 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h4>Party List</h4>
-        <a href="{{ route('parties.create') }}" class="btn btn-primary btn-sm">Add New Party</a>
+        <div>
+            <a href="{{ route('parties.create') }}" class="btn btn-primary btn-sm">+ Add Party</a>
+            <a href="{{ route('parties.import.form') }}" class="btn btn-primary">Import Design</a>
+        </div>
     </div>
     <div class="card-body">
         @if(session('success'))

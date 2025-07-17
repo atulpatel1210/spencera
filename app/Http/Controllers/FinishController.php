@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\SampleFinishExport;
+use App\Imports\FinishesImport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Finish;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -72,5 +75,30 @@ class FinishController extends Controller
     {
         $finish->delete();
         return redirect()->route('finishes.index')->with('success', 'Finish deleted successfully.');
+    }
+
+    public function downloadSampleFile()
+    {
+        return Excel::download(new SampleFinishExport, 'sample_finish_import.xlsx');
+    }
+
+    public function showImportForm()
+    {
+        return view('finishes.import');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'import_file' => 'required|mimes:xlsx,xls,csv'
+        ]);
+
+        $import = new FinishesImport();
+        Excel::import($import, $request->file('import_file'));
+
+        return back()->with([
+            'successCount' => $import->successCount,
+            'errors' => $import->customFailures,
+        ]);
     }
 }

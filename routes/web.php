@@ -21,13 +21,29 @@ Route::get('/', function () {
 Route::get('/dashboard', [HomeController::class, 'index'])->middleware('auth')->name('dashboard');
 
 Route::get('parties/data', [PartyController::class, 'getPartiesData'])->name('parties.data');
+Route::get('parties/download-sample', [PartyController::class, 'downloadSampleFile'])->name('parties.download-sample');
+Route::get('parties/import', [PartyController::class, 'showImportForm'])->name('parties.import.form');
+Route::post('parties/import', [PartyController::class, 'import'])->name('parties.import');
 Route::resource('parties', PartyController::class);
+
 Route::get('designs/data', [DesignController::class, 'getDesignsData'])->name('designs.data');
+Route::get('designs/download-sample', [DesignController::class, 'downloadSampleFile'])->name('designs.download-sample');
+Route::get('designs/import', [DesignController::class, 'showImportForm'])->name('designs.import.form');
+Route::post('designs/import', [DesignController::class, 'import'])->name('designs.import');
 Route::resource('designs', DesignController::class)->middleware('auth');
+
 Route::get('finishes/data', [FinishController::class, 'getFinishesData'])->name('finishes.data');
+Route::get('finishes/download-sample', [FinishController::class, 'downloadSampleFile'])->name('finishes.download-sample');
+Route::get('finishes/import', [FinishController::class, 'showImportForm'])->name('finishes.import.form');
+Route::post('finishes/import', [FinishController::class, 'import'])->name('finishes.import');
 Route::resource('finishes', FinishController::class)->middleware('auth');
+
 Route::get('sizes/data', [SizeController::class, 'getSizesData'])->name('sizes.data');
+Route::get('sizes/download-sample', [SizeController::class, 'downloadSampleFile'])->name('sizes.download-sample');
+Route::get('sizes/import', [SizeController::class, 'showImportForm'])->name('sizes.import.form');
+Route::post('sizes/import', [SizeController::class, 'import'])->name('sizes.import');
 Route::resource('sizes', SizeController::class)->middleware('auth');
+
 Route::resource('pallet', PalletController::class)->middleware('auth');
 Route::get('orders/order-item-list', [PurchaseOrderController::class, 'getAllItem'])->name('purchase_order_item.list');
 // Route::get('orders/order-item-list', [PurchaseOrderController::class, 'getAllItem'])->name('purchase_order_item.list');

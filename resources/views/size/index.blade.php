@@ -5,7 +5,10 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h4>Size List</h4>
-        <a href="{{ route('sizes.create') }}" class="btn btn-primary">+ Add Size</a>
+        <div>
+            <a href="{{ route('sizes.create') }}" class="btn btn-primary">+ Add Size</a>
+            <a href="{{ route('sizes.import.form') }}" class="btn btn-primary">Import Sizes</a>
+        </div>
     </div>
 
     <div class="card-body">
