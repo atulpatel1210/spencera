@@ -41,9 +41,37 @@ class StockPalletController extends Controller
         ));
     }
 
+    // public function reportData(Request $request)
+    // {
+    //     $query = StockPallet::query();
+
+    //     if ($request->filled('party_id')) {
+    //         $query->where('party_id', $request->party_id);
+    //     }
+    //     if ($request->filled('po')) {
+    //         $query->where('po', $request->po);
+    //     }
+    //     if ($request->filled('design')) {
+    //         $query->where('design', $request->design);
+    //     }
+    //     if ($request->filled('size')) {
+    //         $query->where('size', $request->size);
+    //     }
+    //     if ($request->filled('finish')) {
+    //         $query->where('finish', $request->finish);
+    //     }
+    //     if ($request->filled('pallet_size')) {
+    //         $query->where('pallet_size', $request->pallet_size);
+    //     }
+
+    //     return DataTables::of($query)
+    //         ->addIndexColumn()
+    //         ->make(true);
+    // }
+
     public function reportData(Request $request)
     {
-        $query = StockPallet::query();
+        $query = StockPallet::with(['designDetail', 'sizeDetail', 'finishDetail', 'partyDetail']);
 
         if ($request->filled('party_id')) {
             $query->where('party_id', $request->party_id);
@@ -66,6 +94,19 @@ class StockPalletController extends Controller
 
         return DataTables::of($query)
             ->addIndexColumn()
+            ->editColumn('party_id', function ($row) {
+                return $row->partyDetail->party_name ?? '-';
+            })
+            ->editColumn('design', function ($row) {
+                return $row->designDetail->name ?? '-';
+            })
+            ->editColumn('size', function ($row) {
+                return $row->sizeDetail->size_name ?? '-';
+            })
+            ->editColumn('finish', function ($row) {
+                return $row->finishDetail->finish_name ?? '-';
+            })
             ->make(true);
     }
+
 }

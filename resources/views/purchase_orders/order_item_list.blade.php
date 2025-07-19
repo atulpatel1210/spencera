@@ -50,17 +50,17 @@
                     <div class="mb-3">
                         <label for="quantity" class="form-label">Quantity</label>
                         <input type="number" class="form-control" name="quantity" id="quantity">
-                        <div class="text-danger" id="errorMsg"></div>
+                        <div class="text-danger" id="quantity_error"></div>
                     </div>
                     <div class="mb-3" id="batch_no_section">
                         <label for="batch_no" class="form-label">Batch No</label>
                         <input type="text" class="form-control" name="batch_no" id="batch_no">
-                        <div class="text-danger" id="errorMsg"></div>
+                        <div class="text-danger" id="batch_no_error"></div>
                     </div>
                     <div class="mb-3">
                         <label for="remark" class="form-label">Remark</label>
                         <textarea class="form-control" id="remark" name="remark" rows="5"></textarea>
-                        <div class="text-danger" id="errorMsg"></div>
+                        <div class="text-danger" id="remark_error"></div>
                     </div>
                 </form>
             </div>
@@ -105,6 +105,9 @@ $(function() {
             const itemId = $(this).data('id');
             const type = $(this).data('type');
 
+            $('#quantity_error, #batch_no_error, #remark_error').text('');
+            $('#quantityForm')[0].reset();
+
             fetch(`order-item-data/${itemId}`)
                 .then(response => {
                     if (!response.ok) throw new Error('Failed to fetch order item data');
@@ -127,7 +130,7 @@ $(function() {
             const form = document.getElementById('quantityForm');
             const formData = new FormData(form);
             const itemId = $('#item_id').val();
-            const error = $('#errorMsg');
+            $('#quantity_error, #batch_no_error, #remark_error').text('');
 
             fetch(`update-order-item/${itemId}`, {
                 method: 'POST',
@@ -138,15 +141,26 @@ $(function() {
             })
             .then(res => res.json())
             .then(result => {
+                console.log(result);
                 if (result.success) {
                     quantityModal.hide();
-                    $('#order-items-table').DataTable().ajax.reload(); // Refresh table
+                    $('#order-items-table').DataTable().ajax.reload();
+                } else if (result.errors) {
+                    if (result.errors.quantity) {
+                        $('#quantity_error').text(result.errors.quantity[0]);
+                    }
+                    if (result.errors.batch_no) {
+                        $('#batch_no_error').text(result.errors.batch_no[0]);
+                    }
+                    if (result.errors.remark) {
+                        $('#remark_error').text(result.errors.remark[0]);
+                    }
                 } else {
-                    error.text(result.message || 'Error occurred!');
+                    alert(result.message || 'Something went wrong!');
                 }
             })
             .catch(err => {
-                error.text('Something went wrong!');
+                alert('Something went wrong while saving.');
             });
         });
     });
