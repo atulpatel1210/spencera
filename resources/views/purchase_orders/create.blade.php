@@ -48,6 +48,7 @@
                                             <option value="{{ $design->id }}">{{ $design->name }}</option>
                                         @endforeach
                                     </select>
+                                    
                                     @error('order_items.0.name')
                                         <div class="alert alert-danger mt-2">{{ $message }}</div>
                                     @enderror

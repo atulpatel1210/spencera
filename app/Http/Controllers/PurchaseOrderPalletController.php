@@ -10,7 +10,9 @@ use App\Models\PurchaseOrderItem;
 use App\Models\PurchaseOrderPallet;
 use App\Models\Size;
 use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables; 
+use Yajra\DataTables\Facades\DataTables;
+use App\Models\PurchaseOrderPalletDesign; // Using your provided model name
+use Illuminate\Validation\ValidationException;
 
 class PurchaseOrderPalletController extends Controller
 {
@@ -132,48 +134,111 @@ class PurchaseOrderPalletController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        $request->validate([
-            'purchase_order_id' => 'required|exists:purchase_orders,id',
-            'purchase_order_item_id' => 'required|exists:purchase_order_items,id',
-            // 'po' => 'required|string',
-            'design' => 'required|string',
-            'size' => 'required|string',
-            'finish' => 'required|string',
-            'packing_date' => 'required|date',
-            'pallets' => 'required|array',
-            'batch_id' => 'required|exists:purchase_order_batches,id',
-            'pallets.*.pallet_size' => 'required|string',
-            'pallets.*.pallet_no' => 'required|string',
-            'pallets.*.total_qty' => 'required|integer|min:1',
-            'pallets.*.remark' => 'nullable|string',
+{
+    $commonRules = [
+        'purchase_order_id' => 'required|exists:purchase_orders,id',
+        'purchase_order_item_id' => 'required|exists:purchase_order_items,id',
+        'design' => 'required|exists:designs,id',
+        'size' => 'required|exists:sizes,id',
+        'finish' => 'required|exists:finishes,id',
+        'batch_id' => 'required|exists:purchase_order_batches,id',
+        'packing_date' => 'required|date',
+        'pallets' => 'required|array|min:1',
+    ];
+
+    $palletRules = [
+        'pallets.*.pallet_size' => 'required|numeric|min:1',
+        'pallets.*.pallet_no' => 'required|numeric|min:1',
+        'pallets.*.total_qty' => 'required|integer|min:0',
+        'pallets.*.remark' => 'nullable|string|max:500',
+        'pallets.*.po' => 'required|string',
+        'pallets.*.design_id' => 'required|exists:designs,id',
+        'pallets.*.size_id' => 'required|exists:sizes,id',
+        'pallets.*.finish_id' => 'required|exists:finishes,id',
+        'pallets.*.batch_id' => 'required|exists:purchase_order_batches,id',
+        'pallets.*.design_quantities' => 'required|string',
+    ];
+
+    $request->validate(array_merge($commonRules, $palletRules));
+
+    $mainDesignName = Design::find($request->design)->name ?? null;
+    $mainSizeName = Size::find($request->size)->size_name ?? null;
+    $mainFinishName = Finish::find($request->finish)->finish_name ?? null;
+
+    $purchaseOrder = PurchaseOrder::findOrFail($request->purchase_order_id);
+    $partyId = $purchaseOrder->party_id;
+
+    $purchaseOrderItem = PurchaseOrderItem::findOrFail($request->purchase_order_item_id);
+    $productionQty = $purchaseOrderItem->production_qty;
+
+    $totalSumOfPalletQuantities = 0;
+
+    foreach ($request->pallets as $index => $palletData) {
+        $decodedDesigns = json_decode($palletData['design_quantities'], true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw ValidationException::withMessages([
+                "pallets.{$index}.design_quantities" => 'Invalid JSON format for design quantities.'
+            ]);
+        }
+
+        $sumOfDesignsForThisPallet = 0;
+        foreach ($decodedDesigns as $designId => $detail) {
+            $sumOfDesignsForThisPallet += (int) $detail['quantity'];
+        }
+
+        if ((int)$sumOfDesignsForThisPallet !== (int)$palletData['total_qty']) {
+            throw ValidationException::withMessages([
+                "pallets.{$index}.design_quantities" => "Design total ({$sumOfDesignsForThisPallet}) does not match pallet total ({$palletData['total_qty']})."
+            ]);
+        }
+
+        $totalSumOfPalletQuantities += (int)$palletData['total_qty'];
+
+        $createdPallet = PurchaseOrderPallet::create([
+            'purchase_order_id' => (int)$palletData['purchase_order_id'],
+            'purchase_order_item_id' => (int)$palletData['purchase_order_item_id'],
+            'party_id' => (int)$partyId,
+            'po' => $palletData['po'],
+            'design' => $mainDesignName,
+            'size' => $mainSizeName,
+            'finish' => $mainFinishName,
+            'batch_id' => (int)$palletData['batch_id'],
+            'pallet_size' => $palletData['pallet_size'],
+            'pallet_no' => $palletData['pallet_no'],
+            'total_qty' => (int)$palletData['total_qty'],
+            'packing_date' => $request->packing_date,
+            'remark' => $palletData['remark'] ?? null,
         ]);
 
-        $purchaseOrder = \App\Models\PurchaseOrder::find($request->purchase_order_id);
-        if (!$purchaseOrder) {
-            return redirect()->back()->withErrors(['purchase_order_id' => 'Invalid Purchase Order']);
-        }
-        $partyId = $purchaseOrder->party_id;
+        foreach ($decodedDesigns as $designId => $detail) {
+            $qty = (int)$detail['quantity'];
+            $sizeId = $detail['size_id'] ?? null;
+            $finishId = $detail['finish_id'] ?? null;
 
-        foreach ($request->pallets as $palletData) {
-            $createData = [
-                'purchase_order_id' => $request->purchase_order_id,
-                'purchase_order_item_id' => $request->purchase_order_item_id,
-                'party_id' => $partyId,
-                'po' => $palletData['po'],
-                'design' => $request->design,
-                'size' => $request->size,
-                'finish' => $request->finish,
-                'batch_id' => $request->batch_id,
-                'pallet_size' => $palletData['pallet_size'],
-                'pallet_no' => $palletData['pallet_no'],
-                'total_qty' => $palletData['total_qty'],
-                'packing_date' => $request->packing_date,
-                'remark' => $palletData['remark'] ?? null,
-            ];
-            PurchaseOrderPallet::create($createData);
+            if (!$qty || !$sizeId || !$finishId) {
+                throw ValidationException::withMessages([
+                    "pallets.{$index}.design_quantities" => "Missing size/finish/qty for design ID {$designId}."
+                ]);
+            }
+
+            PurchaseOrderPalletDesign::create([
+                'purchase_order_pallet_id' => $createdPallet->id,
+                'design_id' => (int)$designId,
+                'quantity' => $qty,
+                'size_id' => (int)$sizeId,
+                'finish_id' => (int)$finishId,
+            ]);
         }
-        return redirect()->route('purchase_order_pallets.index')->with('success', 'Pallets added successfully!');
-        // return redirect()->route('purchase_order_pallets.create')->with('success', 'Pallets added successfully!');
     }
+
+    if ($totalSumOfPalletQuantities > $productionQty) {
+        throw ValidationException::withMessages([
+            'pallets' => "Overall pallet quantity ({$totalSumOfPalletQuantities}) exceeds production quantity ({$productionQty})."
+        ]);
+    }
+
+    return redirect()->route('purchase_order_pallets.index')->with('success', 'Pallets added successfully!');
+}
+
 }
