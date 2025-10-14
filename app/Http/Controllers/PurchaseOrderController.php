@@ -10,6 +10,7 @@ use App\Models\Party;
 use App\Models\PurchaseOrderBatch;
 use App\Models\Size;
 use App\Models\PurchaseOrderItem;
+use App\Models\PurchaseOrderItemTransaction;
 use Yajra\DataTables\Facades\DataTables;
 use Exception;
 use Illuminate\Support\Facades\Validator;
@@ -269,6 +270,7 @@ class PurchaseOrderController extends Controller
         $rules = [
             'quantity' => 'required|integer|min:1',
             'remark'   => 'nullable|string|max:255',
+            'date'     => 'required|date',
         ];
 
         if ($type === 'production') {
@@ -323,6 +325,15 @@ class PurchaseOrderController extends Controller
                 ]);
             }
         }
+        PurchaseOrderItemTransaction::create([
+            'purchase_order_item_id' => $item->id,
+            'quantity' => $qty,
+            'batch_no' => $request->batch_no ?? null,
+            'date' => $request->date,
+            'remark' => $request->remark,
+            'type' => $type,
+            'created_by' => auth()->id() ?? null,
+        ]);
         return response()->json(['success' => true]);
     }
 

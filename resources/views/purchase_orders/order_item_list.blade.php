@@ -58,6 +58,11 @@
                         <div class="text-danger" id="batch_no_error"></div>
                     </div>
                     <div class="mb-3">
+                        <label for="date" class="form-label">Date</label>
+                        <input type="date" class="form-control" name="date" id="date">
+                        <div class="text-danger" id="date_error"></div>
+                    </div>
+                    <div class="mb-3">
                         <label for="remark" class="form-label">Remark</label>
                         <textarea class="form-control" id="remark" name="remark" rows="5"></textarea>
                         <div class="text-danger" id="remark_error"></div>
@@ -151,6 +156,9 @@ $(function() {
                     }
                     if (result.errors.batch_no) {
                         $('#batch_no_error').text(result.errors.batch_no[0]);
+                    }
+                    if (result.errors.date) {
+                        $('#date_error').text(result.errors.date[0]);
                     }
                     if (result.errors.remark) {
                         $('#remark_error').text(result.errors.remark[0]);
