@@ -71,4 +71,12 @@ class StockPallet extends Model
     {
         return $this->belongsTo(Finish::class, 'finish');
     }
+
+    /**
+     * Get the finish detail for the stock pallet.
+     */
+    public function partyDetail()
+    {
+        return $this->belongsTo(Party::class, 'party_id');
+    }
 }

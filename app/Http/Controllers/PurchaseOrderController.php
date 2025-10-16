@@ -10,8 +10,10 @@ use App\Models\Party;
 use App\Models\PurchaseOrderBatch;
 use App\Models\Size;
 use App\Models\PurchaseOrderItem;
+use App\Models\PurchaseOrderItemTransaction;
 use Yajra\DataTables\Facades\DataTables;
 use Exception;
+use Illuminate\Support\Facades\Validator;
 
 class PurchaseOrderController extends Controller
 {
@@ -256,18 +258,43 @@ class PurchaseOrderController extends Controller
     public function updateOrderItem(Request $request, $id)
     {
         $item = PurchaseOrderItem::findOrFail($id);
-        $type = $request->type;
+        $type = strtolower($request->type);
 
         if (!in_array($type, ['planning', 'production'])) {
-            return response()->json(['success' => false, 'message' => 'Invalid type']);
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid quantity type.'
+            ], 422);
+        }
+
+        $rules = [
+            'quantity' => 'required|integer|min:1',
+            'remark'   => 'nullable|string|max:255',
+            'date'     => 'required|date',
+        ];
+
+        if ($type === 'production') {
+            $rules['batch_no'] = 'required|string|max:100';
+        }
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         $qty = (int) $request->quantity;
 
-        if ($qty > $item->order_qty) {
-            return response()->json(['success' => false, 'message' => ucfirst($type).' quantity cannot exceed order quantity']);
+        if (strtolower($type) == 'planning' && $qty > $item->pending_qty) {
+            return response()->json([
+                'success' => false,
+                'errors' => ['quantity' => ['Planning quantity cannot exceed pending quantity']]
+            ], 422);
         }
-        if(strtolower($type) == 'production'){
+        if($type == 'production'){
             $item->planning_qty = $item->planning_qty - $qty;
             $item->short_qty = $item->short_qty - $qty;
             $item->production_qty = $qty + $item->production_qty;
@@ -278,8 +305,8 @@ class PurchaseOrderController extends Controller
         $item->remark = $request->remark;
         $item->save();
         
-        $batchNo = $request->batch_no;
-        if (strtolower($type) == 'production' && $batchNo) {
+        if ($type == 'production') {
+            $batchNo = $request->batch_no;
             $batch = PurchaseOrderBatch::where('purchase_order_id', $item->purchase_order_id)
                 ->where('purchase_order_item_id', $item->id)
                 ->where('batch_no', $batchNo)
@@ -298,6 +325,15 @@ class PurchaseOrderController extends Controller
                 ]);
             }
         }
+        PurchaseOrderItemTransaction::create([
+            'purchase_order_item_id' => $item->id,
+            'quantity' => $qty,
+            'batch_no' => $request->batch_no ?? null,
+            'date' => $request->date,
+            'remark' => $request->remark,
+            'type' => $type,
+            'created_by' => auth()->id() ?? null,
+        ]);
         return response()->json(['success' => true]);
     }
 
