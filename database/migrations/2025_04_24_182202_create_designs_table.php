@@ -13,9 +13,16 @@ return new class extends Migration
     {
         Schema::create('designs', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('party_id')->nullable()->index();
             $table->string('name')->unique();
+            $table->string('image')->nullable();
             $table->timestamps();
-        });        
+
+            $table->foreign('party_id')
+                  ->references('id')
+                  ->on('parties')
+                  ->onDelete('set null');
+        });
     }
 
     /**
@@ -23,6 +30,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('designs', function (Blueprint $table) {
+            $table->dropForeign(['party_id']);
+        });
         Schema::dropIfExists('designs');
     }
 };

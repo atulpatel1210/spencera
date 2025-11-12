@@ -8,6 +8,9 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Design;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\Party;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class DesignController extends Controller
 {
@@ -18,10 +21,19 @@ class DesignController extends Controller
 
     public function getDesignsData()
     {
-        $query = Design::select(['id', 'name']);
+        $query = Design::with('party')->select(['id', 'name', 'party_id', 'image']);
 
         return DataTables::of($query)
             ->addIndexColumn()
+            ->addColumn('party_name', function(Design $design) {
+                return $design->party->party_name ?? '-';
+            })
+            ->addColumn('image', function(Design $design) {
+                if ($design->image && Storage::disk('public')->exists('designs/'.$design->image)) {
+                    return '<img src="'.asset('storage/designs/'.$design->image).'" width="60" height="60" class="rounded">';
+                }
+                return '-';
+            })
             ->addColumn('actions', function(Design $design) {
                 $editUrl = route('designs.edit', $design->id);
                 $deleteUrl = route('designs.destroy', $design->id);
@@ -30,44 +42,77 @@ class DesignController extends Controller
 
                 return "
                     <a href='{$editUrl}' class='btn btn-sm btn-warning'>Edit</a>
-                    <form action='{$deleteUrl}' method='POST' style='display:inline;'>
+                    <form action='{$deleteUrl}' method='POST' style='display:inline;' onsubmit=\"return confirm('Are you sure?')\">
                         {$csrf}
                         {$method}
-                        <button type='submit' onclick=\"return confirm('Are you sure you want to delete this design?')\" class='btn btn-sm btn-danger'>Del</button>
+                        <button type='submit' class='btn btn-sm btn-danger'>Del</button>
                     </form>
                 ";
             })
-            ->rawColumns(['actions'])
+            ->rawColumns(['image', 'actions'])
             ->toJson();
     }
 
     public function create()
     {
-        return view('designs.create');
+        $parties = Party::select('id', 'party_name')->orderBy('party_name')->get();
+        return view('designs.create', compact('parties'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|unique:designs,name'
+            'party_id' => 'required|exists:parties,id',
+            'name' => [
+                'required',
+                Rule::unique('designs')->where(fn($q) => $q->where('party_id', $request->party_id)),
+            ],
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        Design::create($request->only('name'));
+        $data = $request->only('name', 'party_id');
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('designs', 'public');
+            $data['image'] = basename($data['image']);
+        }
+
+        Design::create($data);
         return redirect()->route('designs.index')->with('success', 'Design added successfully.');
     }
 
     public function edit(Design $design)
     {
-        return view('designs.edit', compact('design'));
+        $parties = Party::select('id', 'party_name')->orderBy('party_name')->get();
+        return view('designs.edit', compact('design', 'parties'));
     }
 
     public function update(Request $request, Design $design)
     {
         $request->validate([
-            'name' => 'required|unique:designs,name,' . $design->id
+            'party_id' => 'required|exists:parties,id',
+            'name' => [
+                'required',
+                Rule::unique('designs')->where(fn($q) => $q->where('party_id', $request->party_id))
+                    ->ignore($design->id),
+            ],
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $design->update($request->only('name'));
+        $data = $request->only('name', 'party_id');
+
+        if ($request->hasFile('image')) {
+            if ($design->image && Storage::disk('public')->exists('designs/' . $design->image)) {
+                Storage::disk('public')->delete('designs/' . $design->image);
+            }
+
+            $path = $request->file('image')->store('designs', 'public');
+            $data['image'] = basename($path);
+        } else {
+            $data['image'] = $design->image;
+        }
+
+        $design->update($data);
         return redirect()->route('designs.index')->with('success', 'Design updated successfully.');
     }
 

@@ -2,6 +2,7 @@
 namespace App\Imports;
 
 use App\Models\Design;
+use App\Models\Party;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -17,27 +18,48 @@ class DesignsImport implements ToCollection, WithHeadingRow, SkipsOnFailure
 
     public function collection(Collection $rows)
     {
-        $existing = Design::pluck('name')->map(fn($v) => strtolower($v))->toArray();
+        $existing = Design::select('party_id', 'name')->get()
+            ->map(fn($item) => strtolower($item->party_id . '_' . $item->name))
+            ->toArray();
         $seen = [];
 
         foreach ($rows as $index => $row) {
             $rowNumber = $index + 2; // +2 because of heading row
 
-            $DesignName = trim($row['name']);
+            $partyId = trim($row['party_id'] ?? '');
+            $designName = trim($row['name'] ?? '');
 
-            if (!$DesignName) {
+            // Basic validations
+            if (!$partyId) {
+                $this->customFailures[] = "Row {$rowNumber}: party_id is required.";
+                continue;
+            }
+
+            if (!Party::find($partyId)) {
+                $this->customFailures[] = "Row {$rowNumber}: Invalid party_id ({$partyId}).";
+                continue;
+            }
+
+            if (!$designName) {
                 $this->customFailures[] = "Row {$rowNumber}: name is required.";
                 continue;
             }
 
-            if (in_array(strtolower($DesignName), $existing) || in_array(strtolower($DesignName), $seen)) {
-                $this->customFailures[] = "Row {$rowNumber}: Duplicate value \"{$DesignName}\" found.";
+            $uniqueKey = strtolower($partyId . '_' . $designName);
+
+            // 3️⃣ Check duplicate (party_id + name)
+            if (in_array($uniqueKey, $existing) || in_array($uniqueKey, $seen)) {
+                $this->customFailures[] = "Row {$rowNumber}: Duplicate name \"{$designName}\" found for party_id {$partyId}.";
                 continue;
             }
 
-            Design::create(['name' => $DesignName]);
+            // Store record
+            Design::create([
+                'party_id' => $partyId,
+                'name' => $designName,
+            ]);
             $this->successCount++;
-            $seen[] = strtolower($DesignName);
+            $seen[] = strtolower($designName);
         }
     }
 }

@@ -9,14 +9,14 @@ class SampleDesignExport implements FromArray, WithHeadings
     public function array(): array
     {
         return [
-            ['Small'],
-            ['Medium'],
-            ['Large'],
+            ['1', 'Small'],
+            ['2', 'Medium'],
+            ['3', 'Large'],
         ];
     }
 
     public function headings(): array
     {
-        return ['name'];
+        return ['party_id', 'name'];
     }
 }

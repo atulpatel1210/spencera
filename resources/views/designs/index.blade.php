@@ -16,13 +16,12 @@
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>Image</th>
+                    <th>Party</th>
                     <th>Name</th>
                     <th width="120">Actions</th>
                 </tr>
             </thead>
-            <tbody>
-                {{-- Data will be loaded by Yajra Datatables --}}
-            </tbody>
         </table>
     </div>
 </div>
@@ -36,13 +35,13 @@ $(function() {
         ajax: '{{ route('designs.data') }}',
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+            { data: 'image', name: 'image', orderable: false, searchable: false },
+            { data: 'party_name', name: 'party_name' },
             { data: 'name', name: 'name' },
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ],
         dom: 'Bfrtip',
-        buttons: [
-            'copy', 'csv', 'excel', 'pdf', 'print'
-        ]
+        buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
     });
 });
 </script>
