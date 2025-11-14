@@ -30,9 +30,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('designs', function (Blueprint $table) {
-            $table->dropForeign(['party_id']);
-        });
+        // Avoid dropping the named foreign key directly because its name
+        // may not exist in all databases/environments and can cause errors
+        // during rollback. Dropping the table will remove any foreign keys
+        // automatically in MySQL.
         Schema::dropIfExists('designs');
     }
 };
