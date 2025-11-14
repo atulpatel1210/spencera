@@ -107,6 +107,13 @@
                             @enderror
                         </div>
                         <div class="col-md-3">
+                            <label for="location_0" class="form-label">Location</label>
+                            <input type="text" class="form-control" name="pallets[0][location]" id="location_0" placeholder="e.g. Warehouse A">
+                            @error('pallets.0.location')
+                            <div class="text-danger mt-2">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-3">
                             <label for="total_qty_0" class="form-label">Total Qty (Pallet)</label>
                             <input type="number" class="form-control total-qty-input" name="pallets[0][total_qty]" id="total_qty_0" readonly required min="0">
                             @error('pallets.0.total_qty')

@@ -15,6 +15,7 @@ class PurchaseOrderBatch extends Model
         'batch_no',
         'qty',
         'party_id',
+        'location',
     ];
 
     public function purchaseOrder()

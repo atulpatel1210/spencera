@@ -13,6 +13,7 @@ class PurchaseOrderItemTransaction extends Model
         'purchase_order_item_id',
         'quantity',
         'batch_no',
+        'location',
         'date',
         'remark',
         'type',

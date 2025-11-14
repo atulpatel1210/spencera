@@ -360,6 +360,9 @@ class PurchaseOrderController extends Controller
 
             if ($batch) {
                 $batch->qty += $qty;
+                if ($request->filled('location')) {
+                    $batch->location = $request->location;
+                }
                 $batch->save();
             } else {
                 PurchaseOrderBatch::create([
@@ -367,11 +370,12 @@ class PurchaseOrderController extends Controller
                     'purchase_order_item_id' => $item->id,
                     'batch_no' => $batchNo,
                     'qty' => $qty,
-                    'party_id' => $item->party_id
+                    'party_id' => $item->party_id,
+                    'location' => $request->location ?? null,
                 ]);
             }
         }
-        PurchaseOrderItemTransaction::create([
+        $transactionData = [
             'purchase_order_item_id' => $item->id,
             'quantity' => $qty,
             'batch_no' => $request->batch_no ?? null,
@@ -379,7 +383,11 @@ class PurchaseOrderController extends Controller
             'remark' => $request->remark,
             'type' => $type,
             'created_by' => auth()->id() ?? null,
-        ]);
+        ];
+        if ($request->filled('location')) {
+            $transactionData['location'] = $request->location;
+        }
+        PurchaseOrderItemTransaction::create($transactionData);
         return response()->json(['success' => true]);
     }
 

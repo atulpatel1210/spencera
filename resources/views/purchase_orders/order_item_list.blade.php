@@ -62,7 +62,7 @@
                         <input type="date" class="form-control" name="date" id="date">
                         <div class="text-danger" id="date_error"></div>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3" id="location_section">
                         <label for="location" class="form-label">Location</label>
                         <textarea class="form-control" id="location" name="location" rows="5"></textarea>
                         <div class="text-danger" id="location_error"></div>
@@ -128,7 +128,7 @@ $(function() {
                     $('#type').val(type);
                     $('#remark').val(data.remark || '');
                     $('#modalTitle').text(`Edit ${type.charAt(0).toUpperCase() + type.slice(1)} Quantity`);
-                    $('#batch_no_section').toggle(type === 'production');
+                    $('#batch_no_section, #location_section').toggle(type === 'production');
                     quantityModal.show();
                 })
                 .catch(error => {
@@ -164,6 +164,9 @@ $(function() {
                     }
                     if (result.errors.date) {
                         $('#date_error').text(result.errors.date[0]);
+                    }
+                    if (result.errors.location) {
+                        $('#location_error').text(result.errors.location[0]);
                     }
                     if (result.errors.remark) {
                         $('#remark_error').text(result.errors.remark[0]);
