@@ -18,6 +18,8 @@
                 <tr>
                     <th>PO</th>
                     <th>Party Name</th>
+                    <th>Brand Name</th>
+                    <th>Box Image</th>
                     <th>Order Date</th>
                     <th>Actions</th>
                 </tr>
@@ -39,6 +41,8 @@ $(function() {
         columns: [
             { data: 'po', name: 'po' },
             { data: 'party_name', name: 'party.party_name', orderable: true, searchable: true }, // Use party_name column
+            { data: 'brand_name', name: 'brand_name' },
+            { data: 'box_image', name: 'box_image' },
             { data: 'order_date', name: 'order_date' },
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ],

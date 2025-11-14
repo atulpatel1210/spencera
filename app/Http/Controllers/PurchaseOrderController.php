@@ -14,6 +14,7 @@ use App\Models\PurchaseOrderItemTransaction;
 use Yajra\DataTables\Facades\DataTables;
 use Exception;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class PurchaseOrderController extends Controller
 {
@@ -31,38 +32,55 @@ class PurchaseOrderController extends Controller
     {
         $request->validate([
             'po' => 'required|unique:purchase_orders,po',
-            'party_id' => 'required',
-            'order_date' => 'required',
-            'order_items' => 'required|array',
-            'order_items.*.design' => 'nullable|string',
-            'order_items.*.size' => 'nullable|string',
-            'order_items.*.finish' => 'nullable|string',
-            'order_items.*.order_qty' => 'required|integer|min:0',
-            'order_items.*.pending_qty' => 'nullable|integer|min:0',
-            'order_items.*.planning_qty' => 'nullable|integer|min:0',
-            'order_items.*.production_qty' => 'nullable|integer|min:0',
-            'order_items.*.short_qty' => 'nullable|integer|min:0',
-            'order_items.*.remark' => 'nullable|string',
-            'order_items.*.status' => 'nullable|string',
+            'party_id' => 'required|exists:parties,id',
+            'brand_name' => 'nullable|string|max:255',
+            'order_date' => 'required|date',
+            'box_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'order_items' => 'required',
         ]);
 
-        $purchaseOrder = PurchaseOrder::create([
-            'po' => $request->input('po'),
-            'party_id' => $request->input('party_id'),
-            'order_date' => $request->input('order_date'),
-        ]);
+        DB::beginTransaction();
 
-        if ($request->has('order_items')) {
-            foreach ($request->input('order_items') as $itemData) {
-                $purchaseOrder->orderItems()->create(array_merge($itemData, [
-                    'purchase_order_id' => $purchaseOrder->id,
-                    'po' => $purchaseOrder->po,
-                    'party_id' => $purchaseOrder->party_id,
-                ]));
+        try {
+
+            $data = $request->only('po', 'party_id', 'brand_name', 'order_date');
+
+            if ($request->hasFile('box_image')) {
+                $data['box_image'] = $request->file('box_image')->store('box_images', 'public');
+                $data['box_image'] = basename($data['box_image']);
             }
-        }
 
-        return redirect()->route('orders.index')->with('success', 'Order created successfully!');
+            $order = PurchaseOrder::create($data);
+
+            $items = json_decode($request->order_items, true);
+
+            foreach ($items as $item) {
+                $order->orderItems()->create([
+                    'po' => $order->po,
+                    'party_id' => $order->party_id,
+                    'design' => $item['design_id'],
+                    'size' => $item['size_id'],
+                    'finish' => $item['finish_id'],
+                    'order_qty' => $item['order_qty'],
+                    'remark' => $item['remark'] ?? null,
+                    'pending_qty' => $item['order_qty'],
+                    'planning_qty' => 0,
+                    'production_qty' => 0,
+                    'short_qty' => 0,
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('orders.index')->with('success', 'Order saved successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()
+                ->back()
+                ->with('error', 'Something went wrong! ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     public function index()
@@ -73,13 +91,23 @@ class PurchaseOrderController extends Controller
     public function getOrdersData()
     {
         try {
-            $query = PurchaseOrder::select(['id', 'po', 'party_id', 'order_date'])
+            $query = PurchaseOrder::select(['id', 'po', 'party_id', 'order_date', 'brand_name', 'box_image'])
                                 ->with('party');
 
             return DataTables::of($query)
                 ->addIndexColumn()
                 ->addColumn('party_name', function (PurchaseOrder $order) {
                     return $order->party->party_name ?? 'N/A';
+                })
+                ->addColumn('brand_name', function (PurchaseOrder $order) {
+                    return $order->brand_name ?? 'N/A';
+                })
+                ->addColumn('box_image', function (PurchaseOrder $order) {
+                    if ($order->box_image) {
+                        $url = asset('storage/box_images/' . $order->box_image);
+                        return "<img src='{$url}' alt='Box' style='height:50px; object-fit:contain;'/>";
+                    }
+                    return 'N/A';
                 })
                 ->addColumn('actions', function (PurchaseOrder $order) {
                     $viewUrl = route('orders.show', $order->id);
@@ -89,16 +117,34 @@ class PurchaseOrderController extends Controller
                     $method = method_field('DELETE');
 
                     return "
-                        <a href='{$viewUrl}' class='btn btn-info btn-sm'>View</a>
-                        <a href='{$editUrl}' class='btn btn-primary btn-sm ms-2'>Edit</a>
-                        <form action='{$deleteUrl}' method='POST' class='d-inline'>
+                        <a href='{$viewUrl}' title='View' style='width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;padding:0;margin-right:6px;border-radius:4px;background:transparent;border:0;color:#0d6efd;text-decoration:none;'>
+                            <i class='fa fa-eye fa-fw fa-lg'></i>
+                        </a>
+                        <form action='{$deleteUrl}' method='POST' class='d-inline' onsubmit=\"return confirm('Are you sure?')\" style='display:inline-block;vertical-align:middle;margin-right:0;'>
                             {$csrf}
                             {$method}
-                            <button type='submit' class='btn btn-danger btn-sm ms-2' onclick=\"return confirm('Are you sure?')\">Delete</button>
+                            <button type='submit' title='Delete' style='width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:4px;background:transparent;border:0;color:#dc3545;'>
+                                <i class='fa fa-trash fa-fw fa-lg'></i>
+                            </button>
                         </form>
                     ";
+                    // return "
+                    //     <a href='{$viewUrl}' title='View' style='width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;padding:0;margin-right:6px;border-radius:4px;background:transparent;border:0;color:#0d6efd;text-decoration:none;'>
+                    //         <i class='fa fa-eye fa-fw fa-lg'></i>
+                    //     </a>
+                    //     <a href='{$editUrl}' title='Edit' style='width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;padding:0;margin-right:6px;border-radius:4px;background:transparent;border:0;color:#0d6efd;text-decoration:none;'>
+                    //         <i class='fa fa-edit fa-fw fa-lg'></i>
+                    //     </a>
+                    //     <form action='{$deleteUrl}' method='POST' class='d-inline' onsubmit=\"return confirm('Are you sure?')\" style='display:inline-block;vertical-align:middle;margin-right:0;'>
+                    //         {$csrf}
+                    //         {$method}
+                    //         <button type='submit' title='Delete' style='width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:4px;background:transparent;border:0;color:#dc3545;'>
+                    //             <i class='fa fa-trash fa-fw fa-lg'></i>
+                    //         </button>
+                    //     </form>
+                    // ";
                 })
-                ->rawColumns(['actions'])
+                ->rawColumns(['actions', 'box_image'])
                 ->toJson();
         } catch (Exception $e) {
             \Log::error("Yajra DataTables error in getOrdersData: " . $e->getMessage(), ['exception' => $e]);

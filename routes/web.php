@@ -30,6 +30,7 @@ Route::get('designs/data', [DesignController::class, 'getDesignsData'])->name('d
 Route::get('designs/download-sample', [DesignController::class, 'downloadSampleFile'])->name('designs.download-sample');
 Route::get('designs/import', [DesignController::class, 'showImportForm'])->name('designs.import.form');
 Route::post('designs/import', [DesignController::class, 'import'])->name('designs.import');
+Route::get('/party/designs', [DesignController::class, 'getDesignByParty'])->name('party.designs');
 Route::resource('designs', DesignController::class)->middleware('auth');
 
 Route::get('finishes/data', [FinishController::class, 'getFinishesData'])->name('finishes.data');

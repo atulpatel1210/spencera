@@ -146,4 +146,14 @@ class DesignController extends Controller
             'errors' => $import->customFailures,
         ]);
     }
+
+    public function getDesignByParty(Request $request)
+    {
+        $designs = Design::where('party_id', $request->party_id)
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json($designs);
+    }
 }

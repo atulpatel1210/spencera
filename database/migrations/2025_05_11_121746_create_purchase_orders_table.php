@@ -11,9 +11,12 @@ return new class extends Migration
         Schema::create('purchase_orders', function (Blueprint $table) {
             $table->id();
             $table->string('po')->nullable();
-            $table->integer('party_id')->constrained('parties')->onDelete('cascade');;
+            $table->unsignedBigInteger('party_id');
+            $table->string('brand_name')->nullable();
+            $table->string('box_image')->nullable();
             $table->date('order_date')->nullable();
             $table->timestamps();
+            $table->foreign('party_id')->references('id')->on('parties')->onDelete('cascade');
         });
     }
 

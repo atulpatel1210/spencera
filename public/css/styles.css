@@ -225,6 +225,11 @@
     border-color: #ef7c1b !important;
 }
 
+.disabled {
+    pointer-events: none !important;
+    opacity: 1 !important;
+}
+
 .select2-container .select2-selection--single {
     height: 38px !important;
     padding: 6px 12px;

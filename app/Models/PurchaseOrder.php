@@ -14,7 +14,9 @@ class PurchaseOrder extends Model
     protected $fillable = [
         'po',
         'party_id',
-        'order_date'
+        'brand_name',
+        'order_date',
+        'box_image'
     ];
 
     public function orderItems(): HasMany

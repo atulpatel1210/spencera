@@ -63,6 +63,11 @@
                         <div class="text-danger" id="date_error"></div>
                     </div>
                     <div class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <textarea class="form-control" id="location" name="location" rows="5"></textarea>
+                        <div class="text-danger" id="location_error"></div>
+                    </div>
+                    <div class="mb-3">
                         <label for="remark" class="form-label">Remark</label>
                         <textarea class="form-control" id="remark" name="remark" rows="5"></textarea>
                         <div class="text-danger" id="remark_error"></div>
