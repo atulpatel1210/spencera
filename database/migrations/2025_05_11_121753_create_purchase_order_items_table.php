@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreignId('size_id')->nullable()->constrained('sizes')->nullOnDelete();
             $table->foreignId('finish_id')->nullable()->constrained('finishes')->nullOnDelete();
             $table->string('batch_no')->nullable();
-            $table->string('pallet')->nullable();
+            $table->unsignedBigInteger('pallet_id')->nullable();
             $table->integer('order_qty')->default(0);
             $table->integer('pending_qty')->default(0);
             $table->integer('planning_qty')->default(0);

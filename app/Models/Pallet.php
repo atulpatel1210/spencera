@@ -9,5 +9,17 @@ class Pallet extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['pallet_name'];
+    protected $fillable = [
+        'purchase_order_item_id',
+        'box_pallet',
+        'total_pallet',
+    ];
+
+    /**
+     * Relation: Pallet belongs to Purchase Order Item
+     */
+    public function orderItem()
+    {
+        return $this->belongsTo(PurchaseOrderItem::class, 'purchase_order_item_id');
+    }
 }

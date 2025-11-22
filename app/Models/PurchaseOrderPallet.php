@@ -14,9 +14,9 @@ class PurchaseOrderPallet extends Model
         'purchase_order_id',
         'po',
         'purchase_order_item_id',
-        'design',
-        'size',
-        'finish',
+        'design_id',
+        'size_id',
+        'finish_id',
         'batch_id',
         'party_id',
         'pallet_size',
@@ -43,17 +43,17 @@ class PurchaseOrderPallet extends Model
 
     public function sizeDetail(): BelongsTo
     {
-        return $this->belongsTo(Size::class, 'size', 'id');
+        return $this->belongsTo(Size::class, 'size_id', 'id');
     }
 
     public function designDetail(): BelongsTo
     {
-        return $this->belongsTo(Design::class, 'design', 'id');
+        return $this->belongsTo(Design::class, 'design_id', 'id');
     }
 
     public function finishDetail(): BelongsTo
     {
-        return $this->belongsTo(Finish::class, 'finish', 'id');
+        return $this->belongsTo(Finish::class, 'finish_id', 'id');
     }
 
     // public function batchDetail(): HasMany

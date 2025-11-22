@@ -18,9 +18,9 @@ return new class extends Migration
             $table->foreignId('purchase_order_id')->constrained('purchase_orders')->onDelete('cascade');
             $table->foreignId('purchase_order_item_id')->constrained('purchase_order_items')->onDelete('cascade');
             $table->foreignId('batch_id')->constrained('purchase_order_batches')->onDelete('cascade');
-            $table->foreignId('design')->nullable()->constrained('designs')->onDelete('set null');
-            $table->foreignId('size')->nullable()->constrained('sizes')->onDelete('set null');
-            $table->foreignId('finish')->nullable()->constrained('finishes')->onDelete('set null');
+            $table->foreignId('design_id')->nullable()->constrained('designs')->nullOnDelete();
+            $table->foreignId('size_id')->nullable()->constrained('sizes')->nullOnDelete();
+            $table->foreignId('finish_id')->nullable()->constrained('finishes')->nullOnDelete();
             $table->string('pallet_size');
             $table->string('pallet_no');
             $table->integer('current_qty');

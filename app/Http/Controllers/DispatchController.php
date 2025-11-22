@@ -118,7 +118,7 @@ class DispatchController extends Controller
 
         $purchaseOrders = PurchaseOrderItem::where('party_id', $partyId)
             ->where('purchase_order_id', $purchaseOrderId)
-            ->join('designs', 'purchase_order_items.design', '=', 'designs.id')
+            ->join('designs', 'purchase_order_items.design_id', '=', 'designs.id')
             ->select('designs.id', 'designs.name')
             ->distinct()
             ->get();
@@ -135,8 +135,8 @@ class DispatchController extends Controller
 
         $purchaseOrders = PurchaseOrderItem::where('party_id', $partyId)
             ->where('purchase_order_id', $purchaseOrderId)
-            ->where('design', $designId)
-            ->join('sizes', 'purchase_order_items.size', '=', 'sizes.id')
+            ->where('design_id', $designId)
+            ->join('sizes', 'purchase_order_items.size_id', '=', 'sizes.id')
             ->select('sizes.id', 'sizes.size_name')
             ->distinct()
             ->get();
@@ -154,9 +154,9 @@ class DispatchController extends Controller
 
         $purchaseOrders = PurchaseOrderItem::where('party_id', $partyId)
             ->where('purchase_order_id', $purchaseOrderId)
-            ->where('design', $designId)
-            ->where('size', $sizeId)
-            ->join('finishes', 'purchase_order_items.finish', '=', 'finishes.id')
+            ->where('design_id', $designId)
+            ->where('size_id', $sizeId)
+            ->join('finishes', 'purchase_order_items.finish_id', '=', 'finishes.id')
             ->select('finishes.id', 'finishes.finish_name')
             ->distinct()
             ->get();
@@ -188,13 +188,13 @@ class DispatchController extends Controller
             $query->where('party_id', $partyId);
         }
         if ($designId) {
-            $query->where('design', $designId);
+            $query->where('design_id', $designId);
         }
         if ($sizeId) {
-            $query->where('size', $sizeId);
+            $query->where('size_id', $sizeId);
         }
         if ($finishId) {
-            $query->where('finish', $finishId);
+            $query->where('finish_id', $finishId);
         }
 
         $orderItems = $query->get();
@@ -257,13 +257,13 @@ class DispatchController extends Controller
             $query->where('batch_id', $batchId);
         }
         if ($designId) {
-            $query->where('design', $designId);
+            $query->where('design_id', $designId);
         }
         if ($sizeId) {
-            $query->where('size', $sizeId);
+            $query->where('size_id', $sizeId);
         }
         if ($finishId) {
-            $query->where('finish', $finishId);
+            $query->where('finish_id', $finishId);
         }
 
         $pallets = $query->get();
@@ -293,9 +293,9 @@ class DispatchController extends Controller
         $request->validate([
             'party_id' => 'required|exists:parties,id',
             'purchase_order_id' => 'required|exists:purchase_orders,id',
-            'design' => 'required|exists:designs,id',
-            'size' => 'required|exists:sizes,id',
-            'finish' => 'required|exists:finishes,id',
+            'design_id' => 'required|exists:designs,id',
+            'size_id' => 'required|exists:sizes,id',
+            'finish_id' => 'required|exists:finishes,id',
             'purchase_order_item_id' => 'required|exists:purchase_order_items,id',
             'pallet_id' => 'required|exists:purchase_order_pallets,id',
             'batch_id' => 'required|exists:purchase_order_batches,id',
@@ -312,9 +312,9 @@ class DispatchController extends Controller
         $stock = StockPallet::where('party_id', $request->party_id)
             ->where('purchase_order_id', $request->purchase_order_id)
             ->where('purchase_order_item_id', $request->purchase_order_item_id)
-            ->where('design', $request->design)
-            ->where('size', $request->size)
-            ->where('finish', $request->finish)
+            ->where('design_id', $request->design_id)
+            ->where('size_id', $request->size_id)
+            ->where('finish_id', $request->finish_id)
             ->where('batch_id', $request->batch_id)
             ->first();
 
@@ -334,9 +334,9 @@ class DispatchController extends Controller
             $newStock->purchase_order_id = $request->purchase_order_id;
             $newStock->po = $request->po;
             $newStock->purchase_order_item_id = $request->purchase_order_item_id;
-            $newStock->design = $request->design;
-            $newStock->size = $request->size;
-            $newStock->finish = $request->finish;
+            $newStock->design_id = $request->design_id;
+            $newStock->size_id = $request->size_id;
+            $newStock->finish_id = $request->finish_id;
             $newStock->batch_id = $request->batch_id;
             $newStock->pallet_size = $pallet->pallet_size;
             $newStock->pallet_no = $request->pallet_no;

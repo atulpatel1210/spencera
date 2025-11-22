@@ -100,13 +100,13 @@ class PurchaseOrderPalletController extends Controller
                     ->with(['designDetail', 'sizeDetail', 'finishDetail']); // Eager load details
 
         if (!empty($designId)) {
-            $query->where('design', $designId);
+            $query->where('design_id', $designId);
         }
         if (!empty($sizeId)) {
-            $query->where('size', $sizeId);
+            $query->where('size_id', $sizeId);
         }
         if (!empty($finishId)) {
-            $query->where('finish', $finishId);
+            $query->where('finish_id', $finishId);
         }
 
         $orderItems = $query->get();
@@ -138,9 +138,9 @@ class PurchaseOrderPalletController extends Controller
     $commonRules = [
         'purchase_order_id' => 'required|exists:purchase_orders,id',
         'purchase_order_item_id' => 'required|exists:purchase_order_items,id',
-        'design' => 'required|exists:designs,id',
-        'size' => 'required|exists:sizes,id',
-        'finish' => 'required|exists:finishes,id',
+        'design_id' => 'required|exists:designs,id',
+        'size_id' => 'required|exists:sizes,id',
+        'finish_id' => 'required|exists:finishes,id',
         'batch_id' => 'required|exists:purchase_order_batches,id',
         'packing_date' => 'required|date',
         'pallets' => 'required|array|min:1',
@@ -161,9 +161,9 @@ class PurchaseOrderPalletController extends Controller
 
     $request->validate(array_merge($commonRules, $palletRules));
 
-    $mainDesignName = Design::find($request->design)->name ?? null;
-    $mainSizeName = Size::find($request->size)->size_name ?? null;
-    $mainFinishName = Finish::find($request->finish)->finish_name ?? null;
+    $mainDesignId = $request->design_id;
+    $mainSizeId = $request->size_id;
+    $mainFinishId = $request->finish_id;
 
     $purchaseOrder = PurchaseOrder::findOrFail($request->purchase_order_id);
     $partyId = $purchaseOrder->party_id;
@@ -200,9 +200,9 @@ class PurchaseOrderPalletController extends Controller
             'purchase_order_item_id' => (int)$palletData['purchase_order_item_id'],
             'party_id' => (int)$partyId,
             'po' => $palletData['po'],
-            'design' => $mainDesignName,
-            'size' => $mainSizeName,
-            'finish' => $mainFinishName,
+            'design_id' => $mainDesignId,
+            'size_id' => $mainSizeId,
+            'finish_id' => $mainFinishId,
             'batch_id' => (int)$palletData['batch_id'],
             'pallet_size' => $palletData['pallet_size'],
             'pallet_no' => $palletData['pallet_no'],

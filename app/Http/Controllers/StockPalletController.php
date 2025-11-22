@@ -22,15 +22,15 @@ class StockPalletController extends Controller
                     ->orderBy('po')
                     ->pluck('po', 'po');
 
-        $designList = Design::whereIn('id', StockPallet::distinct()->pluck('design'))
+        $designList = Design::whereIn('id', StockPallet::distinct()->pluck('design_id'))
                         ->orderBy('name')
                         ->pluck('name', 'id');
 
-        $sizeList = Size::whereIn('id', StockPallet::distinct()->pluck('size'))
+        $sizeList = Size::whereIn('id', StockPallet::distinct()->pluck('size_id'))
                         ->orderBy('size_name')
                         ->pluck('size_name', 'id');
 
-        $finishList = Finish::whereIn('id', StockPallet::distinct()->pluck('finish'))
+        $finishList = Finish::whereIn('id', StockPallet::distinct()->pluck('finish_id'))
                         ->orderBy('finish_name')
                         ->pluck('finish_name', 'id');
 
@@ -80,13 +80,13 @@ class StockPalletController extends Controller
             $query->where('po', $request->po);
         }
         if ($request->filled('design')) {
-            $query->where('design', $request->design);
+            $query->where('design_id', $request->design);
         }
         if ($request->filled('size')) {
-            $query->where('size', $request->size);
+            $query->where('size_id', $request->size);
         }
         if ($request->filled('finish')) {
-            $query->where('finish', $request->finish);
+            $query->where('finish_id', $request->finish);
         }
         if ($request->filled('pallet_size')) {
             $query->where('pallet_size', $request->pallet_size);
@@ -97,13 +97,13 @@ class StockPalletController extends Controller
             ->editColumn('party_id', function ($row) {
                 return $row->partyDetail->party_name ?? '-';
             })
-            ->editColumn('design', function ($row) {
+            ->editColumn('design_id', function ($row) {
                 return $row->designDetail->name ?? '-';
             })
-            ->editColumn('size', function ($row) {
+            ->editColumn('size_id', function ($row) {
                 return $row->sizeDetail->size_name ?? '-';
             })
-            ->editColumn('finish', function ($row) {
+            ->editColumn('finish_id', function ($row) {
                 return $row->finishDetail->finish_name ?? '-';
             })
             ->make(true);

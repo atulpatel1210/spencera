@@ -19,9 +19,9 @@ return new class extends Migration
             $table->unsignedBigInteger('purchase_order_id');
             $table->string('po')->nullable();
             $table->unsignedBigInteger('purchase_order_item_id');
-            $table->string('design')->nullable();
-            $table->string('size')->nullable();
-            $table->string('finish')->nullable();
+            $table->foreignId('design_id')->nullable()->constrained('designs')->nullOnDelete();
+            $table->foreignId('size_id')->nullable()->constrained('sizes')->nullOnDelete();
+            $table->foreignId('finish_id')->nullable()->constrained('finishes')->nullOnDelete();
             $table->unsignedBigInteger('batch_id');
             $table->string('pallet_size');
             $table->string('pallet_no');

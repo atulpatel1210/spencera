@@ -15,9 +15,9 @@ class StockPallet extends Model
         'purchase_order_item_id',
         'po',
         'batch_id',
-        'design',
-        'size',
-        'finish',
+        'design_id',
+        'size_id',
+        'finish_id',
         'pallet_size',
         'pallet_no',
         'current_qty',
@@ -53,7 +53,7 @@ class StockPallet extends Model
      */
     public function designDetail()
     {
-        return $this->belongsTo(Design::class, 'design');
+        return $this->belongsTo(Design::class, 'design_id');
     }
 
     /**
@@ -61,7 +61,7 @@ class StockPallet extends Model
      */
     public function sizeDetail()
     {
-        return $this->belongsTo(Size::class, 'size');
+        return $this->belongsTo(Size::class, 'size_id');
     }
 
     /**
@@ -69,7 +69,7 @@ class StockPallet extends Model
      */
     public function finishDetail()
     {
-        return $this->belongsTo(Finish::class, 'finish');
+        return $this->belongsTo(Finish::class, 'finish_id');
     }
 
     /**

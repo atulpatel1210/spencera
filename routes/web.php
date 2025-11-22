@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CompanyDetailController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
@@ -51,6 +52,7 @@ Route::get('orders/order-item-list', [PurchaseOrderController::class, 'getAllIte
 Route::get('orders/order-item-data', [PurchaseOrderController::class, 'getOrderItemData'])->name('purchase_order_item.data');
 Route::get('orders/data', [PurchaseOrderController::class, 'getOrdersData'])->name('orders.data');
 Route::resource('orders', PurchaseOrderController::class)->middleware('auth');
+Route::get('orders/{order}/print', [PurchaseOrderController::class, 'printView'])->name('orders.print');
 
 Route::get('orders/order-item-data/{id}', [PurchaseOrderController::class, 'getItem']);
 Route::patch('orders/update-order-item/{id}', [PurchaseOrderController::class, 'updateOrderItem']);
@@ -74,6 +76,9 @@ Route::resource('dispatches', DispatchController::class);
 
 Route::get('stock-pallets/report', [StockPalletController::class, 'showStockPalletReport'])->name('stock-pallets.report');
 Route::get('stock-pallets/report-data', [StockPalletController::class, 'reportData'])->name('stock-pallets.report.data');
+
+Route::get('company-details/edit', [CompanyDetailController::class, 'edit'])->name('company.edit');
+Route::put('company-details', [CompanyDetailController::class, 'update'])->name('company.update');
 
 
 // Profile management

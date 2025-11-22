@@ -26,9 +26,9 @@ class PurchaseOrderItemController extends Controller
     {
         $request->validate([
             'po' => 'required|unique:purchase_orders,po',
-            'design' => 'nullable|string',
-            'size' => 'nullable|string',
-            'finish' => 'nullable|string',
+            'design_id' => 'nullable|exists:designs,id',
+            'size_id' => 'nullable|exists:sizes,id',
+            'finish_id' => 'nullable|exists:finishes,id',
             'planning_qty' => 'nullable|integer|min:0',
             'production_qty' => 'nullable|integer|min:0',
             'remark' => 'nullable|string',
@@ -76,9 +76,9 @@ class PurchaseOrderItemController extends Controller
         $request->validate([
             'po' => 'required|unique:purchase_orders,po,' . $order->id,
             'order_items' => 'required|array',
-            'order_items.*.design' => 'nullable|string',
-            'order_items.*.size' => 'nullable|string',
-            'order_items.*.finish' => 'nullable|string',
+            'order_items.*.design_id' => 'nullable|exists:designs,id',
+            'order_items.*.size_id' => 'nullable|exists:sizes,id',
+            'order_items.*.finish_id' => 'nullable|exists:finishes,id',
             'order_items.*.order_qty' => 'required|integer|min:0',
             'order_items.*.pending_qty' => 'nullable|integer|min:0',
             'order_items.*.planning_qty' => 'nullable|integer|min:0',

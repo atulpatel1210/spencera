@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CompanyDetail;
 use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
 use App\Models\Design;
 use App\Models\Finish;
+use App\Models\Pallet;
 use App\Models\Party;
 use App\Models\PurchaseOrderBatch;
 use App\Models\Size;
@@ -15,6 +17,7 @@ use Yajra\DataTables\Facades\DataTables;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class PurchaseOrderController extends Controller
 {
@@ -55,12 +58,13 @@ class PurchaseOrderController extends Controller
             $items = json_decode($request->order_items, true);
 
             foreach ($items as $item) {
-                $order->orderItems()->create([
+                // $order->orderItems()->create([
+                $orderItem = $order->orderItems()->create([
                     'po' => $order->po,
                     'party_id' => $order->party_id,
-                    'design' => $item['design_id'],
-                    'size' => $item['size_id'],
-                    'finish' => $item['finish_id'],
+                    'design_id' => $item['design_id'],
+                    'size_id' => $item['size_id'],
+                    'finish_id' => $item['finish_id'],
                     'order_qty' => $item['order_qty'],
                     'remark' => $item['remark'] ?? null,
                     'pending_qty' => $item['order_qty'],
@@ -68,6 +72,17 @@ class PurchaseOrderController extends Controller
                     'production_qty' => 0,
                     'short_qty' => 0,
                 ]);
+                // if (!empty($item['has_pallet']) && $item['has_pallet'] == 1 && !empty($item['pallets'])) {
+
+                    foreach ($item['pallets'] as $pallet) {
+
+                        Pallet::create([
+                            'purchase_order_item_id' => $orderItem->id,
+                            'box_pallet'  => $pallet['box_pallet'],
+                            'total_pallet' => $pallet['total_pallet'],
+                        ]);
+                    }
+                // }
             }
 
             DB::commit();
@@ -82,6 +97,7 @@ class PurchaseOrderController extends Controller
                 ->withInput();
         }
     }
+
 
     public function index()
     {
@@ -112,13 +128,19 @@ class PurchaseOrderController extends Controller
                 ->addColumn('actions', function (PurchaseOrder $order) {
                     $viewUrl = route('orders.show', $order->id);
                     $editUrl = route('orders.edit', $order->id);
+                    $printUrl = route('orders.print', $order->id);
                     $deleteUrl = route('orders.destroy', $order->id);
                     $csrf = csrf_field();
                     $method = method_field('DELETE');
-
                     return "
                         <a href='{$viewUrl}' title='View' style='width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;padding:0;margin-right:6px;border-radius:4px;background:transparent;border:0;color:#0d6efd;text-decoration:none;'>
                             <i class='fa fa-eye fa-fw fa-lg'></i>
+                        </a>
+                        <a href='{$editUrl}' title='Edit' style='width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;padding:0;margin-right:6px;border-radius:4px;background:transparent;border:0;color:#0d6efd;text-decoration:none;'>
+                            <i class='fa fa-edit fa-fw fa-lg'></i>
+                        </a>
+                        <a href='{$printUrl}' title='Print PO' target='_blank' style='width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;padding:0;margin-right:6px;border-radius:4px;background:transparent;border:0;color:#17a2b8;text-decoration:none;'>
+                            <i class='fa fa-print fa-fw fa-lg'></i>
                         </a>
                         <form action='{$deleteUrl}' method='POST' class='d-inline' onsubmit=\"return confirm('Are you sure?')\" style='display:inline-block;vertical-align:middle;margin-right:0;'>
                             {$csrf}
@@ -128,21 +150,6 @@ class PurchaseOrderController extends Controller
                             </button>
                         </form>
                     ";
-                    // return "
-                    //     <a href='{$viewUrl}' title='View' style='width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;padding:0;margin-right:6px;border-radius:4px;background:transparent;border:0;color:#0d6efd;text-decoration:none;'>
-                    //         <i class='fa fa-eye fa-fw fa-lg'></i>
-                    //     </a>
-                    //     <a href='{$editUrl}' title='Edit' style='width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;padding:0;margin-right:6px;border-radius:4px;background:transparent;border:0;color:#0d6efd;text-decoration:none;'>
-                    //         <i class='fa fa-edit fa-fw fa-lg'></i>
-                    //     </a>
-                    //     <form action='{$deleteUrl}' method='POST' class='d-inline' onsubmit=\"return confirm('Are you sure?')\" style='display:inline-block;vertical-align:middle;margin-right:0;'>
-                    //         {$csrf}
-                    //         {$method}
-                    //         <button type='submit' title='Delete' style='width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:4px;background:transparent;border:0;color:#dc3545;'>
-                    //             <i class='fa fa-trash fa-fw fa-lg'></i>
-                    //         </button>
-                    //     </form>
-                    // ";
                 })
                 ->rawColumns(['actions', 'box_image'])
                 ->toJson();
@@ -168,45 +175,96 @@ class PurchaseOrderController extends Controller
 
     public function edit(PurchaseOrder $order)
     {
-        $order->load('orderItems');
+        $order->load(['orderItems.designDetail', 'orderItems.sizeDetail', 'orderItems.finishDetail']);
+
+        $currentItems = $order->orderItems->map(function ($item) {
+            return [
+                'design_id' => $item->design_id,
+                'design_text' => $item->designDetail->name ?? 'N/A',
+                'size_id' => $item->size_id,
+                'size_text' => $item->sizeDetail->size_name ?? 'N/A',
+                'finish_id' => $item->finish_id,
+                'finish_text' => $item->finishDetail->finish_name ?? 'N/A',
+                'order_qty' => $item->order_qty,
+                'remark' => $item->remark,
+                'pallets' => json_decode($item->pallets ?? '[]', true),
+            ];
+        });
+
+        $orderItemsJson = json_encode($currentItems);
+
         $designs = Design::all();
         $sizes = Size::all();
         $finishes = Finish::all();
         $parties = Party::all();
-        return view('purchase_orders.edit', compact('order', 'designs', 'sizes', 'finishes', 'parties'));
+
+        return view('purchase_orders.edit', compact('order', 'designs', 'sizes', 'finishes', 'parties', 'orderItemsJson'));
     }
 
     public function update(Request $request, PurchaseOrder $order)
     {
         $request->validate([
             'po' => 'required|unique:purchase_orders,po,' . $order->id,
-            'party_id' => 'required',
-            'order_date' => 'required',
-            'order_items' => 'required|array',
-            'order_items.*.design' => 'nullable|string',
-            'order_items.*.size' => 'nullable|string',
-            'order_items.*.finish' => 'nullable|string',
-            'order_items.*.order_qty' => 'required|integer|min:0',
-            'order_items.*.pending_qty' => 'nullable|integer|min:0',
-            'order_items.*.planning_qty' => 'nullable|integer|min:0',
-            'order_items.*.production_qty' => 'nullable|integer|min:0',
-            'order_items.*.short_qty' => 'nullable|integer|min:0',
-            'order_items.*.remark' => 'nullable|string',
-            'order_items.*.status' => 'nullable|string',
+            'party_id' => 'required|exists:parties,id',
+            'brand_name' => 'nullable|string|max:255',
+            'order_date' => 'required|date',
+            'box_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
+            'order_items' => 'required|string',
         ]);
 
-        $order->update(['po' => $request->input('po')]);
-        $order->orderItems()->delete();
+        DB::beginTransaction();
 
-        $newItems = [];
-        if ($request->has('order_items')) {
-            foreach ($request->input('order_items') as $itemData) {
-                $newItems[] = array_merge($itemData, ['purchase_order_id' => $order->id, 'po' => $order->po, 'party_id' => $order->party_id]);
+        try {
+            $updateData = $request->only('po', 'party_id', 'brand_name', 'order_date');
+            if ($request->hasFile('box_image')) {
+                if ($order->box_image) {
+                    Storage::disk('public')->delete('box_images/' . $order->box_image); 
+                }
+                $filePath = $request->file('box_image')->store('box_images', 'public');
+                $updateData['box_image'] = basename($filePath);
             }
-            $order->orderItems()->createMany($newItems);
-        }
 
-        return redirect()->route('orders.index')->with('success', 'Order updated successfully!');
+            $order->update($updateData);
+            $order->orderItems()->delete(); 
+            $orderItemsData = json_decode($request->input('order_items'), true);
+            
+            if ($orderItemsData) {
+                foreach ($orderItemsData as $item) {
+                    $orderItem = $order->orderItems()->create([
+                        'po' => $order->po,
+                        'party_id' => $order->party_id,
+                        'design_id' => $item['design_id'],
+                        'size_id' => $item['size_id'],
+                        'finish_id' => $item['finish_id'],
+                        'order_qty' => $item['order_qty'],
+                        'remark' => $item['remark'] ?? null,
+                        'pending_qty' => $item['order_qty'],
+                        'planning_qty' => 0,
+                        'production_qty' => 0,
+                        'short_qty' => 0,
+                        // 'status' => 'Pending', 
+                    ]);
+                    
+                    if (!empty($item['pallets'])) {
+                        foreach ($item['pallets'] as $pallet) {
+                            Pallet::create([
+                                'purchase_order_item_id' => $orderItem->id,
+                                'box_pallet' => $pallet['box_pallet'],
+                                'total_pallet' => $pallet['total_pallet'],
+                            ]);
+                        }
+                    }
+                }
+            }
+            DB::commit();
+            return redirect()->route('orders.index')->with('success', 'Order updated successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()
+                ->back()
+                ->with('error', 'Something went wrong while updating order! ' . $e->getMessage())
+                ->withInput();
+        }
     }
 
     public function destroy(PurchaseOrder $order)
@@ -228,14 +286,13 @@ class PurchaseOrderController extends Controller
     public function getOrderItemData()
     {
         try {
-            // Corrected: Include foreign keys in the select statement for relationships to work
             $query = PurchaseOrderItem::select([
-                'id', // Always good to select ID
-                'purchase_order_id', // Foreign key for orderMaster
-                'design', // Foreign key for designDetail
-                'size',   // Foreign key for sizeDetail
-                'finish', // Foreign key for finishDetail
-                'po', // Directly select 'po' if it's a column in PurchaseOrderItem
+                'id',
+                'purchase_order_id',
+                'design_id',
+                'size_id',
+                'finish_id',
+                'po',
                 'order_qty',
                 'pending_qty',
                 'planning_qty',
@@ -246,12 +303,10 @@ class PurchaseOrderController extends Controller
 
             return DataTables::of($query)
                 ->addIndexColumn()
-                // Corrected: Use 'orderMaster.po' to match the relationship name in the model
                 ->addColumn('purchase_order.po', function (PurchaseOrderItem $item) {
                     return $item->orderMaster->po ?? 'N/A';
                 })
                 ->addColumn('design_detail.name', function (PurchaseOrderItem $item) {
-                    // Removed dd() for production
                     return $item->designDetail->name ?? 'N/A';
                 })
                 ->addColumn('size_detail.size_name', function (PurchaseOrderItem $item) {
@@ -389,6 +444,21 @@ class PurchaseOrderController extends Controller
         }
         PurchaseOrderItemTransaction::create($transactionData);
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Display the print view for a specific Purchase Order.
+     */
+    public function printView(PurchaseOrder $order)
+    {
+        $order->load([
+            'party', 
+            'orderItems.designDetail', 
+            'orderItems.sizeDetail', 
+            'orderItems.finishDetail'
+        ]);
+        $companyDetail = CompanyDetail::first(); 
+        return view('purchase_orders.print_view', compact('order', 'companyDetail'));
     }
 
 }

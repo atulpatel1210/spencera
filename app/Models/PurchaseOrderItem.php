@@ -15,11 +15,12 @@ class PurchaseOrderItem extends Model
         'purchase_order_id',
         'po',
         'party_id',
-        'design',
-        'size',
-        'finish',
+        'design_id',
+        'size_id',
+        'finish_id',
+        'pallet_id',
         'batch_no',
-        'pallet',
+        //'pallet', // renamed to pallet_id
         'order_qty',
         'pending_qty',
         'planning_qty',
@@ -36,21 +37,26 @@ class PurchaseOrderItem extends Model
 
     public function sizeDetail(): BelongsTo
     {
-        return $this->belongsTo(Size::class, 'size', 'id');
+        return $this->belongsTo(Size::class, 'size_id', 'id');
     }
 
     public function designDetail(): BelongsTo
     {
-        return $this->belongsTo(Design::class, 'design', 'id');
+        return $this->belongsTo(Design::class, 'design_id', 'id');
     }
 
     public function finishDetail(): BelongsTo
     {
-        return $this->belongsTo(Finish::class, 'finish', 'id');
+        return $this->belongsTo(Finish::class, 'finish_id', 'id');
     }
 
     public function batchDetail(): HasMany
     {
         return $this->hasMany(PurchaseOrderBatch::class, 'purchase_order_item_id', 'id');
+    }
+
+    public function pallets(): HasMany
+    {
+        return $this->hasMany(Pallet::class, 'purchase_order_item_id', 'id');
     }
 }

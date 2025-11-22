@@ -241,3 +241,10 @@
     .select2-selection__rendered {
     line-height: 24px !important;
 }
+
+.table-secondary th {
+    padding: 0.15rem 0.5rem !important;
+}
+.table-secondary td {
+    padding: 0.10rem 0.5rem !important;
+}
