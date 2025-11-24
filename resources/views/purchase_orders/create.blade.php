@@ -103,20 +103,23 @@
                         <input type="checkbox" id="has_pallet">
                     </div>
                 </div>
-                <div id="palletWrapper" style="display:none; border:1px dashed #ccc; padding:12px; border-radius:8px; margin-top:15px;">
-                    <div class="row g-3 pallet-row">
-                        <div class="col-md-3">
-                            <label class="form-label">Box / Pallet</label>
-                            <input type="number" class="form-control box_pallet">  </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Total Pallet</label>
-                            <input type="number" class="form-control total_pallet"> </div>
+                <div id="palletSection" style="display:none; border:1px dashed #ccc; padding:12px; border-radius:8px; margin-top:15px;">
+                    <div id="palletWrapper">
+                        <div class="row g-3 pallet-row">
+                            <div class="col-md-3">
+                                <label class="form-label">Box / Pallet</label>
+                                <input type="number" class="form-control box_pallet">  
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Total Pallet</label>
+                                <input type="number" class="form-control total_pallet">
+                            </div>
                         </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <button type="button" id="addMorePalletBtn" class="btn btn-dark btn-sm">
-                                + Add More
-                            </button>
-                        </div>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end mt-2">
+                        <button type="button" id="addMorePalletBtn" class="btn btn-dark btn-sm">
+                            + Add More
+                        </button>
                     </div>
                 </div>
                 <div class="col-md-2 text-end">
@@ -204,9 +207,9 @@
     });
     document.getElementById("has_pallet").addEventListener("change", function() {
         if (this.checked) {
-            document.getElementById("palletWrapper").style.display = "block";
+            document.getElementById("palletSection").style.display = "block";
         } else {
-            document.getElementById("palletWrapper").style.display = "none";
+            document.getElementById("palletSection").style.display = "none";
             document.querySelectorAll("#palletWrapper .pallet-row:not(:first-child)").forEach(r => {
                 r.remove();
             });
@@ -222,9 +225,10 @@
             let row = `
             <div class="row g-3 pallet-row mt-2">
                 <div class="col-md-3">
-                    <input type="number" class="form-control box_pallet" placeholder="Box Per Pallet">  </div>
+                    <input type="number" class="form-control box_pallet" placeholder="Box Per Pallet">
+                </div>
                 <div class="col-md-3">
-                    <input type="number" class="form-control total_pallet" placeholder="Total Pallet"> </div>
+                    <input type="number" class="form-control total_pallet" placeholder="Total Pallet">
                 </div>
                 <div class="col-md-2 d-flex align-items-center">
                     <button type="button" class="btn btn-danger btn-sm removePallet">X</button>
@@ -281,8 +285,8 @@
                 <td>${item.order_qty} ${palletHtml}</td>
                 <td>${item.remark}</td>
                 <td>
-                    <button type="button" class="btn btn-sm btn-warning" onclick="editItem(${index})">Edit</button>
-                    <button type="button" class="btn btn-sm btn-danger" onclick="removeItem(${index})">Delete</button>
+                    <button type="button" class="btn btn-sm text-primary" onclick="editItem(${index})"><i class="fa fa-edit fa-fw fa-lg"></i></button>
+                    <button type="button" class="btn btn-sm text-danger" onclick="removeItem(${index})"><i class="fa fa-trash fa-fw fa-lg"></i></button>
                 </td>
             </tr>`;
             tbody.innerHTML += row;
@@ -302,7 +306,7 @@
         $('#remark').val('');
         
         document.getElementById('has_pallet').checked = false;
-        document.getElementById("palletWrapper").style.display = "none";
+        document.getElementById("palletSection").style.display = "none";
         document.querySelectorAll("#palletWrapper .pallet-row:not(:first-child)").forEach(r => r.remove());
         let firstRow = document.querySelector("#palletWrapper .pallet-row");
         if(firstRow) {
@@ -412,8 +416,9 @@
         document.getElementById('remark').value = item.remark;
         let hasPallet = item.pallets && item.pallets.length > 0;
         document.getElementById('has_pallet').checked = hasPallet;
+        let palletSection = document.getElementById("palletSection");
         let wrapper = document.getElementById("palletWrapper");
-        wrapper.style.display = hasPallet ? "block" : "none";
+        palletSection.style.display = hasPallet ? "block" : "none";
         wrapper.querySelectorAll(".pallet-row:not(:first-child)").forEach(r => r.remove());
         let firstRow = wrapper.querySelector(".pallet-row");
 

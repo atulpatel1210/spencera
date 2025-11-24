@@ -133,19 +133,19 @@ class PurchaseOrderController extends Controller
                     $csrf = csrf_field();
                     $method = method_field('DELETE');
                     return "
-                        <a href='{$viewUrl}' title='View' style='width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;padding:0;margin-right:6px;border-radius:4px;background:transparent;border:0;color:#0d6efd;text-decoration:none;'>
+                        <a href='{$viewUrl}' title='View' class='btn btn-sm text-secondary'>
                             <i class='fa fa-eye fa-fw fa-lg'></i>
                         </a>
-                        <a href='{$editUrl}' title='Edit' style='width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;padding:0;margin-right:6px;border-radius:4px;background:transparent;border:0;color:#0d6efd;text-decoration:none;'>
+                        <a href='{$editUrl}' title='Edit' class='btn btn-sm text-primary'>
                             <i class='fa fa-edit fa-fw fa-lg'></i>
                         </a>
-                        <a href='{$printUrl}' title='Print PO' target='_blank' style='width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;padding:0;margin-right:6px;border-radius:4px;background:transparent;border:0;color:#17a2b8;text-decoration:none;'>
+                        <a href='{$printUrl}' title='Print PO' target='_blank' class='btn btn-sm text-info'>
                             <i class='fa fa-print fa-fw fa-lg'></i>
                         </a>
                         <form action='{$deleteUrl}' method='POST' class='d-inline' onsubmit=\"return confirm('Are you sure?')\" style='display:inline-block;vertical-align:middle;margin-right:0;'>
                             {$csrf}
                             {$method}
-                            <button type='submit' title='Delete' style='width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:4px;background:transparent;border:0;color:#dc3545;'>
+                            <button type='submit' title='Delete' class='btn btn-sm text-danger'>
                                 <i class='fa fa-trash fa-fw fa-lg'></i>
                             </button>
                         </form>
