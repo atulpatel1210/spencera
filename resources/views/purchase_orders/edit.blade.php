@@ -612,16 +612,18 @@
         $("#po").attr("readonly", true);
         $("#brand_name").attr("readonly", true);
         $("#order_date").attr("readonly", true);
-        $('#party_id').attr("disabled", true); 
-        $('#party_id').next('.select2-container').addClass('disabled-select2'); // Custom class for styling disabled select2
+        // $('#party_id').attr("disabled", true); 
+        $('#party_id').closest('div').addClass('disabled');
+        // $('#party_id').next('.select2-container').addClass('disabled-select2'); // Custom class for styling disabled select2
     }
     
     function enableMainFields() {
         $("#po").attr("readonly", false);
         $("#brand_name").attr("readonly", false);
         $("#order_date").attr("readonly", false);
-        $('#party_id').attr("disabled", false);
-        $('#party_id').next('.select2-container').removeClass('disabled-select2');
+        // $('#party_id').attr("disabled", false);
+        $('#party_id').closest('div').removeClass('disabled');
+        // $('#party_id').next('.select2-container').removeClass('disabled-select2');
     } 
     
     function previewBoxImage(event) {
