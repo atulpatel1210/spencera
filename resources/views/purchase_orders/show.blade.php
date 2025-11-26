@@ -20,7 +20,7 @@
                         <th>Production</th>
                         <th>Short/Excess</th>
                         <th>Remark</th>
-                        <th>Actions</th>
+                        <!-- <th>Actions</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -35,7 +35,7 @@
                         <td>{{ $item->production_qty }}</td>
                         <td>{{ $item->short_qty }}</td>
                         <td>{{ $item->remark }}</td>
-                        <td>
+                        <!-- <td>
                             <div class="btn-group">
                                 <button
                                     class="btn btn-sm btn-outline-info openModal {{ $item->pending_qty > 0 ? '' : 'disabled' }}"
@@ -52,7 +52,7 @@
                                     Production
                                 </button>
                             </div>
-                        </td>
+                        </td> -->
                     </tr>
                     @endforeach
                 </tbody>
@@ -62,7 +62,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="quantityModal" tabindex="-1">
+<!-- <div class="modal fade" id="quantityModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -97,9 +97,9 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
-<script>
+<!-- <script>
     document.addEventListener("DOMContentLoaded", function() {
         const quantityModal = new bootstrap.Modal(document.getElementById('quantityModal'));
 
@@ -164,5 +164,5 @@
                 });
         });
     });
-</script>
+</script> -->
 @endsection

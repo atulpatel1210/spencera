@@ -4,96 +4,260 @@
     <title>Purchase Order - {{ $order->po }}</title>
     <style>
         /* BASE STYLES */
-        body { font-family: Arial, sans-serif; font-size: 10pt; color: #000; }
-        .po-container { width: 100%; max-width: 800px; margin: 0 auto; padding: 10px; }
-        
-        /* TABLE STYLES */
-        .info-table, .description-table, .totals-table, .remark-table {
-            width: 100%; border-collapse: collapse; margin-bottom: 10px;
+        body { 
+            font-family: 'Helvetica Neue', Arial, sans-serif; 
+            font-size: 10pt; 
+            color: #333; 
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4; 
         }
-        .info-table th, .info-table td,
-        .description-table th, .description-table td,
-        .totals-table td, .remark-table td {
-            border: 1px solid #000; padding: 4px; text-align: left;
-            vertical-align: top;
+        .po-container { 
+            width: 95%; 
+            max-width: 900px; /* Increased width to prevent cutting */
+            margin: 20px auto; 
+            padding: 20px; 
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+        }
+
+        /* --- CRITICAL FIXES FOR PRINTING (Colors and Page Breaks) --- */
+        /* Force background colors and images to print */
+        * { 
+            -webkit-print-color-adjust: exact !important; 
+            print-color-adjust: exact !important; 
+        }
+
+        /* Prevent table rows from splitting across pages */
+        .description-table tbody tr {
+            page-break-inside: avoid;
+        }
+
+        /* HEADER STYLES */
+        .po-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end; /* Align title and logo to the bottom */
+            border-bottom: 5px solid #000; /* Thicker, defined bottom line */
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo-img {
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+        .po-title {
+            text-align: right;
+            font-size: 28pt; /* Larger title */
+            font-weight: 900;
+            color: #000;
+            margin: 0;
+        }
+
+        /* INFO BOXES STYLES */
+        .manufacturer-info, .exporter-info {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-left: 5px solid #ef7c1b; /* Accent color bar on the left */
+            border-radius: 4px;
+            margin-bottom: 15px;
+            line-height: 2; /* Better line spacing */
+            min-height: 90px;
+            font-size: 10pt;
+        }
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        .po-meta-box {
+            background-color: #f7f7f7; /* Lighter background for PO details */
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .po-meta-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+        .po-meta-item strong {
+            color: #000;
+        }
+        .po-number {
+            font-weight: bold;
+        }
+
+        /* DATA TABLE STYLES */
+        .description-table {
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-bottom: 15px;
+        }
+        .description-table th, .description-table td {
+            border: 1px solid #a19c9c; /* Darker border for table clarity */
+            padding: 7px 10px; 
+            text-align: center;
+            vertical-align: middle;
+            font-size: 9pt;
+        }
+        .description-table thead th { 
+            background-color: #e0e0e0; 
+            color: #000; 
+            text-align: center;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .description-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9; 
+        }
+
+        /* PALLET DETAIL GROUPING */
+        .pallet-detail-header th {
+            background-color: #5555558f !important;
         }
         
-        /* NO BORDER STYLE */
-        .no-border, .no-border td, .no-border th { border: none !important; padding: 2px 4px; }
-        
-        /* ALIGNMENT */
-        .text-center { text-align: center; }
+        /* TOTALS AND FOOTER STYLES */
+        .total-row td {
+            font-size: 11pt;
+            background-color: #e0e0e0 !important;
+            font-weight: bold;
+            border-top: 2px solid #a19c9c !important;
+        }
+        .footer-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 15px;
+        }
+        .signatures {
+            text-align: right;
+            line-height: 1.5;
+            padding-right: 10px;
+        }
+        .remarks {
+            border: 1px solid #ddd;
+            padding: 12px;
+            min-height: 50px;
+            margin-top: 5px;
+            margin-bottom: 20px;
+            background-color: #fcfcfc;
+            line-height: 1.5;
+        }
+        .strong-label {
+            font-weight: bold;
+            color: #222;
+            display: block;
+            margin-bottom: 5px;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 2px;
+        }
         .text-right { text-align: right; }
-        .description-table th { background-color: #f0f0f0; }
+        .text-center { text-align: center; }
+        
+        /* Print Styles: Minimize margins for maximum content space */
+        @media print {
+            body { 
+                margin: 0; /* Remove body margin */
+            }
+            .po-container { 
+                box-shadow: none; 
+                margin: 0;
+                padding: 10mm; /* Use a small physical margin */
+            }
+            /* Force background printing for images within the logo box */
+            .logo-img img {
+                background-color: #000 !important;
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important; 
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="po-container">
     
-    <table class="header-table no-border">
-        <tr>
-            <td colspan="2" class="no-border">
-                <img src="{{ asset('path/to/your/exporter_logo.png') }}" alt="Exporter Logo" height="40"><br>
-                <strong>BHABHA EXPORTS</strong>
-            </td>
-            <td colspan="2" class="text-center no-border">
-                <h3 style="margin: 0;">PURCHASE ORDER</h3>
-            </td>
-        </tr>
-    </table>
-    
-    <table class="info-table">
-        <tr>
-            <td width="50%">
-                <strong>EXPORTERS:</strong><br>
-                {{ $order->party?->party_name ?? 'N/A' }}<br>
-                {{ $order->party?->address ?? 'N/A' }}<br>
-                MORBI - INDIA, <br>
-                TEL: {{ $order->party?->phone ?? 'N/A' }}
-            </td>
-            <td width="50%">
-                <table class="no-border" style="width: 100%;">
-                    <tr><td width="50%">PO NO:</td><td><strong>{{ $order->po }}</strong></td></tr>
-                    <tr><td>DATE:</td><td>{{ \Carbon\Carbon::parse($order->order_date)->format('d M Y') }}</td></tr>
-                    <tr><td>BRAND NAME:</td><td>{{ $order->brand_name }}</td></tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-             <td>
+    <div class="po-header">
+        <div class="logo-box">
+            <div class="logo-img">
+                <img src="{{ asset('images/logo_black.PNG') }}" alt="Logo" height="40">
+            </div>
+            <!-- <h2 style="font-weight: 800; color: #000; margin: 0; font-size: 14pt;">BHABHA EXPORTS</h2> -->
+        </div>
+        <h1 class="po-title">PURCHASE ORDER</h1>
+    </div>
+
+    <div class="header-section">
+        
+        <div style="width: 55%;">
+            <div class="manufacturer-info">
+                <span class="strong-label">MANUFACTURER:</span>
                 @if($companyDetail)
-                    <strong>MANUFACTURER:</strong><br>
-                    {{ $companyDetail->name ?? 'N/A' }} LLP:<br>
+                    <strong>{{ $companyDetail->name ?? 'N/A' }} LLP</strong><br>
                     {{ $companyDetail->address_line1 ?? '' }} {{ $companyDetail->address_line2 ?? '' }}<br>
                     {{ $companyDetail->city ?? '' }}, {{ $companyDetail->state ?? '' }}, {{ $companyDetail->zip ?? '' }}
                 @else
-                    <strong>MANUFACTURER:</strong><br>
                     (Company details not set)
                 @endif
-            </td>
-            <td>
-                <table class="no-border" style="width: 100%;">
-                    <tr><td width="50%">TERMS OF DELIVERY:</td><td>MUNDRA PORT</td></tr>
-                    <tr><td>PAYMENT TERMS:</td><td>ADVANCE</td></tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+            </div>
+            <?php
+            if(!empty($order->party) && strtolower($order->party->party_type) == 'export') {
+            ?>
+            <div class="manufacturer-info">
+                <span class="strong-label">EXPORTER:</span>
+                <strong>{{ $order->party?->party_name ?? 'N/A' }}</strong><br>
+                {{ $order->party?->address ?? 'N/A' }}<br>
+                TEL: {{ $order->party?->phone ?? 'N/A' }}
+            </div>
+            <?php
+            } ?>
+        </div>
+        
+        <div style="width: 40%;">
+            <div class="po-meta-box">
+                <div class="po-meta-item">
+                    <span>PO NO:</span>
+                    <span class="po-number">{{ $order->po }}</span>
+                </div>
+                <div class="po-meta-item">
+                    <span>DATE:</span>
+                    <strong>{{ \Carbon\Carbon::parse($order->order_date)->format('d M Y') }}</strong>
+                </div>
+                <div class="po-meta-item">
+                    <span>BRAND NAME:</span>
+                    <strong>{{ $order->brand_name }}</strong>
+                </div>
+                <hr style="border-top: 1px solid #ccc; margin: 10px 0;">
+                <div style="text-align: center; margin-bottom: 5px;">
+                    <span class="strong-label" style="text-align: center; border: none;">BOX IMAGE REFERENCE</span>
+                </div>
+                <div class="po-meta-item" style="justify-content: center;">
+                    <img src="{{ asset('storage/box_images/'.$order->box_image) }}"  alt="Box Image" height="200" width="400" style="background-color: #000; padding: 5px; border-radius: 2px;">
+                </div>
+            </div>
+        </div>
+    </div>
     
-    <h4 class="text-center" style="margin: 5px 0;">DESCRIPTIONS OF GOODS</h4>
+    <h3 style="margin: 5px 0 10px 0; border-left: 5px solid #ef7c1b; padding-left: 10px; color: #222;">DESCRIPTION OF GOODS</h3>
     
     <table class="description-table">
         <thead>
             <tr>
-                <th rowspan="2" width="15%">SIZE</th>
+                <th rowspan="2" width="8%">SIZE</th>
                 <th rowspan="2" width="15%">DESIGN</th>
-                <th rowspan="2" width="10%">FINISH</th>
-                <th rowspan="2" width="10%">DESIGN PHOTO</th>
-                <th colspan="3" width="30%">PALLET DETAIL</th>
+                <th rowspan="2" width="7%">FINISH</th>
+                <th rowspan="2" width="20%">DESIGN PHOTO</th>
+                <th colspan="3" class="pallet-detail-header" width="30%">PALLET DETAIL</th>
                 <th rowspan="2" width="10%">TOTAL BOX</th>
             </tr>
-            <tr>
+            <tr class="pallet-detail-header">
                 <th width="10%">BOX/PALLET</th>
                 <th width="10%">TOTAL PALLET</th>
                 <th width="10%">QNTY (BOX)</th>
@@ -133,13 +297,15 @@
                     
                     {{-- DESIGN PHOTO (Null Check) --}}
                     <td rowspan="{{ $palletCount > 1 ? $palletCount : 1 }}" class="text-center">
-                        @if ($design && $design->photo_path)
-                            <img src="{{ asset('storage/design_photos/' . $design->photo_path) }}" alt="Design Photo" style="max-height: 50px; max-width: 50px;">
+                        @if ($design && $design->image)
+                            <!-- <img src="{{ asset('storage/design_photos/' . $design->photo_path) }}" alt="Design Photo" style="max-height: 50px; max-width: 50px; border: 1px solid #ccc;"> -->
+                            <img src="{{ asset('storage/designs/'.$design->image) }}" width="150" height="75">
                         @else
                             N/A
                         @endif
                     </td>
                     
+                    {{-- PALLET DETAILS (First Row) --}}
                     @if ($firstPallet)
                         <td class="text-center">{{ $firstPallet['box_pallet'] }}</td>
                         <td class="text-center">{{ $firstPallet['total_pallet'] }}</td>
@@ -151,11 +317,12 @@
                     @endif
                     
                     {{-- TOTAL BOX --}}
-                    <td rowspan="{{ $palletCount > 1 ? $palletCount : 1 }}" class="text-right">
+                    <td rowspan="{{ $palletCount > 1 ? $palletCount : 1 }}" class="text-right total-row-item" style="font-weight: bold;">
                         {{ number_format($itemTotalBoxes) }}
                     </td>
                 </tr>
                 
+                {{-- PALLET DETAILS (Additional Rows) --}}
                 @if ($palletCount > 1)
                     @foreach (array_slice($pallets, 1) as $pallet)
                         <tr>
@@ -167,44 +334,35 @@
                 @endif
             @endforeach
             
-            <tr>
-                <td colspan="7" class="text-right"><strong>TOTAL</strong></td>
+            <tr class="total-row">
+                <td colspan="7" class="text-right">GRAND TOTAL</td>
                 <td class="text-right">
-                    <strong>{{ number_format($grandTotalBox) }}</strong>
+                    {{ number_format($grandTotalBox) }}
                 </td>
             </tr>
         </tbody>
     </table>
     
-    <h5 style="margin: 5px 0;">REMARKS:</h5>
-    <table class="remark-table">
-        <tr>
-            <td style="min-height: 50px;">
-                @if (count($allRemarks) > 0)
-                    {{ implode('; ', array_unique($allRemarks)) }}
-                @else
-                    N/A
-                @endif
-            </td>
-        </tr>
-    </table>
+    <span class="strong-label">REMARKS:</span>
+    <div class="remarks">
+        @if (count($allRemarks) > 0)
+            {{ implode('; ', array_unique($allRemarks)) }}
+        @else
+            <em style="color: #888;">No specific remarks for this order.</em>
+        @endif
+    </div>
 
 
-    <table class="totals-table">
-        <tr>
-            <td width="50%">
-                COMPANY'S PAN: <strong>{{ $companyDetail->pan_number ?? 'N/A' }}</strong><br>
-                COMPANY'S GST NO: <strong>{{ $companyDetail->gst_no ?? 'N/A' }}</strong>
-            </td>
-            <td width="50%">
-                PREPARED BY<br><br><br>
-                D. A. KAVAR
-            </td>
-        </tr>
-    </table>
+    <div class="footer-section">
+        <div style="width: 50%; line-height: 1.8;">
+        </div>
+        <div class="signatures">
+            PREPARED BY<br><br><br>
+            <strong style="border-top: 1px solid #000; padding-top: 5px; display: inline-block;">(AUTHORISED SIGNATORY)</strong>
+        </div>
+    </div>
     
-    <div style="text-align: center; margin-top: 20px;">
-        <!-- <img src="{{ asset('path/to/your/footer_logo.png') }}" alt="NKT" height="40"><br> -->
+    <div style="text-align: center; margin-top: 30px; color: #888; font-size: 8pt;">
         <small>This is a computer generated document and does not require a signature.</small>
     </div>
 
@@ -212,7 +370,7 @@
 
 <script>
     window.onload = function() {
-        window.print();
+        // window.print();
     }
 </script>
 
