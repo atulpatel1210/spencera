@@ -208,7 +208,7 @@
                 @endif
             </div>
             <?php
-            if(!empty($order->party) && strtolower($order->party->party_type) == 'export') {
+            if(!empty($order->party) && strtolower($order->party->party_type) != 'export') {
             ?>
             <div class="manufacturer-info">
                 <span class="strong-label">EXPORTER:</span>
