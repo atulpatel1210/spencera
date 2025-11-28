@@ -187,7 +187,7 @@
     <div class="po-header">
         <div class="logo-box">
             <div class="logo-img">
-                <img src="{{ asset('images/logo_black.PNG') }}" alt="Logo" height="40">
+                <img src="{{ asset('images/logo_black.png') }}" alt="Logo" height="40">
             </div>
             <!-- <h2 style="font-weight: 800; color: #000; margin: 0; font-size: 14pt;">BHABHA EXPORTS</h2> -->
         </div>
@@ -239,7 +239,7 @@
                     <span class="strong-label" style="text-align: center; border: none;">BOX IMAGE REFERENCE</span>
                 </div>
                 <div class="po-meta-item" style="justify-content: center;">
-                    <img src="{{ asset('storage/box_images/'.$order->box_image) }}"  alt="Box Image" height="200" width="400" style="background-color: #000; padding: 5px; border-radius: 2px;">
+                    <img src="{{ asset('storage/box_images/'.$order->box_image) }}"  alt="Box Image" height="200" width="335" style="background-color: #000; padding: 5px; border-radius: 2px;">
                 </div>
             </div>
         </div>
