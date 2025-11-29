@@ -58,8 +58,10 @@
                         @php
                             $imageUrl = $order->box_image ? asset('storage/' . $order->box_image) : '';
                         @endphp
-                        <img id="boxImagePreview" src="{{ $imageUrl }}" width="120" height="120" 
-                            style="display:{{ $order->box_image ? 'block' : 'none' }};" class="border rounded">
+                        <img id="boxImagePreview" 
+                            src="{{ isset($order->box_image) ? asset('storage/box_images/'.$order->box_image) : '' }}" 
+                            class="img-thumbnail mt-3 shadow-sm" 
+                            style="max-width: 150px; max-height: 150px; {{ isset($order->box_image) ? '' : 'display:none;' }}">
                             
                         @if ($order->box_image)
                             <small class="d-block mt-1 text-muted">Current Image</small>
@@ -96,30 +98,27 @@
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Order Qty</label>
-                    <input type="number" class="form-control" id="order_qty" min="1" value="">
+                    <input type="number" class="form-control" id="order_qty" min="1" value="" placeholder="Order qty" readonly>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Remark</label>
-                    <input type="text" class="form-control" id="remark" placeholder="Optional">
+                    <input type="text" class="form-control" id="remark" placeholder="Remark">
                 </div>
                 {{-- PALLET SECTION --}}
-                <div class="row mt-3">
-                    <div class="col-md-12">
-                        <label class="form-label">Add Pallet?</label><br>
-                        <input type="checkbox" id="has_pallet">
-                    </div>
-                </div>
-
-                <div id="palletSection" style="display:none; border:1px dashed #ccc; padding:12px; border-radius:8px; margin-top:15px;">
+                <div id="palletSection" style="border:1px dashed #ccc; padding:12px; border-radius:8px; margin-top:15px;">
                     <div id="palletWrapper">
                         <div class="row g-3 pallet-row">
                             <div class="col-md-3">
                                 <label class="form-label">Box / Pallet</label>
-                                <input type="number" class="form-control box_pallet" min="1">
+                                <input type="number" class="form-control box_pallet" min="1" oninput="calculatePalletRowTotal(this);" placeholder="Box Per Pallet">
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Total Pallet</label>
-                                <input type="number" class="form-control total_pallet" min="1">
+                                <input type="number" class="form-control total_pallet" min="1" oninput="calculatePalletRowTotal(this);" placeholder="Total Pallet">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Total Boxes</label>
+                                <input type="number" class="form-control total_boxe_pallets" placeholder="Total Boxes (Pallet)" readonly>
                             </div>
                         </div>
                     </div>
@@ -168,16 +167,17 @@
 @push('scripts')
 <script>
     let items = [];
-    let isEditing = false; // New global state variable
+    let isEditing = false;
+    let editingItemId = null;
 
     document.addEventListener("DOMContentLoaded", function() {
-        // Initializing items from old data or initial order data
         let oldItems = @json(old('order_items'));
         let initialItems = {!! isset($orderItemsJson) ? $orderItemsJson : '[]' !!};
+        
         if (oldItems) {
             try {
                 let parsed = JSON.parse(oldItems);
-                items = parsed;
+                items = parsed; 
             } catch (err) {
                 items = initialItems;
             }
@@ -196,7 +196,7 @@
         $('#party_id').trigger('change.select2');
         
         const boxImagePreview = document.getElementById('boxImagePreview');
-        if (boxImagePreview.src && boxImagePreview.src !== window.location.href) {
+        if (boxImagePreview.src && boxImagePreview.src.indexOf('http') === 0) {
             boxImagePreview.style.display = 'block';
         }
     });
@@ -240,45 +240,46 @@
         });
     });
     
-    document.getElementById("has_pallet").addEventListener("change", function() {
-        if (this.checked) {
-            document.getElementById("palletSection").style.display = "block";
-        } else {
-            document.getElementById("palletSection").style.display = "none";
-            document.querySelectorAll("#palletWrapper .pallet-row:not(:first-child)").forEach(r => {
-                r.remove();
-            });
-            let firstRow = document.querySelector("#palletWrapper .pallet-row");
-            if(firstRow) {
-                firstRow.querySelector(".box_pallet").value = '';
-                firstRow.querySelector(".total_pallet").value = '';
-            }
-        }
-    });
     document.addEventListener("click", function(e) {
         if (e.target && e.target.id === "addMorePalletBtn") {
-            let row = `
-            <div class="row g-3 pallet-row mt-2">
-                <div class="col-md-3">
-                    <input type="number" class="form-control box_pallet" placeholder="Box Per Pallet" min="1">
-                </div>
-                <div class="col-md-3">
-                    <input type="number" class="form-control total_pallet" placeholder="Total Pallet" min="1">
-                </div>
-                <div class="col-md-2 d-flex align-items-center">
-                    <button type="button" class="btn btn-danger btn-sm removePallet">X</button>
-                </div>
-            </div>`;
-            document.getElementById("palletWrapper").insertAdjacentHTML("beforeend", row);
-        }
-    });
-    document.addEventListener("click", function(e) {
-        if (e.target && e.target.classList.contains("removePallet")) {
-            e.target.closest(".pallet-row").remove();
+            addPalletRow({});
         }
     });
     
-    // Renders the items table and updates the hidden input
+    document.addEventListener("click", function(e) {
+        if (e.target && e.target.classList.contains("removePallet")) {
+            e.target.closest(".pallet-row").remove();
+            updateOrderQty();
+        }
+    });
+    
+    function addPalletRow(pallet = {}) {
+        const palletWrapper = document.getElementById('palletWrapper');
+        const isFirstRow = palletWrapper.children.length === 0;
+        const palletId = pallet.id || '';
+        const boxPalletValue = pallet.box_pallet || '';
+        const totalPalletValue = pallet.total_pallet || '';
+        const totalBoxesValue = pallet.total_boxe_pallets || ''; 
+
+        const newRow = document.createElement('div');
+        newRow.className = 'row g-3 pallet-row mt-2';
+        const removeButtonHtml = isFirstRow ? '' : `<div class="col-md-2 d-flex align-items-center"><button type="button" class="btn btn-danger btn-sm removePallet">X</button></div>`;
+        newRow.innerHTML = `
+            <div class="col-md-3">
+                <input type="number" class="form-control box_pallet" oninput="calculatePalletRowTotal(this);" placeholder="Box Per Pallet" value="${boxPalletValue}" min="1">
+            </div>
+            <div class="col-md-3">
+                <input type="number" class="form-control total_pallet" oninput="calculatePalletRowTotal(this);" placeholder="Total Pallet" value="${totalPalletValue}" min="1">
+            </div>
+            <div class="col-md-3">
+                <input type="number" class="form-control total_boxe_pallets" placeholder="Total Boxes (Pallet)" value="${totalBoxesValue}" readonly>
+            </div>
+            <input type="hidden" class="pallet_id" value="${palletId}">
+            ${removeButtonHtml}
+        `;
+        palletWrapper.appendChild(newRow);
+    }
+
     function renderTable() {
         let tbody = document.querySelector('#itemsTable tbody');
         tbody.innerHTML = '';
@@ -291,38 +292,27 @@
                             <tr class="table-secondary">
                                 <th>Pallet</th>
                                 <th>Box/Pallet</th>
-                                <th></th>
                                 <th>Total Pallet</th>
-                                <th>=</th>
                                 <th>Total Boxes</th>
                             </tr>
                         </thead>
                         <tbody>`;
                             let totalBoxesSum = 0;
                             item.pallets.forEach((p, i) => {
-                                let totalBoxes = p.box_pallet * p.total_pallet;
+                                let totalBoxes = p.total_boxe_pallets || (p.box_pallet * p.total_pallet); 
                                 totalBoxesSum += totalBoxes;
                                 palletHtml += `
                                 <tr>
                                     <td>${i + 1}</td>
                                     <td>${p.box_pallet}</td>
-                                    <td>*</td>
                                     <td>${p.total_pallet}</td>
-                                    <td>=</td>
                                     <td>${totalBoxes}</td>
                                 </tr>`;
                             });
-                            // Add total row if needed, but not strictly required here
-                            // palletHtml += `
-                            // <tr>
-                            //     <td colspan="5" class="text-end fw-bold">Pallet Total:</td>
-                            //     <td class="fw-bold">${totalBoxesSum}</td>
-                            // </tr>
                     palletHtml += `</tbody>
                     </table>`;
             }
 
-            // Disable buttons if another item is being edited
             const disabledAttr = isEditing ? 'disabled' : '';
 
             let row = `<tr>
@@ -345,16 +335,9 @@
             enableMainFields();
         }
         
-        // Disable the Add/Update button if currently editing another item
         const addItemBtn = document.getElementById('addItemBtn');
-        // if (isEditing) {
-        //     addItemBtn.setAttribute('disabled', 'disabled');
-        // } else {
-        //     addItemBtn.removeAttribute('disabled');
-        // }
     }
 
-    // Resets the item form fields and pallet section
     function resetItemForm() {
         $('#design_id').val('');
         $('#size_id').val('');
@@ -362,16 +345,11 @@
         $('#order_qty').val('');
         $('#remark').val('');
         
-        document.getElementById('has_pallet').checked = false;
-        document.getElementById("palletSection").style.display = "none";
-        document.querySelectorAll("#palletWrapper .pallet-row:not(:first-child)").forEach(r => r.remove());
-        let firstRow = document.querySelector("#palletWrapper .pallet-row");
-        if(firstRow) {
-            firstRow.querySelector(".box_pallet").value = '';
-            firstRow.querySelector(".total_pallet").value = '';
-        }
+        editingItemId = null; 
 
-        // Reset button state
+        document.getElementById("palletWrapper").innerHTML = '';
+        addPalletRow({});
+
         document.getElementById('addItemBtn').textContent = 'Add/Update';
         document.getElementById('addItemBtn').dataset.mode = 'add';
         document.getElementById('addItemBtn').dataset.index = '-1';
@@ -380,54 +358,80 @@
         document.getElementById('addItemBtn').classList.add('btn-primary');
     }
 
-    // Function to validate and get pallet data
+    function calculatePalletRowTotal(element) {
+        const row = element.closest('.pallet-row');
+        if (!row) return;
+        const boxInput = row.querySelector('.box_pallet');
+        const totalInput = row.querySelector('.total_pallet');
+        const totalBoxesOutput = row.querySelector('.total_boxe_pallets');
+        const box = parseInt(boxInput.value) || 0;
+        const total = parseInt(totalInput.value) || 0;
+        const rowTotalBoxes = box * total;
+        totalBoxesOutput.value = rowTotalBoxes > 0 ? rowTotalBoxes : '';
+        updateOrderQty();
+    }
+
+    function updateOrderQty() {
+        let grandTotalBoxesSum = 0;
+        document.querySelectorAll("#palletWrapper .total_boxe_pallets").forEach(input => {
+            let rowTotal = parseInt(input.value) || 0;
+            grandTotalBoxesSum += rowTotal;
+        });
+        document.getElementById("order_qty").value = grandTotalBoxesSum > 0 ? grandTotalBoxesSum : '';
+    }
+
     function getPalletData(orderQty) {
         let pallets = [];
         let palletTotalQty = 0;
-        let has_pallet = document.getElementById('has_pallet').checked;
         
-        if (has_pallet) {
-            let isValid = true;
-            let rows = document.querySelectorAll("#palletWrapper .pallet-row");
-            if (rows.length === 0) {
-                 isValid = false; // Should not happen with initial row, but good for safety
-            }
+        let rows = document.querySelectorAll("#palletWrapper .pallet-row");
+        if (rows.length === 0) {
+            return [];
+        }
+        
+        let isValid = true;
+
+        rows.forEach(row => {
+            let boxInput = row.querySelector(".box_pallet");
+            let totalInput = row.querySelector(".total_pallet");
+            let totalBoxesInput = row.querySelector(".total_boxe_pallets"); 
+            let palletIdInput = row.querySelector(".pallet_id");
             
-            rows.forEach(row => {
-                let boxInput = row.querySelector(".box_pallet");
-                let totalInput = row.querySelector(".total_pallet");
-                
-                let box = parseInt(boxInput.value) || 0;
-                let total = parseInt(totalInput.value) || 0;
-                
-                if (box <= 0 || total <= 0) {
+            let box = parseInt(boxInput.value) || 0;
+            let total = parseInt(totalInput.value) || 0;
+            let calculatedTotalBoxes = parseInt(totalBoxesInput.value) || 0;
+            
+            if (box > 0 && total > 0) {
+                if (box * total !== calculatedTotalBoxes) {
+                    alert("Pallet boxes calculation error. Please check your inputs.");
                     isValid = false;
-                    return;
+                    return; 
                 }
 
                 pallets.push({
+                    id: palletIdInput ? palletIdInput.value : null,
                     box_pallet: box,
-                    total_pallet: total
+                    total_pallet: total,
+                    total_boxe_pallets: calculatedTotalBoxes 
                 });
-                palletTotalQty += (box * total);
-            });
-            
-            if (!isValid) {
-                alert("Please fill both Box / Pallet and Total Pallet fields with valid positive numbers.");
-                return null;
+                palletTotalQty += calculatedTotalBoxes;
             }
-
-            let requiredQty = parseInt(orderQty);
-
-            if (palletTotalQty !== requiredQty) { // Check for equality
-                alert(`Pallet total boxes (${palletTotalQty}) must be equal to Order Qty (${requiredQty})`);
-                return null;
-            }
+        });
+        
+        if (!isValid) {
+            return null;
         }
+
+        if (pallets.length > 0) {
+            let requiredQty = parseInt(order_qty.value);
+            if (palletTotalQty !== requiredQty) {
+                alert(`Pallet total boxes (${palletTotalQty}) must equal Order Qty (${requiredQty}).`);
+                return null;
+            }
+        }        
         return pallets;
     }
 
-    // Universal button handler (Add or Update)
     document.getElementById('addItemBtn').addEventListener('click', function() {
         let po = $('#po').val();
         let party_id = $('#party_id').val();
@@ -442,19 +446,16 @@
         const mode = this.dataset.mode;
         const index = parseInt(this.dataset.index);
 
-        // 1. Validate Order Info
         if (!po || !party_id || !brand_name || !order_date) {
             alert("Please fill all order fields (PO Number, Party, Brand Name, Order Date).");
             return;
         }
 
-        // 2. Validate Item Info
         if (!design.value || !size.value || !finish.value || !order_qty.value || parseInt(order_qty.value) <= 0) {
             alert("Please fill all item fields correctly (Design, Size, Finish, Qty > 0).");
             return;
         }
 
-        // 3. Check for existing item (only on Add mode)
         if (mode === 'add') {
             let exists = items.some(i =>
                 i.design_id == design.value &&
@@ -466,9 +467,8 @@
                 return;
             }
         } else if (mode === 'update') {
-             // Check if the combination now exists somewhere else after edit
              let exists = items.some((i, idx) =>
-                idx !== index && // Exclude the item being updated
+                idx !== index &&
                 i.design_id == design.value &&
                 i.size_id == size.value &&
                 i.finish_id == finish.value
@@ -479,14 +479,13 @@
             }
         }
         
-        // 4. Validate and get Pallet Data
         let pallets = getPalletData(order_qty.value);
-        if (document.getElementById('has_pallet').checked && pallets === null) {
-            return; // Validation failed inside getPalletData
+        if (pallets === null) {
+            return;
         }
 
-        // 5. Create new item object
         const newItem = {
+            id: editingItemId,
             design_id: design.value,
             design_text: design.options[design.selectedIndex].text,
             size_id: size.value,
@@ -498,21 +497,16 @@
             pallets: pallets || []
         };
         
-        // 6. Add or Update the item in the array
         if (mode === 'add') {
             items.push(newItem);
         } else if (mode === 'update') {
             items[index] = newItem;
-            // After update, reset the editing state
             isEditing = false;
         }
-
-        // 7. Render table and reset form
         renderTable();
         resetItemForm(); 
     });
 
-    // Remove item function
     function removeItem(index) {
         if (isEditing) {
             alert("Please finish editing the current item before deleting another one.");
@@ -522,7 +516,6 @@
         renderTable();
     }
     
-    // Edit item function
     function editItem(index) {
         if (isEditing) {
             alert("An item is already being edited. Please finish or cancel the current edit.");
@@ -530,100 +523,63 @@
         }
         
         let item = items[index];
-        
-        // 1. Set editing state
         isEditing = true;
         
-        // 2. Populate form fields
+        editingItemId = item.id || null; 
+        
         document.getElementById('design_id').value = item.design_id;
         document.getElementById('size_id').value = item.size_id;
         document.getElementById('finish_id').value = item.finish_id;
         document.getElementById('order_qty').value = item.order_qty;
         document.getElementById('remark').value = item.remark;
         
-        // 3. Handle Pallet Section
         let hasPallet = item.pallets && item.pallets.length > 0;
-        document.getElementById('has_pallet').checked = hasPallet;
         let palletSection = document.getElementById("palletSection");
         let wrapper = document.getElementById("palletWrapper");
-        palletSection.style.display = hasPallet ? "block" : "none";
         
-        // Remove extra pallet rows first
-        wrapper.querySelectorAll(".pallet-row:not(:first-child)").forEach(r => r.remove());
-        let firstRow = wrapper.querySelector(".pallet-row");
-
+        wrapper.innerHTML = ''; 
+        
         if (hasPallet) {
-            if (item.pallets[0]) {
-                 firstRow.querySelector(".box_pallet").value = item.pallets[0].box_pallet;
-                 firstRow.querySelector(".total_pallet").value = item.pallets[0].total_pallet;
-            } else {
-                 firstRow.querySelector(".box_pallet").value = '';
-                 firstRow.querySelector(".total_pallet").value = '';
-            }
-            for (let i = 1; i < item.pallets.length; i++) {
-                 let p = item.pallets[i];
-                 let row = `
-                 <div class="row g-3 pallet-row mt-2">
-                    <div class="col-md-3">
-                        <input type="number" class="form-control box_pallet" placeholder="Box Per Pallet" value="${p.box_pallet}" min="1">
-                    </div>
-                    <div class="col-md-3">
-                        <input type="number" class="form-control total_pallet" placeholder="Total Pallet" value="${p.total_pallet}" min="1">
-                    </div>
-                    <div class="col-md-2 d-flex align-items-center">
-                        <button type="button" class="btn btn-danger btn-sm removePallet">X</button>
-                    </div>
-                 </div>`;
-                 wrapper.insertAdjacentHTML("beforeend", row);
-            }
+            palletSection.style.display = "block";
+            item.pallets.forEach(p => {
+                addPalletRow(p); 
+            });
         } else {
-            if(firstRow) {
-                 firstRow.querySelector(".box_pallet").value = '';
-                 firstRow.querySelector(".total_pallet").value = '';
-            }
+            palletSection.style.display = "none";
+            addPalletRow({});
         }
 
-        // 4. Update the Add/Update button for update mode
+
         const addItemBtn = document.getElementById('addItemBtn');
         addItemBtn.textContent = 'Update Item';
         addItemBtn.dataset.mode = 'update';
-        addItemBtn.dataset.index = index; // Store the index of the item being edited
+        addItemBtn.dataset.index = index;
         addItemBtn.classList.remove('btn-primary');
         addItemBtn.classList.add('btn-success');
-        // addItemBtn.removeAttribute('disabled');
-        
-        // 5. Show Cancel button
         document.getElementById('cancelItemBtn').style.display = 'inline-block';
-
-        // 6. Re-render table to disable other buttons
         renderTable(); 
     }
     
-    // Cancel Edit function
     function cancelEdit() {
-        if (!isEditing) return; // Only cancel if we are editing
+        if (!isEditing) return;
         
         isEditing = false;
-        resetItemForm(); // Resets the form and button text/mode
-        renderTable(); // Re-render to re-enable other Edit/Delete buttons
+        resetItemForm();
+        renderTable();
     }
     
     function disableMainFields() {
         $("#po").attr("readonly", true);
         $("#brand_name").attr("readonly", true);
         $("#order_date").attr("readonly", true);
-        // $('#party_id').attr("disabled", true); 
         $('#party_id').closest('div').addClass('disabled');
-        // $('#party_id').next('.select2-container').addClass('disabled-select2'); // Custom class for styling disabled select2
     }
     
     function enableMainFields() {
         $("#po").attr("readonly", false);
         $("#brand_name").attr("readonly", false);
         $("#order_date").attr("readonly", false);
-        // $('#party_id').attr("disabled", false);
         $('#party_id').closest('div').removeClass('disabled');
-        // $('#party_id').next('.select2-container').removeClass('disabled-select2');
     } 
     
     function previewBoxImage(event) {
@@ -634,11 +590,4 @@
         }
     }
 </script>
-<style>
-/* Custom style to make select2 appear disabled */
-.disabled-select2 .select2-selection {
-    background-color: #e9ecef !important;
-    cursor: not-allowed !important;
-}
-</style>
 @endpush

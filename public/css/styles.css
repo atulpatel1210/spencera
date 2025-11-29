@@ -248,3 +248,8 @@
 .table-secondary td {
     padding: 0.10rem 0.5rem !important;
 }
+
+.disabled-select2 .select2-selection {
+    background-color: #e9ecef !important;
+    cursor: not-allowed !important;
+}

@@ -13,6 +13,7 @@ class Pallet extends Model
         'purchase_order_item_id',
         'box_pallet',
         'total_pallet',
+        'total_boxe_pallets',
     ];
 
     /**

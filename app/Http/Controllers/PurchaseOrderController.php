@@ -58,7 +58,6 @@ class PurchaseOrderController extends Controller
             $items = json_decode($request->order_items, true);
 
             foreach ($items as $item) {
-                // $order->orderItems()->create([
                 $orderItem = $order->orderItems()->create([
                     'po' => $order->po,
                     'party_id' => $order->party_id,
@@ -72,17 +71,16 @@ class PurchaseOrderController extends Controller
                     'production_qty' => 0,
                     'short_qty' => 0,
                 ]);
-                // if (!empty($item['has_pallet']) && $item['has_pallet'] == 1 && !empty($item['pallets'])) {
-
+                if (!empty($item['pallets'])) {
                     foreach ($item['pallets'] as $pallet) {
-
                         Pallet::create([
                             'purchase_order_item_id' => $orderItem->id,
                             'box_pallet'  => $pallet['box_pallet'],
                             'total_pallet' => $pallet['total_pallet'],
+                            'total_boxe_pallets' => $pallet['total_boxe_pallets'],
                         ]);
                     }
-                // }
+                }
             }
 
             DB::commit();
@@ -169,16 +167,26 @@ class PurchaseOrderController extends Controller
     public function show(PurchaseOrder $order)
     {
         $order->load('orderItems.sizeDetail','orderItems.designDetail','orderItems.finishDetail');
-        // dd($order);
         return view('purchase_orders.show', compact('order'));
     }
 
     public function edit(PurchaseOrder $order)
     {
-        $order->load(['orderItems.designDetail', 'orderItems.sizeDetail', 'orderItems.finishDetail']);
+        $order->load(['orderItems.designDetail', 'orderItems.sizeDetail', 'orderItems.finishDetail', 'orderItems.pallets']);
 
         $currentItems = $order->orderItems->map(function ($item) {
+            
+            $palletsData = $item->pallets->map(function ($pallet) {
+                return [
+                    'id' => $pallet->id, 
+                    'box_pallet' => $pallet->box_pallet,
+                    'total_pallet' => $pallet->total_pallet,
+                    'total_boxe_pallets' => $pallet->total_boxe_pallets,
+                ];
+            })->toArray();
+            
             return [
+                'id' => $item->id,
                 'design_id' => $item->design_id,
                 'design_text' => $item->designDetail->name ?? 'N/A',
                 'size_id' => $item->size_id,
@@ -187,7 +195,7 @@ class PurchaseOrderController extends Controller
                 'finish_text' => $item->finishDetail->finish_name ?? 'N/A',
                 'order_qty' => $item->order_qty,
                 'remark' => $item->remark,
-                'pallets' => json_decode($item->pallets ?? '[]', true),
+                'pallets' => $palletsData, 
             ];
         });
 
@@ -225,37 +233,53 @@ class PurchaseOrderController extends Controller
             }
 
             $order->update($updateData);
-            $order->orderItems()->delete(); 
             $orderItemsData = json_decode($request->input('order_items'), true);
-            
+            $newOrderItemsIds = [];
+
             if ($orderItemsData) {
-                foreach ($orderItemsData as $item) {
-                    $orderItem = $order->orderItems()->create([
-                        'po' => $order->po,
-                        'party_id' => $order->party_id,
-                        'design_id' => $item['design_id'],
-                        'size_id' => $item['size_id'],
-                        'finish_id' => $item['finish_id'],
-                        'order_qty' => $item['order_qty'],
-                        'remark' => $item['remark'] ?? null,
-                        'pending_qty' => $item['order_qty'],
-                        'planning_qty' => 0,
-                        'production_qty' => 0,
-                        'short_qty' => 0,
-                        // 'status' => 'Pending', 
-                    ]);
-                    
-                    if (!empty($item['pallets'])) {
-                        foreach ($item['pallets'] as $pallet) {
-                            Pallet::create([
-                                'purchase_order_item_id' => $orderItem->id,
-                                'box_pallet' => $pallet['box_pallet'],
-                                'total_pallet' => $pallet['total_pallet'],
-                            ]);
-                        }
+            foreach ($orderItemsData as $item) {
+                $orderItemId = $item['id'] ?? null;
+                $itemData = [
+                    'po' => $order->po,
+                    'party_id' => $order->party_id,
+                    'design_id' => $item['design_id'],
+                    'size_id' => $item['size_id'],
+                    'finish_id' => $item['finish_id'],
+                    'order_qty' => $item['order_qty'],
+                    'remark' => $item['remark'] ?? null,
+                    'pending_qty' => $item['order_qty'],
+                    'planning_qty' => 0,
+                    'production_qty' => 0,
+                    'short_qty' => 0,
+                ];
+                $orderItem = $order->orderItems()->updateOrCreate(
+                    ['id' => $orderItemId],
+                    $itemData
+                );
+                $submittedItemIds[] = $orderItem->id;
+
+                $submittedPalletIds = [];
+                
+                if (!empty($item['pallets'])) {
+                    foreach ($item['pallets'] as $pallet) {
+                        $palletId = $pallet['id'] ?? null;                        
+                        $palletData = [
+                            'purchase_order_item_id' => $orderItem->id,
+                            'box_pallet' => $pallet['box_pallet'],
+                            'total_pallet' => $pallet['total_pallet'],
+                            'total_boxe_pallets' => $pallet['total_boxe_pallets'],
+                        ];
+                        $palletRecord = Pallet::updateOrCreate(
+                            ['id' => $palletId, 'purchase_order_item_id' => $orderItem->id],
+                            $palletData
+                        );
+                        $submittedPalletIds[] = $palletRecord->id;
                     }
                 }
+                $orderItem->pallets()->whereNotIn('id', $submittedPalletIds)->delete();
+                }
             }
+            $order->orderItems()->whereNotIn('id', $submittedItemIds)->delete();
             DB::commit();
             return redirect()->route('orders.index')->with('success', 'Order updated successfully!');
         } catch (\Exception $e) {

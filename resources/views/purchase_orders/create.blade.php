@@ -23,7 +23,7 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <label for="po" class="form-label fw-semibold">PO Number</label>
-                    <input type="text" class="form-control" id="po" name="po" required value="{{ old('po') }}">
+                    <input type="text" class="form-control" id="po" name="po" required value="{{ old('po') }}" placeholder="PO Number">
                 </div>
                 <div class="col-md-3">
                     <label for="party_id" class="form-label fw-semibold">Party</label>
@@ -90,29 +90,27 @@
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Order Qty</label>
-                    <input type="number" class="form-control" id="order_qty" min="1" value="">
+                    <input type="number" class="form-control" id="order_qty" min="1" value="" placeholder="Order Qty" readonly>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Remark</label>
-                    <input type="text" class="form-control" id="remark" placeholder="Optional">
+                    <input type="text" class="form-control" id="remark" placeholder="Remark">
                 </div>
                 {{-- PALLET SECTION --}}
-                <div class="row mt-3">
-                    <div class="col-md-12">
-                        <label class="form-label">Add Pallet?</label><br>
-                        <input type="checkbox" id="has_pallet">
-                    </div>
-                </div>
-                <div id="palletSection" style="display:none; border:1px dashed #ccc; padding:12px; border-radius:8px; margin-top:15px;">
+                <div id="palletSection" style="border:1px dashed #ccc; padding:12px; border-radius:8px; margin-top:15px;">
                     <div id="palletWrapper">
                         <div class="row g-3 pallet-row">
                             <div class="col-md-3">
                                 <label class="form-label">Box / Pallet</label>
-                                <input type="number" class="form-control box_pallet">  
+                                <input type="number" class="form-control box_pallet" oninput="calculatePalletRowTotal(this);" placeholder="Box Per Pallet">  
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Total Pallet</label>
-                                <input type="number" class="form-control total_pallet">
+                                <input type="number" class="form-control total_pallet" oninput="calculatePalletRowTotal(this);" placeholder="Total Pallet">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Total Boxes (Pallet)</label>
+                                <input type="number" class="form-control total_boxe_pallets" placeholder="Total Boxes (Pallet)" readonly>
                             </div>
                         </div>
                     </div>
@@ -163,17 +161,17 @@
         let oldItems = @json(old('order_items'));
         if (oldItems) {
             try {
-                let parsed = JSON.parse(oldItems);
-                items = parsed;
+                items = typeof oldItems === 'string' ? JSON.parse(oldItems) : oldItems;
                 renderTable();
-                if (items.length > 0) {
-                    disableMainFields();
-                }
             } catch (err) {
                 console.error("Invalid JSON in old items", err);
             }
         }
-        $('#party_id').trigger('change.select2');
+        let initialPartyId = $('#party_id').val();
+        let oldDesignId = "{{ old('design_id') }}";
+        if(initialPartyId) {
+            loadDesigns(initialPartyId, oldDesignId);
+        }
     });
     $(document).ready(function() {
         $('.select2').select2({
@@ -183,52 +181,40 @@
         });
         $('#party_id').on('change', function() {
             let partyId = $(this).val();
-            $('#design_id').html('<option value="">Loading...</option>');
-            if (partyId) {
-                $.ajax({
-                    url: "{{ route('party.designs') }}",
-                    type: "GET",
-                    data: {
-                        party_id: partyId
-                    },
-                    success: function(res) {
-                        $('#design_id').empty().append('<option value="">Select</option>');
-                        $.each(res, function(index, design) {
-                            $('#design_id').append(
-                                `<option value="${design.id}">${design.name}</option>`
-                            );
-                        });
-                    }
-                });
-            } else {
-                $('#design_id').html('<option value="">Select</option>');
-            }
+            loadDesigns(partyId);
         });
     });
-    document.getElementById("has_pallet").addEventListener("change", function() {
-        if (this.checked) {
-            document.getElementById("palletSection").style.display = "block";
-        } else {
-            document.getElementById("palletSection").style.display = "none";
-            document.querySelectorAll("#palletWrapper .pallet-row:not(:first-child)").forEach(r => {
-                r.remove();
-            });
-            let firstRow = document.querySelector("#palletWrapper .pallet-row");
-            if(firstRow) {
-                firstRow.querySelector(".box_pallet").value = '';
-                firstRow.querySelector(".total_pallet").value = '';
-            }
-        }
-    });
+    function calculatePalletRowTotal(element) {
+        const row = element.closest('.pallet-row');
+        const boxInput = row.querySelector('.box_pallet');
+        const totalInput = row.querySelector('.total_pallet');
+        const totalBoxesOutput = row.querySelector('.total_boxe_pallets');
+        const box = parseInt(boxInput.value) || 0;
+        const total = parseInt(totalInput.value) || 0;
+        const rowTotalBoxes = box * total;
+        totalBoxesOutput.value = rowTotalBoxes > 0 ? rowTotalBoxes : '';
+        updateOrderQty();
+    }
+    function updateOrderQty() {
+        let grandTotalBoxesSum = 0;
+        document.querySelectorAll("#palletWrapper .total_boxe_pallets").forEach(input => {
+            let rowTotal = parseInt(input.value) || 0;
+            grandTotalBoxesSum += rowTotal;
+        });
+        document.getElementById("order_qty").value = grandTotalBoxesSum > 0 ? grandTotalBoxesSum : '';
+    }
     document.addEventListener("click", function(e) {
         if (e.target && e.target.id === "addMorePalletBtn") {
             let row = `
             <div class="row g-3 pallet-row mt-2">
                 <div class="col-md-3">
-                    <input type="number" class="form-control box_pallet" placeholder="Box Per Pallet">
+                    <input type="number" class="form-control box_pallet" oninput="calculatePalletRowTotal(this);" placeholder="Box Per Pallet">
                 </div>
                 <div class="col-md-3">
-                    <input type="number" class="form-control total_pallet" placeholder="Total Pallet">
+                    <input type="number" class="form-control total_pallet" oninput="calculatePalletRowTotal(this);" placeholder="Total Pallet">
+                </div>
+                <div class="col-md-3">
+                    <input type="number" class="form-control total_boxe_pallets" placeholder="Total Boxes (Pallet)" readonly>
                 </div>
                 <div class="col-md-2 d-flex align-items-center">
                     <button type="button" class="btn btn-danger btn-sm removePallet">X</button>
@@ -240,6 +226,7 @@
     document.addEventListener("click", function(e) {
         if (e.target && e.target.classList.contains("removePallet")) {
             e.target.closest(".pallet-row").remove();
+            updateOrderQty(); 
         }
     });
     function renderTable() {
@@ -254,9 +241,7 @@
                             <tr class="table-secondary">
                                 <th>Pallet</th>
                                 <th>Box/Pallet</th>
-                                <th></th>
                                 <th>Total Pallet</th>
-                                <th>=</th>
                                 <th>Total Boxes</th>
                             </tr>
                         </thead>
@@ -267,9 +252,7 @@
                                 <tr>
                                     <td>${i + 1}</td>
                                     <td>${p.box_pallet}</td>
-                                    <td>*</td>
                                     <td>${p.total_pallet}</td>
-                                    <td>=</td>
                                     <td>${totalBoxes}</td>
                                 </tr>`;
                             });
@@ -304,16 +287,13 @@
         $('#finish_id').val('');
         $('#order_qty').val('');
         $('#remark').val('');
-        
-        document.getElementById('has_pallet').checked = false;
-        document.getElementById("palletSection").style.display = "none";
         document.querySelectorAll("#palletWrapper .pallet-row:not(:first-child)").forEach(r => r.remove());
         let firstRow = document.querySelector("#palletWrapper .pallet-row");
         if(firstRow) {
             firstRow.querySelector(".box_pallet").value = '';
             firstRow.querySelector(".total_pallet").value = '';
+            firstRow.querySelector(".total_boxe_pallets").value = '';
         }
-
     }
     document.getElementById('addItemBtn').addEventListener('click', function() {
         let po = $('#po').val();
@@ -325,7 +305,6 @@
         let finish = document.getElementById('finish_id');
         let order_qty = document.getElementById('order_qty');
         let remark = document.getElementById('remark');
-        let has_pallet = document.getElementById('has_pallet').checked;
         
         if (!po || !party_id || !brand_name || !order_date) {
             alert("Please fill all order fields (PO Number, Party, Brand Name, Order Date).");
@@ -349,44 +328,31 @@
         let pallets = [];
         let palletTotalQty = 0;
         
-        if (has_pallet) {
-            let isValid = true;
-            document.querySelectorAll("#palletWrapper .pallet-row").forEach(row => {
-                let boxInput = row.querySelector(".box_pallet");
-                let totalInput = row.querySelector(".total_pallet");
-                
-                let box = parseInt(boxInput.value) || 0;
-                let total = parseInt(totalInput.value) || 0;
-                
-                if (box <= 0 || total <= 0) {
-                    isValid = false;
-                    return;
-                }
-
+        let isValid = true;
+        document.querySelectorAll("#palletWrapper .pallet-row").forEach(row => {
+            let boxInput = row.querySelector(".box_pallet");
+            let totalInput = row.querySelector(".total_pallet");
+            let boxpalletInput = row.querySelector(".total_boxe_pallets");
+            
+            let box = parseInt(boxInput.value) || 0;
+            let total = parseInt(totalInput.value) || 0;
+            
+            if (box > 0 && total > 0) {
                 pallets.push({
                     box_pallet: box,
-                    total_pallet: total
+                    total_pallet: total,
+                    total_boxe_pallets: boxpalletInput
                 });
                 palletTotalQty += (box * total);
-            });
-            
-            if (!isValid) {
-                alert("Please fill both Box / Pallet and Total Pallet fields with valid positive numbers.");
-                return;
             }
-
+        });
+        if (pallets.length > 0) {
             let requiredQty = parseInt(order_qty.value);
-
-            if (palletTotalQty > requiredQty) {
-                alert(`Pallet total boxes (${palletTotalQty}) cannot exceed Order Qty (${requiredQty})`);
-                return;
-            }
-            if (palletTotalQty < requiredQty) {
-                alert(`Pallet total boxes (${palletTotalQty}) must be equal to Order Qty (${requiredQty})`);
+            if (palletTotalQty !== requiredQty) {
+                alert(`Pallet total boxes (${palletTotalQty}) must equal Order Qty (${requiredQty}).`);
                 return;
             }
         }
-        
         items.push({
             design_id: design.value,
             design_text: design.options[design.selectedIndex].text,
@@ -406,50 +372,84 @@
         items.splice(index, 1);
         renderTable();
     }
+
+    function loadDesigns(partyId, selectedDesignId = null) {
+        let designSelect = $('#design_id');
+        
+        if (!partyId) {
+            designSelect.html('<option value="">Select</option>');
+            return;
+        }
+
+        $.ajax({
+            url: "{{ route('party.designs') }}",
+            type: "GET",
+            data: { party_id: partyId },
+            success: function(res) {
+                designSelect.empty().append('<option value="">Select</option>');
+                $.each(res, function(index, design) {
+                    designSelect.append(
+                        `<option value="${design.id}">${design.name}</option>`
+                    );
+                });
+                if (selectedDesignId) {
+                    designSelect.val(selectedDesignId).trigger('change'); 
+                }
+            },
+            error: function() {
+                console.error("Failed to load designs");
+            }
+        });
+    }
     
     function editItem(index) {
         let item = items[index];
-        document.getElementById('design_id').value = item.design_id;
+        let currentPartyId = $('#party_id').val();
+        loadDesigns(currentPartyId, item.design_id);
         document.getElementById('size_id').value = item.size_id;
         document.getElementById('finish_id').value = item.finish_id;
         document.getElementById('order_qty').value = item.order_qty;
         document.getElementById('remark').value = item.remark;
-        let hasPallet = item.pallets && item.pallets.length > 0;
-        document.getElementById('has_pallet').checked = hasPallet;
-        let palletSection = document.getElementById("palletSection");
         let wrapper = document.getElementById("palletWrapper");
-        palletSection.style.display = hasPallet ? "block" : "none";
         wrapper.querySelectorAll(".pallet-row:not(:first-child)").forEach(r => r.remove());
         let firstRow = wrapper.querySelector(".pallet-row");
+        let hasPallet = item.pallets && item.pallets.length > 0;
 
         if (hasPallet) {
             if (item.pallets[0]) {
-                 firstRow.querySelector(".box_pallet").value = item.pallets[0].box_pallet;
-                 firstRow.querySelector(".total_pallet").value = item.pallets[0].total_pallet;
-            } else {
-                 firstRow.querySelector(".box_pallet").value = '';
-                 firstRow.querySelector(".total_pallet").value = '';
+                let p1 = item.pallets[0];
+                firstRow.querySelector(".box_pallet").value = p1.box_pallet;
+                firstRow.querySelector(".total_pallet").value = p1.total_pallet;
+                let total1 = (parseFloat(p1.box_pallet) || 0) * (parseFloat(p1.total_pallet) || 0);
+                firstRow.querySelector(".total_boxe_pallets").value = total1 > 0 ? total1 : '';
             }
             for (let i = 1; i < item.pallets.length; i++) {
-                 let p = item.pallets[i];
-                 let row = `
-                 <div class="row g-3 pallet-row mt-2">
-                     <div class="col-md-3">
-                         <input type="number" class="form-control box_pallet" placeholder="Box Per Pallet" value="${p.box_pallet}" required>
-                     </div>
-                     <div class="col-md-3">
-                         <input type="number" class="form-control total_pallet" placeholder="Total Pallet" value="${p.total_pallet}" required>
-                     </div>
-                     <div class="col-md-2 d-flex align-items-center">
-                         <button type="button" class="btn btn-danger btn-sm removePallet">X</button>
-                     </div>
-                 </div>`;
-                 wrapper.insertAdjacentHTML("beforeend", row);
+                let p = item.pallets[i];
+                let rowTotal = (parseFloat(p.box_pallet) || 0) * (parseFloat(p.total_pallet) || 0);
+                let finalTotal = rowTotal > 0 ? rowTotal : '';
+
+                let row = `
+                <div class="row g-3 pallet-row mt-2">
+                    <div class="col-md-3">
+                        <input type="number" class="form-control box_pallet" oninput="calculatePalletRowTotal(this);" placeholder="Box Per Pallet" value="${p.box_pallet}">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" class="form-control total_pallet" oninput="calculatePalletRowTotal(this);" placeholder="Total Pallet" value="${p.total_pallet}">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" class="form-control total_boxe_pallets" placeholder="Total Boxes (Pallet)" value="${finalTotal}" readonly>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-center">
+                        <button type="button" class="btn btn-danger btn-sm removePallet">X</button>
+                    </div>
+                </div>`;
+                wrapper.insertAdjacentHTML("beforeend", row);
             }
         } else {
             if(firstRow) {
-                 firstRow.querySelector(".box_pallet").value = '';
-                 firstRow.querySelector(".total_pallet").value = '';
+                firstRow.querySelector(".box_pallet").value = '';
+                firstRow.querySelector(".total_pallet").value = '';
+                firstRow.querySelector(".total_boxe_pallets").value = '';
             }
         }
         items.splice(index, 1);
@@ -457,18 +457,10 @@
     }
     
     function disableMainFields() {
-        $("#po").attr("readonly", true);
-        $("#brand_name").attr("readonly", true);
-        $("#order_date").attr("readonly", true);
         $('#party_id').closest('div').addClass('disabled');
-        // $("#box_image").attr("disabled", true);
     }
     function enableMainFields() {
-        $("#po").attr("readonly", false);
-        $("#brand_name").attr("readonly", false);
-        $("#order_date").attr("readonly", false);
         $('#party_id').closest('div').removeClass('disabled');
-        // $("#box_image").attr("disabled", false);
     } 
     function previewBoxImage(event) {
         const output = document.getElementById('boxImagePreview');

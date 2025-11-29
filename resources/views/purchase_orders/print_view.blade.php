@@ -173,7 +173,7 @@
             }
             /* Force background printing for images within the logo box */
             .logo-img img {
-                background-color: #000 !important;
+                /* background-color: #000 !important; */
                 -webkit-print-color-adjust: exact !important; 
                 print-color-adjust: exact !important; 
             }
@@ -189,9 +189,8 @@
             <div class="logo-img">
                 <img src="{{ asset('images/logo_black.png') }}" alt="Logo" height="40">
             </div>
-            <!-- <h2 style="font-weight: 800; color: #000; margin: 0; font-size: 14pt;">BHABHA EXPORTS</h2> -->
         </div>
-        <h1 class="po-title">PURCHASE ORDER</h1>
+        <h1 class="po-title">PRODUCTION ORDER</h1>
     </div>
 
     <div class="header-section">
@@ -200,7 +199,7 @@
             <div class="manufacturer-info">
                 <span class="strong-label">MANUFACTURER:</span>
                 @if($companyDetail)
-                    <strong>{{ $companyDetail->name ?? 'N/A' }} LLP</strong><br>
+                    <strong>{{ $companyDetail->name ?? 'N/A' }}</strong><br>
                     {{ $companyDetail->address_line1 ?? '' }} {{ $companyDetail->address_line2 ?? '' }}<br>
                     {{ $companyDetail->city ?? '' }}, {{ $companyDetail->state ?? '' }}, {{ $companyDetail->zip ?? '' }}
                 @else
@@ -236,7 +235,7 @@
                 </div>
                 <hr style="border-top: 1px solid #ccc; margin: 10px 0;">
                 <div style="text-align: center; margin-bottom: 5px;">
-                    <span class="strong-label" style="text-align: center; border: none;">BOX IMAGE REFERENCE</span>
+                    <span class="strong-label" style="text-align: center; border: none;">BOX IMAGE</span>
                 </div>
                 <div class="po-meta-item" style="justify-content: center;">
                     <img src="{{ asset('storage/box_images/'.$order->box_image) }}"  alt="Box Image" height="200" width="335" style="background-color: #000; padding: 5px; border-radius: 2px;">
@@ -250,7 +249,7 @@
     <table class="description-table">
         <thead>
             <tr>
-                <th rowspan="2" width="8%">SIZE</th>
+                <th rowspan="2" width="9%">SIZE</th>
                 <th rowspan="2" width="15%">DESIGN</th>
                 <th rowspan="2" width="7%">FINISH</th>
                 <th rowspan="2" width="20%">DESIGN PHOTO</th>
@@ -298,7 +297,6 @@
                     {{-- DESIGN PHOTO (Null Check) --}}
                     <td rowspan="{{ $palletCount > 1 ? $palletCount : 1 }}" class="text-center">
                         @if ($design && $design->image)
-                            <!-- <img src="{{ asset('storage/design_photos/' . $design->photo_path) }}" alt="Design Photo" style="max-height: 50px; max-width: 50px; border: 1px solid #ccc;"> -->
                             <img src="{{ asset('storage/designs/'.$design->image) }}" width="150" height="75">
                         @else
                             N/A
