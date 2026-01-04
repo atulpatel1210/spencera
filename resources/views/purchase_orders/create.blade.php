@@ -341,7 +341,7 @@
                 pallets.push({
                     box_pallet: box,
                     total_pallet: total,
-                    total_boxe_pallets: boxpalletInput
+                    total_boxe_pallets: box * total
                 });
                 palletTotalQty += (box * total);
             }
