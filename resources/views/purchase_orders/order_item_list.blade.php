@@ -49,7 +49,7 @@
                     <input type="hidden" name="type" id="type">
                     <div class="mb-3">
                         <label for="quantity" class="form-label">Quantity</label>
-                        <input type="number" class="form-control" name="quantity" id="quantity">
+                        <input type="number" class="form-control" name="quantity" id="quantity" min="0" step="1" inputmode="numeric" pattern="[0-9]*" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                         <div class="text-danger" id="quantity_error"></div>
                     </div>
                     <div class="mb-3" id="batch_no_section">
@@ -88,6 +88,13 @@ $(function() {
     $('#order-items-table').DataTable({
         processing: true,
         serverSide: true,
+        responsive: false,
+        scrollX: true,
+        paging: true,
+        pageLength: 10,
+        lengthChange: true,
+        autoWidth: false,
+        scrollCollapse: true, 
         ajax: '{{ route('purchase_order_item.data') }}',
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },

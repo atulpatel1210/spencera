@@ -10,7 +10,7 @@
 .sidebar h4 {
     color: #fff;
     text-align: center;
-    padding: 20px 10px;
+    padding: 10px;
     margin-bottom: 0; /* Remove default margin-bottom from heading */
     font-size: 1.25rem;
     font-weight: bold;
@@ -67,6 +67,10 @@
     /* background-color: #ef7c1b; */
     color: #ef7c1b;
     border-left-color: #ef7c1b;
+}
+
+.sidebar .logo img {
+    width: 100%;
 }
 
 /* General Card Styling */

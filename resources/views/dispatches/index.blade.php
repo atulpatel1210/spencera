@@ -43,6 +43,13 @@ $(function() {
     $('#dispatches-table').DataTable({
         processing: true,
         serverSide: true,
+        responsive: false,
+        scrollX: true,
+        paging: true,
+        pageLength: 10,
+        lengthChange: true,
+        autoWidth: false,
+        scrollCollapse: true,
         ajax: '{{ route('dispatches.data') }}',
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },

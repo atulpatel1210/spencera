@@ -64,6 +64,13 @@ $(function() {
     let table = $('#stockPalletTable').DataTable({
         processing: true,
         serverSide: true,
+        responsive: false,
+        scrollX: true,
+        paging: true,
+        pageLength: 10,
+        lengthChange: true,
+        autoWidth: false,
+        scrollCollapse: true, 
         ajax: {
             url: '{{ route("stock-pallets.report.data") }}',
             data: function(d) {

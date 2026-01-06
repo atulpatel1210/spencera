@@ -41,11 +41,15 @@ class DesignController extends Controller
                 $method = method_field('DELETE');
 
                 return "
-                    <a href='{$editUrl}' class='btn btn-sm btn-warning'>Edit</a>
-                    <form action='{$deleteUrl}' method='POST' style='display:inline;' onsubmit=\"return confirm('Are you sure?')\">
+                    <a href='{$editUrl}' title='Edit' class='btn btn-sm text-primary'>
+                        <i class='fa fa-edit fa-fw fa-lg'></i>
+                    </a>
+                    <form action='{$deleteUrl}' method='POST' class='d-inline' onsubmit=\"return confirm('Are you sure you want to delete this design?')\" style='display:inline-block;vertical-align:middle;margin-right:0;'>
                         {$csrf}
                         {$method}
-                        <button type='submit' class='btn btn-sm btn-danger'>Del</button>
+                        <button type='submit' title='Delete' class='btn btn-sm text-danger'>
+                            <i class='fa fa-trash fa-fw fa-lg'></i>
+                        </button>
                     </form>
                 ";
             })

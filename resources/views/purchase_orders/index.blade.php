@@ -37,6 +37,13 @@ $(function() {
     $('#orders-table').DataTable({
         processing: true,
         serverSide: true,
+        responsive: false,
+        scrollX: true,
+        paging: true,
+        pageLength: 10,
+        lengthChange: true,
+        autoWidth: false,
+        scrollCollapse: true,
         ajax: '{{ route('orders.data') }}',
         columns: [
             { data: 'po', name: 'po' },

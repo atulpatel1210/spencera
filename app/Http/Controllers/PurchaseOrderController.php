@@ -140,7 +140,7 @@ class PurchaseOrderController extends Controller
                         <a href='{$printUrl}' title='Print PO' target='_blank' class='btn btn-sm text-info'>
                             <i class='fa fa-print fa-fw fa-lg'></i>
                         </a>
-                        <form action='{$deleteUrl}' method='POST' class='d-inline' onsubmit=\"return confirm('Are you sure?')\" style='display:inline-block;vertical-align:middle;margin-right:0;'>
+                        <form action='{$deleteUrl}' method='POST' class='d-inline' onsubmit=\"return confirm('Are you sure you want to delete this order?')\" style='display:inline-block;vertical-align:middle;margin-right:0;'>
                             {$csrf}
                             {$method}
                             <button type='submit' title='Delete' class='btn btn-sm text-danger'>
@@ -348,7 +348,7 @@ class PurchaseOrderController extends Controller
                         ? "<button class='btn btn-sm btn-outline-primary openModal' data-id='{$item->id}' data-type='production'>Production</button>"
                         : "<button class='btn btn-sm btn-outline-primary disabled' disabled>Production</button>";
 
-                    return "<div class='btn-group'>{$planningBtn}{$productionBtn}</div>";
+                    return "<div class='btn-group gap-2'>{$planningBtn}{$productionBtn}</div>";
                 })
                 ->rawColumns(['actions'])
                 ->toJson();

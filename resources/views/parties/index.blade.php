@@ -44,6 +44,13 @@ $(function() {
     $('#parties-table').DataTable({
         processing: true,
         serverSide: true,
+        responsive: false,
+        scrollX: true,
+        paging: true,
+        pageLength: 10,
+        lengthChange: true,
+        autoWidth: false,
+        scrollCollapse: true,
         ajax: '{{ route('parties.data') }}',
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
