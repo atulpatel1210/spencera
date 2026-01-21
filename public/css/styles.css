@@ -257,3 +257,152 @@
     background-color: #e9ecef !important;
     cursor: not-allowed !important;
 }
+
+/* ========================================
+   ORANGE THEME - Primary Color Override
+   ======================================== */
+.card-header h4,
+.card-header h5,
+.card-header .fw-bold,
+.text-primary {
+    color: #ef7c1b !important;
+}
+
+.border-primary {
+    border-color: #ef7c1b !important;
+}
+
+.bg-primary,
+.btn-primary {
+    background-color: #ef7c1b !important;
+    border-color: #ef7c1b !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: #d66d17 !important;
+    border-color: #d66d17 !important;
+}
+
+.btn-outline-primary {
+    color: #ef7c1b !important;
+    border-color: #ef7c1b !important;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: #ef7c1b !important;
+    border-color: #ef7c1b !important;
+    color: #fff !important;
+}
+
+/* ========================================
+   DATATABLES EXPORT BUTTONS
+   ======================================== */
+.dt-buttons {
+    display: inline-flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.dt-button {
+    padding: 0.5rem 1rem !important;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 0.5rem !important;
+    border: 1px solid #dee2e6 !important;
+    background-color: #fff !important;
+    color: #495057 !important;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.dt-button:hover {
+    background-color: #f8f9fa !important;
+    border-color: #adb5bd !important;
+    color: #212529 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+/* ========================================
+   ACTION BUTTONS - Circular Icons
+   ======================================== */
+.btn.rounded-circle {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn.rounded-circle i {
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.hover-scale {
+    transition: transform 0.2s;
+}
+
+.hover-scale:hover {
+    transform: scale(1.02);
+}
+
+.hover-elevate {
+    transition: transform 0.2s;
+}
+
+.hover-elevate:hover {
+    transform: translateY(-2px);
+}
+
+.hover-bg-gray:hover {
+    background-color: #f8f9fa !important;
+    border-color: #e9ecef !important;
+}
+
+.transition-all {
+    transition: all 0.2s ease;
+}
+
+.input-section {
+    transition: all 0.3s ease;
+}
+
+.input-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.1) !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.upload-zone:hover {
+    background-color: #f1f3f5 !important;
+    border-color: #adb5bd !important;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+    .dt-buttons {
+        flex-wrap: wrap;
+    }
+
+    .btn.rounded-circle {
+        width: 28px;
+        height: 28px;
+    }
+
+    .btn.rounded-circle i {
+        font-size: 0.75rem;
+    }
+}

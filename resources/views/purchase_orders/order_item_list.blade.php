@@ -1,86 +1,147 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="card">
-    <div class="card-header d-flex justify-content-between">
-        <h4>Order Item List</h4>
-        {{-- You might want to add a button for adding new order items if applicable --}}
-        {{-- <a href="{{ route('purchase_order_items.create') }}" class="btn btn-primary btn-sm">+ Add Order Item</a> --}}
-    </div>
-    <div class="card-body">
-        @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
+<div class="container-fluid px-4">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-white py-3 px-4 border-bottom">
+                    <h5 class="mb-0 fw-bold text-primary">
+                        <i class="bi bi-list-check me-2"></i> Order Item List
+                    </h5>
+                </div>
+                
+                <div class="card-body p-0">
+                    @if(session('success')) 
+                        <div class="alert alert-success m-3 rounded-3 border-0 shadow-sm d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                            {{ session('success') }}
+                        </div> 
+                    @endif
 
-        <table class="table table-bordered" id="order-items-table">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>PO</th>
-                    <th>Design</th>
-                    <th>Size</th>
-                    <th>Finish</th>
-                    <th>Order Qty</th>
-                    <th>Pending Qty</th>
-                    <th>Planning Qty</th>
-                    <th>Production Qty</th>
-                    <th>Short/Excess Qty</th>
-                    <th>Remark</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{-- Data will be loaded by Yajra Datatables --}}
-            </tbody>
-        </table>
-    </div>
-</div>
-<!-- Modal -->
-<div class="modal fade" id="quantityModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">Edit Quantity</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="quantityForm" method="POST">
-                    @csrf
-                    <input type="hidden" name="_method" value="PATCH">
-                    <input type="hidden" name="item_id" id="item_id">
-                    <input type="hidden" name="type" id="type">
-                    <div class="mb-3">
-                        <label for="quantity" class="form-label">Quantity</label>
-                        <input type="number" class="form-control" name="quantity" id="quantity" min="0" step="1" inputmode="numeric" pattern="[0-9]*" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
-                        <div class="text-danger" id="quantity_error"></div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="order-items-table">
+                            <thead class="bg-light text-secondary small text-uppercase">
+                                <tr>
+                                    <th class="ps-4">#</th>
+                                    <th>PO</th>
+                                    <th>Design</th>
+                                    <th>Size</th>
+                                    <th>Finish</th>
+                                    <th class="text-center">Order Qty</th>
+                                    <th class="text-center text-warning">Pending</th>
+                                    <th class="text-center text-info">Planning</th>
+                                    <th class="text-center text-success">Production</th>
+                                    <th class="text-center text-danger">Diff</th>
+                                    <th>Remark</th>
+                                    <th class="text-end pe-4">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{-- Data will be loaded by Yajra Datatables --}}
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="mb-3" id="batch_no_section">
-                        <label for="batch_no" class="form-label">Batch No</label>
-                        <input type="text" class="form-control" name="batch_no" id="batch_no">
-                        <div class="text-danger" id="batch_no_error"></div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="date" class="form-label">Date</label>
-                        <input type="date" class="form-control" name="date" id="date">
-                        <div class="text-danger" id="date_error"></div>
-                    </div>
-                    <div class="mb-3" id="location_section">
-                        <label for="location" class="form-label">Location</label>
-                        <textarea class="form-control" id="location" name="location" rows="5"></textarea>
-                        <div class="text-danger" id="location_error"></div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="remark" class="form-label">Remark</label>
-                        <textarea class="form-control" id="remark" name="remark" rows="5"></textarea>
-                        <div class="text-danger" id="remark_error"></div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="saveBtn">Save</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="quantityModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-light border-bottom-0 py-3">
+                <h5 class="modal-title fw-bold text-dark" id="modalTitle">Edit Quantity</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="quantityForm" method="POST">
+                    @csrf
+                    <input type="hidden" name="_method" value="PATCH">
+                    <input type="hidden" name="item_id" id="item_id">
+                    <input type="hidden" name="type" id="type">
+                    
+                    <div class="mb-4">
+                        <label for="quantity" class="form-label fw-semibold text-secondary small text-uppercase">Quantity</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-123"></i></span>
+                            <input type="number" class="form-control border-start-0 ps-0" name="quantity" id="quantity" min="0" step="1" inputmode="numeric">
+                        </div>
+                        <div class="text-danger small mt-1" id="quantity_error"></div>
+                    </div>
+
+                    <div id="batch_no_section" class="mb-4" style="display:none;">
+                        <label for="batch_no" class="form-label fw-semibold text-secondary small text-uppercase">Batch No</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-upc-scan"></i></span>
+                            <input type="text" class="form-control border-start-0 ps-0" name="batch_no" id="batch_no">
+                        </div>
+                        <div class="text-danger small mt-1" id="batch_no_error"></div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="date" class="form-label fw-semibold text-secondary small text-uppercase">Date</label>
+                         <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-calendar-date"></i></span>
+                            <input type="date" class="form-control border-start-0 ps-0" name="date" id="date">
+                        </div>
+                        <div class="text-danger small mt-1" id="date_error"></div>
+                    </div>
+
+                    <div id="location_section" class="mb-4" style="display:none;">
+                        <label for="location" class="form-label fw-semibold text-secondary small text-uppercase">Location</label>
+                        <textarea class="form-control" id="location" name="location" rows="3"></textarea>
+                        <div class="text-danger small mt-1" id="location_error"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="remark" class="form-label fw-semibold text-secondary small text-uppercase">Remark</label>
+                        <textarea class="form-control" id="remark" name="remark" rows="3"></textarea>
+                        <div class="text-danger small mt-1" id="remark_error"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-top-0 d-grid pb-4 px-4">
+                <button type="button" class="btn btn-primary rounded-pill shadow-sm fw-bold" id="saveBtn">
+                    <i class="bi bi-check2-circle me-2"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Premium Table Styling */
+    #order-items-table thead th {
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #eaeaea;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        white-space: nowrap;
+    }
+    #order-items-table tbody td {
+        padding: 0.75rem 0.5rem;
+        color: #495057;
+        border-bottom: 1px solid #f1f1f1;
+    }
+    #order-items-table tbody tr:hover {
+        background-color: #f8f9fa;
+        transition: background-color 0.2s ease-in-out;
+    }
+    #order-items-table_wrapper .dataTables_length select {
+        border-radius: 0.5rem;
+        padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+        border: 1px solid #dee2e6;
+    }
+    #order-items-table_wrapper .dataTables_filter input {
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+        padding: 0.375rem 0.75rem;
+    }
+</style>
 @endsection
 @push('scripts')
 <script>

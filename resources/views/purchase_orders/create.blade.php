@@ -1,157 +1,215 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="card">
-    <div class="card-header">
-        <h4 class="mb-0">Create Order</h4>
-    </div>
-
-    <div class="card-body">
-        <form id="orderForm" action="{{ route('orders.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-
-            {{-- Order Info --}}
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-            <div class="row mb-4">
-                <div class="col-md-3">
-                    <label for="po" class="form-label fw-semibold">PO Number</label>
-                    <input type="text" class="form-control" id="po" name="po" required value="{{ old('po') }}" placeholder="PO Number">
-                </div>
-                <div class="col-md-3">
-                    <label for="party_id" class="form-label fw-semibold">Party</label>
-                    <select class="form-select select2" id="party_id" name="party_id" required>
-                        <option value="">Select Party</option>
-                        @foreach ($parties as $p)
-                        <option value="{{ $p->id }}"
-                            {{ old('party_id') == $p->id ? 'selected' : '' }}>
-                            {{ $p->party_name }}
-                        </option>
-                        @endforeach
-                    </select>
-
-                </div>
-                <div class="col-md-3">
-                    <label for="brand_name" class="form-label fw-semibold">Brand Name</label>
-                    <input type="text" class="form-control" id="brand_name" name="brand_name" placeholder="Enter brand name" value="{{ old('brand_name') }}">
-                </div>
-                <div class="col-md-3">
-                    <label for="order_date" class="form-label fw-semibold">Order Date</label>
-                    <input type="date" class="form-control" id="order_date" name="order_date" value="{{ old('order_date', date('Y-m-d')) }}" required>
+<div class="row justify-content-center">
+    <div class="col-12 col-xxl-11">
+        <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+            <div class="card-header bg-white py-3 px-4 border-bottom">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0 fw-bold text-primary display-6 fs-4">
+                        <i class="bi bi-cart-plus me-2"></i> Create New Order
+                    </h4>
+                    <a href="{{ route('orders.index') }}" class="btn btn-outline-secondary rounded-pill shadow-sm px-4">
+                        <i class="bi bi-arrow-left me-1"></i> Back to List
+                    </a>
                 </div>
             </div>
 
-            {{-- Box Image --}}
-            <div class="row mb-4">
-                <div class="col-md-4">
-                    <label for="box_image" class="form-label fw-semibold">Box Image</label>
-                    <input type="file" name="box_image" id="box_image" class="form-control" accept="image/*" onchange="previewBoxImage(event)">
-                    <div class="mt-2">
-                        <img id="boxImagePreview" src="" width="120" height="120" style="display:none;" class="border rounded">
-                    </div>
-                </div>
-            </div>
+            <div class="card-body p-4 p-md-5">
+                <form id="orderForm" action="{{ route('orders.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
 
-            <hr>
+                    @if ($errors->any())
+                        <div class="alert alert-danger rounded-3 shadow-sm border-0 mb-4">
+                            <ul class="mb-0 ps-3">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
-            {{-- Item Entry --}}
-            <h5 class="fw-semibold mb-3 text-primary">Add Order Item</h5>
-            <div class="row g-3 align-items-end" id="itemForm">
-                <div class="col-md-2">
-                    <label class="form-label">Design</label>
-                    <select class="form-select" id="design_id">
-                        <option value="">Select</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Size</label>
-                    <select class="form-select" id="size_id">
-                        <option value="">Select</option>
-                        @foreach ($sizes as $s)
-                        <option value="{{ $s->id }}">{{ $s->size_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Finish</label>
-                    <select class="form-select" id="finish_id">
-                        <option value="">Select</option>
-                        @foreach ($finishes as $f)
-                        <option value="{{ $f->id }}">{{ $f->finish_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Order Qty</label>
-                    <input type="number" class="form-control" id="order_qty" min="1" value="" placeholder="Order Qty" readonly>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Remark</label>
-                    <input type="text" class="form-control" id="remark" placeholder="Remark">
-                </div>
-                {{-- PALLET SECTION --}}
-                <div id="palletSection" style="border:1px dashed #ccc; padding:12px; border-radius:8px; margin-top:15px;">
-                    <div id="palletWrapper">
-                        <div class="row g-3 pallet-row">
-                            <div class="col-md-3">
-                                <label class="form-label">Box / Pallet</label>
-                                <input type="number" class="form-control box_pallet" oninput="calculatePalletRowTotal(this);" placeholder="Box Per Pallet">  
+                    {{-- Order Information Section --}}
+                    <div class="mb-5">
+                        <h5 class="fw-bold text-dark mb-4 border-start border-4 border-primary ps-3">Order Information</h5>
+                        <div class="row g-4">
+                            <div class="col-md-6 col-lg-3">
+                                <label for="po" class="form-label fw-semibold text-secondary small text-uppercase">PO Number <span class="text-danger">*</span></label>
+                                <div class="input-group input-group-lg shadow-sm">
+                                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-hash"></i></span>
+                                    <input type="text" class="form-control border-start-0 bg-white" id="po" name="po" required value="{{ old('po') }}" placeholder="Ex: PO-2024-001">
+                                </div>
                             </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Total Pallet</label>
-                                <input type="number" class="form-control total_pallet" oninput="calculatePalletRowTotal(this);" placeholder="Total Pallet">
+                            <div class="col-md-6 col-lg-3">
+                                <label for="party_id" class="form-label fw-semibold text-secondary small text-uppercase">Party Name <span class="text-danger">*</span></label>
+                                <select class="form-select form-select-lg select2 shadow-sm" id="party_id" name="party_id" required>
+                                    <option value="">Select Party</option>
+                                    @foreach ($parties as $p)
+                                    <option value="{{ $p->id }}" {{ old('party_id') == $p->id ? 'selected' : '' }}>
+                                        {{ $p->party_name }}
+                                    </option>
+                                    @endforeach
+                                </select>
                             </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Total Boxes (Pallet)</label>
-                                <input type="number" class="form-control total_boxe_pallets" placeholder="Total Boxes (Pallet)" readonly>
+                            <div class="col-md-6 col-lg-3">
+                                <label for="brand_name" class="form-label fw-semibold text-secondary small text-uppercase">Brand Name</label>
+                                <div class="input-group input-group-lg shadow-sm">
+                                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-tag"></i></span>
+                                    <input type="text" class="form-control border-start-0 bg-white" id="brand_name" name="brand_name" placeholder="Enter Brand" value="{{ old('brand_name') }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <label for="order_date" class="form-label fw-semibold text-secondary small text-uppercase">Order Date <span class="text-danger">*</span></label>
+                                <div class="input-group input-group-lg shadow-sm">
+                                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-calendar-event"></i></span>
+                                    <input type="date" class="form-control border-start-0 bg-white" id="order_date" name="order_date" value="{{ old('order_date', date('Y-m-d')) }}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                             <div class="col-md-6">
+                                <label for="box_image" class="form-label fw-semibold text-secondary small text-uppercase">Upload Box Image</label>
+                                <div class="p-4 border rounded-3 bg-light text-center position-relative upload-zone">
+                                    <input type="file" name="box_image" id="box_image" class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer" accept="image/*" onchange="previewBoxImage(event)">
+                                    <div id="uploadPrompt">
+                                        <i class="bi bi-cloud-arrow-up fs-1 text-primary mb-3 opacity-50"></i>
+                                        <p class="mb-0 text-muted fw-medium">Drag & Drop or Click to Upload</p>
+                                    </div>
+                                    <img id="boxImagePreview" src="" class="img-fluid rounded shadow-sm mt-3" style="max-height: 150px; display:none;">
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-2 d-flex align-items-end mt-2">
-                        <button type="button" id="addMorePalletBtn" class="btn btn-dark btn-sm">
-                            + Add More
+
+                    <div class="border-top my-5"></div>
+
+                    {{-- Item Entry Section --}}
+                    <div class="bg-white p-4 rounded-4 shadow-sm mb-5 border border-light-subtle">
+                        <h5 class="fw-bold text-dark mb-4 ps-2 border-start border-4 border-primary"><i class="bi bi-box-seam text-primary me-2"></i> Add Order Items</h5>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold text-muted small">Design</label>
+                                <select class="form-select form-select-lg shadow-sm bg-light border-0" id="design_id">
+                                    <option value="">Select</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold text-muted small">Size</label>
+                                <select class="form-select form-select-lg shadow-sm bg-light border-0" id="size_id">
+                                    <option value="">Select</option>
+                                    @foreach ($sizes as $s)
+                                    <option value="{{ $s->id }}">{{ $s->size_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold text-muted small">Finish</label>
+                                <select class="form-select form-select-lg shadow-sm bg-light border-0" id="finish_id">
+                                    <option value="">Select</option>
+                                    @foreach ($finishes as $f)
+                                    <option value="{{ $f->id }}">{{ $f->finish_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                             <div class="col-md-3">
+                                <label class="form-label fw-semibold text-muted small">Remark</label>
+                                <input type="text" class="form-control form-control-lg shadow-sm bg-light border-0" id="remark" placeholder="Optional remark">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold text-muted small">Total Order Qty</label>
+                                <input type="number" class="form-control form-control-lg shadow-sm bg-white border border-primary font-monospace fw-bold text-primary" id="order_qty" min="1" value="" placeholder="Calculated from pallets..." readonly>
+                            </div>
+                        </div>
+
+                        {{-- Pallet Configuration Sub-Section --}}
+                        <div class="p-4 bg-light rounded-4 border border-light-subtle">
+                             <label class="form-label fw-bold text-dark mb-3 small text-uppercase letter-spacing-1">Pallet Configuration</label>
+                            
+                             <div id="palletWrapper">
+                                <div class="row g-2 pallet-row mb-2 align-items-center">
+                                    <div class="col-md-3">
+                                        <div class="form-floating">
+                                            <input type="number" class="form-control box_pallet bg-white border-0 shadow-sm" oninput="calculatePalletRowTotal(this);" placeholder="0">
+                                            <label>Box / Pallet</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                         <div class="form-floating">
+                                            <input type="number" class="form-control total_pallet bg-white border-0 shadow-sm" oninput="calculatePalletRowTotal(this);" placeholder="0">
+                                            <label>Total Pallet</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                         <div class="form-floating">
+                                            <input type="number" class="form-control total_boxe_pallets bg-secondary bg-opacity-10 border-0 fw-bold text-dark shadow-sm" placeholder="0" readonly>
+                                            <label>Total Boxes</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                         <button type="button" class="btn btn-outline-danger w-100 h-100 py-3 removePallet rounded-3 shadow-sm">
+                                            <i class="bi bi-x-lg"></i>
+                                         </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3 text-center">
+                                <button type="button" id="addMorePalletBtn" class="btn btn-outline-primary btn-sm rounded-pill px-4 shadow-sm">
+                                    <i class="bi bi-plus-lg me-1"></i> Add Another Pallet Size
+                                </button>
+                            </div>
+                        </div>
+
+                         <div class="row mt-4">
+                            <div class="col-12 text-end">
+                                <button type="button" class="btn btn-dark btn-lg px-5 rounded-pill shadow-sm hover-elevate" id="addItemBtn">
+                                    <i class="bi bi-plus-circle me-2"></i> Add Item to Order
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Items Table --}}
+                    <div class="mb-5">
+                        <h5 class="fw-bold text-dark border-start border-4 border-success ps-3 mb-3">Review Order Items</h5>
+                        <div class="table-responsive rounded-4 shadow-sm border bg-white">
+                            <table class="table table-hover mb-0 align-middle" id="itemsTable">
+                                <thead class="bg-light">
+                                    <tr class="text-uppercase small text-secondary">
+                                        <th class="py-3 ps-4">Design / Size / Finish</th>
+                                        <th class="py-3">Order Qty</th>
+                                        <th class="py-3">Remark</th>
+                                        <th class="py-3 text-end pe-4">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr id="emptyRowPlaceholder">
+                                        <td colspan="4" class="text-center py-5 text-muted">
+                                            <i class="bi bi-clipboard-x fs-1 mb-3 opacity-25"></i>
+                                            <p>No items added yet. Please add items from the section above.</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="order_items" id="order_items">
+
+                    <div class="d-flex justify-content-end gap-3 mt-5 pb-4">
+                        <a href="{{ route('orders.index') }}" class="btn btn-light btn-lg px-4 border rounded-pill text-secondary fw-medium hover-bg-gray">Cancel</a>
+                        <button type="submit" class="btn btn-success btn-lg px-5 shadow fw-bold rounded-pill transition-all">
+                            <i class="bi bi-check2-circle me-2"></i> Create Order
                         </button>
                     </div>
-                </div>
-                <div class="col-md-2 text-end">
-                    <button type="button" class="btn btn-primary w-100" id="addItemBtn">Add</button>
-                </div>
+                </form>
             </div>
-
-            <hr>
-
-            {{-- Items Table --}}
-            <h5 class="fw-semibold text-primary">Order Items</h5>
-            <table class="table table-bordered table-striped mt-3 align-middle" id="itemsTable">
-                <thead class="table-light">
-                    <tr>
-                        <th>Design</th>
-                        <th>Size</th>
-                        <th>Finish</th>
-                        <th>Order Qty</th>
-                        <th>Remark</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-
-            <input type="hidden" name="order_items" id="order_items">
-
-            <div class="mt-4 text-end">
-                <button type="submit" class="btn btn-success px-4">Save Order</button>
-                <a href="{{ route('orders.index') }}" class="btn btn-secondary ms-2">Back</a>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
+
 @endsection
 
 @push('scripts')
