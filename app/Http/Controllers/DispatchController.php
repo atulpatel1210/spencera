@@ -74,7 +74,7 @@ class DispatchController extends Controller
                     return $dispatch->batch->batch_no ?? 'N/A';
                 })
                 ->addColumn('actions', function (Dispatch $dispatch) {
-                    return "<a href='" . route('dispatches.show', $dispatch->id) . "' class='btn btn-sm btn-info'>View</a>";
+                    return "<a href='" . route('dispatches.show', $dispatch->id) . "' title='View' class='btn btn-sm btn-outline-info rounded-circle'><i class='bi bi-eye'></i></a>";
                 })
                 // ->addColumn('actions', function (Dispatch $dispatch) {
                 //     // You can add edit/delete actions here if needed

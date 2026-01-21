@@ -1,91 +1,110 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="card">
-    <div class="card-header">
-        <h4>Edit Party</h4>
-    </div>
-    <div class="card-body">
-        <form action="{{ route('parties.update', $party->id) }}" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="row g-3">
-                <div class="col-md-6 mb-3">
-                    <label for="party_name" class="form-label">Party Name</label>
-                    <input type="text" class="form-control @error('party_name') is-invalid @enderror" id="party_name" name="party_name" value="{{ old('party_name', $party->party_name) }}" required autofocus>
-                    @error('party_name')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
+<div class="container-fluid px-4">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-primary">
+                        <i class="bi bi-pencil-square me-2"></i> Edit Party
+                    </h5>
+                    <a href="{{ route('parties.index') }}" class="btn btn-outline-secondary rounded-pill shadow-sm px-4">
+                        <i class="bi bi-arrow-left me-1"></i> Back to List
+                    </a>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label for="party_type" class="form-label">Party Type</label>
-                    <input type="text" class="form-control @error('party_type') is-invalid @enderror" id="party_type" name="party_type" value="{{ old('party_type', $party->party_type) }}">
-                    @error('party_type')
-                        <div class="invalid-feedback">
-                            {{ $message }}
+            
+            <div class="card-body p-4 p-md-5">
+                <form action="{{ route('parties.update', $party->id) }}" method="POST" class="needs-validation" novalidate>
+                    @csrf
+                    @method('PUT')
+                    
+                    <h6 class="fw-bold text-dark mb-4 border-start border-4 border-primary ps-3">Basic Information</h6>
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Party Name <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-building"></i></span>
+                                <input type="text" class="form-control border-start-0 bg-light @error('party_name') is-invalid @enderror" id="party_name" name="party_name" value="{{ old('party_name', $party->party_name) }}" required>
+                                @error('party_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
                         </div>
-                    @enderror
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="contact_person" class="form-label">Contact Person</label>
-                    <input type="text" class="form-control @error('contact_person') is-invalid @enderror" id="contact_person" name="contact_person" value="{{ old('contact_person', $party->contact_person) }}">
-                    @error('contact_person')
-                        <div class="invalid-feedback">
-                            {{ $message }}
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Party Type</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-bookmarks"></i></span>
+                                <select class="form-select border-start-0 bg-light @error('party_type') is-invalid @enderror" id="party_type" name="party_type">
+                                    <option value="">Select Type</option>
+                                    <option value="Export" {{ old('party_type', $party->party_type) == 'Export' ? 'selected' : '' }}>Export</option>
+                                    <option value="Job Work" {{ old('party_type', $party->party_type) == 'Merchant' ? 'selected' : '' }}>Merchant</option>
+                                </select>
+                                @error('party_type') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
                         </div>
-                    @enderror
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $party->email) }}">
-                    @error('email')
-                        <div class="invalid-feedback">
-                            {{ $message }}
+                         <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">GST Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-receipt"></i></span>
+                                <input type="text" class="form-control border-start-0 bg-light @error('gst_no') is-invalid @enderror" id="gst_no" name="gst_no" value="{{ old('gst_no', $party->gst_no) }}">
+                                @error('gst_no') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
                         </div>
-                    @enderror
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="contact_no" class="form-label">Contact No</label>
-                    <input type="text" class="form-control @error('contact_no') is-invalid @enderror" id="contact_no" name="contact_no" value="{{ old('contact_no', $party->contact_no) }}">
-                    @error('contact_no')
-                        <div class="invalid-feedback">
-                            {{ $message }}
+                    </div>
+
+                    <h6 class="fw-bold text-dark mb-4 border-start border-4 border-success ps-3 mt-5">Contact Details</h6>
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Contact Person</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control border-start-0 bg-light @error('contact_person') is-invalid @enderror" id="contact_person" name="contact_person" value="{{ old('contact_person', $party->contact_person) }}">
+                                @error('contact_person') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
                         </div>
-                    @enderror
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="mobile_no" class="form-label">Mobile No</label>
-                    <input type="text" class="form-control @error('mobile_no') is-invalid @enderror" id="mobile_no" name="mobile_no" value="{{ old('mobile_no', $party->mobile_no) }}">
-                    @error('mobile_no')
-                        <div class="invalid-feedback">
-                            {{ $message }}
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control border-start-0 bg-light @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $party->email) }}">
+                                @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
                         </div>
-                    @enderror
-                </div>
-                <div class="col-md-12 mb-3">
-                    <label for="address" class="form-label">Address</label>
-                    <textarea class="form-control @error('address') is-invalid @enderror" id="address" name="address" rows="3">{{ old('address', $party->address) }}</textarea>
-                    @error('address')
-                        <div class="invalid-feedback">
-                            {{ $message }}
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Contact No</label>
+                             <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-telephone"></i></span>
+                                <input type="text" class="form-control border-start-0 bg-light @error('contact_no') is-invalid @enderror" id="contact_no" name="contact_no" value="{{ old('contact_no', $party->contact_no) }}">
+                                @error('contact_no') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
                         </div>
-                    @enderror
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="gst_no" class="form-label">GST No</label>
-                    <input type="text" class="form-control @error('gst_no') is-invalid @enderror" id="gst_no" name="gst_no" value="{{ old('gst_no', $party->gst_no) }}">
-                    @error('gst_no')
-                        <div class="invalid-feedback">
-                            {{ $message }}
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Mobile No</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-phone"></i></span>
+                                <input type="text" class="form-control border-start-0 bg-light @error('mobile_no') is-invalid @enderror" id="mobile_no" name="mobile_no" value="{{ old('mobile_no', $party->mobile_no) }}">
+                                @error('mobile_no') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
                         </div>
-                    @enderror
-                </div>
+                         <div class="col-12">
+                            <label class="form-label fw-semibold text-secondary small text-uppercase">Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-geo-alt"></i></span>
+                                <textarea class="form-control border-start-0 bg-light @error('address') is-invalid @enderror" id="address" name="address" rows="3">{{ old('address', $party->address) }}</textarea>
+                                @error('address') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-5 pt-3 border-top">
+                        <a href="{{ route('parties.index') }}" class="btn btn-light btn-lg px-4 border fw-medium">Cancel</a>
+                        <button type="submit" class="btn btn-primary btn-lg px-5 shadow fw-bold">
+                            <i class="bi bi-check-lg me-2"></i> Update Party
+                        </button>
+                    </div>
+                </form>
             </div>
-            <button type="submit" class="btn btn-success mt-3">Update Party</button>
-            <a href="{{ route('parties.index') }}" class="btn btn-secondary mt-3">Back to List</a>
-        </form>
+        </div>
     </div>
+</div>
 </div>
 @endsection

@@ -131,20 +131,20 @@ class PurchaseOrderController extends Controller
                     $csrf = csrf_field();
                     $method = method_field('DELETE');
                     return "
-                        <a href='{$viewUrl}' title='View' class='btn btn-sm text-secondary'>
-                            <i class='fa fa-eye fa-fw fa-lg'></i>
+                        <a href='{$viewUrl}' title='View' class='btn btn-sm btn-outline-secondary rounded-circle'>
+                            <i class='bi bi-eye'></i>
                         </a>
-                        <a href='{$editUrl}' title='Edit' class='btn btn-sm text-primary'>
-                            <i class='fa fa-edit fa-fw fa-lg'></i>
+                        <a href='{$editUrl}' title='Edit' class='btn btn-sm btn-outline-primary rounded-circle'>
+                            <i class='bi bi-pencil'></i>
                         </a>
-                        <a href='{$printUrl}' title='Print PO' target='_blank' class='btn btn-sm text-info'>
-                            <i class='fa fa-print fa-fw fa-lg'></i>
+                        <a href='{$printUrl}' title='Print PO' target='_blank' class='btn btn-sm btn-outline-info rounded-circle'>
+                            <i class='bi bi-printer'></i>
                         </a>
-                        <form action='{$deleteUrl}' method='POST' class='d-inline' onsubmit=\"return confirm('Are you sure you want to delete this order?')\" style='display:inline-block;vertical-align:middle;margin-right:0;'>
+                        <form action='{$deleteUrl}' method='POST' class='d-inline' onsubmit=\"return confirm('Are you sure you want to delete this order?')\" style='display:inline-block;'>
                             {$csrf}
                             {$method}
-                            <button type='submit' title='Delete' class='btn btn-sm text-danger'>
-                                <i class='fa fa-trash fa-fw fa-lg'></i>
+                            <button type='submit' title='Delete' class='btn btn-sm btn-outline-danger rounded-circle'>
+                                <i class='bi bi-trash'></i>
                             </button>
                         </form>
                     ";
@@ -341,12 +341,12 @@ class PurchaseOrderController extends Controller
                 })
                 ->addColumn('actions', function (PurchaseOrderItem $item) {
                     $planningBtn = $item->pending_qty > 0
-                        ? "<button class='btn btn-sm btn-outline-info openModal' data-id='{$item->id}' data-type='planning'>Planning</button>"
-                        : "<button class='btn btn-sm btn-outline-info disabled' disabled>Planning</button>";
+                        ? "<button class='btn btn-sm btn-outline-info rounded-circle openModal' data-id='{$item->id}' data-type='planning' title='Planning'><i class='bi bi-calendar-check'></i></button>"
+                        : "<button class='btn btn-sm btn-outline-secondary rounded-circle disabled' disabled title='Planning'><i class='bi bi-calendar-check'></i></button>";
 
                     $productionBtn = $item->planning_qty > 0
-                        ? "<button class='btn btn-sm btn-outline-primary openModal' data-id='{$item->id}' data-type='production'>Production</button>"
-                        : "<button class='btn btn-sm btn-outline-primary disabled' disabled>Production</button>";
+                        ? "<button class='btn btn-sm btn-outline-primary rounded-circle openModal' data-id='{$item->id}' data-type='production' title='Production'><i class='bi bi-gear'></i></button>"
+                        : "<button class='btn btn-sm btn-outline-secondary rounded-circle disabled' disabled title='Production'><i class='bi bi-gear'></i></button>";
 
                     return "<div class='btn-group gap-2'>{$planningBtn}{$productionBtn}</div>";
                 })
