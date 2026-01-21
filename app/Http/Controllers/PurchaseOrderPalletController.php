@@ -42,22 +42,6 @@ class PurchaseOrderPalletController extends Controller
             ->addColumn('finish_detail.finish_name', function(PurchaseOrderPallet $pallet) {
                 return $pallet->finishDetail->finish_name ?? 'N/A';
             })
-            // ->addColumn('actions', function(PurchaseOrderPallet $pallet) {
-            //     $editUrl = route('purchase_order_pallets.edit', $pallet->id);
-            //     $deleteUrl = route('purchase_order_pallets.destroy', $pallet->id);
-            //     $csrf = csrf_field();
-            //     $method = method_field('DELETE');
-
-            //     return "
-            //         <a href='{$editUrl}' class='btn btn-sm btn-warning'>Edit</a>
-            //         <form action='{$deleteUrl}' method='POST' style='display:inline;'>
-            //             {$csrf}
-            //             {$method}
-            //             <button type='submit' onclick=\"return confirm('Are you sure?')\" class='btn btn-sm btn-danger'>Del</button>
-            //         </form>
-            //     ";
-            // })
-            // ->rawColumns(['actions']) // Important: tells Datatables to render 'actions' as raw HTML
             ->toJson();
     }
 
@@ -165,7 +149,6 @@ class PurchaseOrderPalletController extends Controller
             $partyId = $purchaseOrder->party_id;
 
             // We need to track total quantities per Order Item to ensure we don't over-produce (optional validation)
-            $productionQuantitiesCheck = [];
 
             // Group incoming pallet quantities by PurchaseOrderItem to validate total production limits
             $incomingQuantities = [];
