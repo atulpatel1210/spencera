@@ -7,10 +7,10 @@
             <div class="card shadow-lg border-0 rounded-4">
                 <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 fw-bold text-primary">
-                        <i class="bi bi-pencil-square me-2"></i> Edit Dispatch (ID: {{ $dispatch->id }})
+                        <i class="fas fa-edit me-2"></i> Edit Dispatch (ID: {{ $dispatch->id }})
                     </h5>
                     <a href="{{ route('dispatches.index') }}" class="btn btn-outline-secondary rounded-pill shadow-sm px-4">
-                        <i class="bi bi-arrow-left me-1"></i> Back to List
+                        <i class="fas fa-arrow-left me-1"></i> Back to List
                     </a>
                 </div>
 
@@ -141,8 +141,8 @@
 
                         <div class="d-flex justify-content-end gap-3 mt-4">
                             <a href="{{ route('dispatches.index') }}" class="btn btn-light btn-lg px-4 border rounded-pill text-secondary fw-medium hover-bg-gray">Cancel</a>
-                            <button type="submit" class="btn btn-warning btn-lg px-5 shadow fw-bold rounded-pill transition-all text-white">
-                                <i class="bi bi-check-circle me-2"></i> Update Dispatch
+                            <button type="submit" class="btn btn-primary btn-lg px-5 shadow fw-bold rounded-pill">
+                                <i class="fas fa-save me-2"></i> Update Dispatch
                             </button>
                         </div>
                     </form>

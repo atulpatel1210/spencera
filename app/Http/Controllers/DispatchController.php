@@ -56,7 +56,8 @@ class DispatchController extends Controller
                     return $dispatch->party->party_name ?? 'N/A';
                 })
                 ->addColumn('po_number', function (Dispatch $dispatch) {
-                    return $dispatch->purchaseOrder->po ?? 'N/A';
+                    $poValue = $dispatch->purchaseOrder->po ?? 'N/A';
+                    return "<span class='po-number'>{$poValue}</span>";
                 })
                 ->addColumn('item_details', function (Dispatch $dispatch) {
                     $item = $dispatch->purchaseOrderItem;
@@ -74,7 +75,7 @@ class DispatchController extends Controller
                     return $dispatch->batch->batch_no ?? 'N/A';
                 })
                 ->addColumn('actions', function (Dispatch $dispatch) {
-                    return "<a href='" . route('dispatches.show', $dispatch->id) . "' title='View' class='btn btn-sm btn-outline-info rounded-circle'><i class='bi bi-eye'></i></a>";
+                    return "<a href='" . route('dispatches.show', $dispatch->id) . "' title='View' class='btn-action text-info'><i class='fas fa-eye'></i></a>";
                 })
                 // ->addColumn('actions', function (Dispatch $dispatch) {
                 //     // You can add edit/delete actions here if needed
@@ -87,7 +88,7 @@ class DispatchController extends Controller
                 //         </form>
                 //     ";
                 // })
-                ->rawColumns(['actions'])
+                ->rawColumns(['actions', 'po_number'])
                 ->toJson();
         } catch (Exception $e) {
             \Log::error("Yajra DataTables error in getDispatchesData: " . $e->getMessage(), ['exception' => $e]);

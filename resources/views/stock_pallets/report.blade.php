@@ -130,18 +130,20 @@ $(function() {
             }
         },
         columns: [
-            { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'ps-4 fw-medium text-secondary' },
-            { data: 'party_id', name: 'party_id', className: 'fw-bold text-dark' },
-            { data: 'po', name: 'po', className: 'text-primary' },
-            { data: 'design', name: 'design' },
-            { data: 'size', name: 'size' },
-            { data: 'finish', name: 'finish' },
+            { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className: 'ps-4 fw-bold text-muted' },
+            { data: 'party_id', name: 'party_id', className: 'fw-semibold' },
+            { data: 'po_number', name: 'po' },
+            { data: 'design_id', name: 'design_id' },
+            { data: 'size_id', name: 'size_id' },
+            { data: 'finish_id', name: 'finish_id' },
             { data: 'pallet_size', name: 'pallet_size', className: 'text-center' },
             { data: 'pallet_no', name: 'pallet_no', className: 'text-center' },
             { data: 'current_qty', name: 'current_qty', className: 'fw-bold text-success text-center' },
-            { data: 'remark', name: 'remark', className: 'small text-muted text-truncate' },
+            { data: 'remark', name: 'remark', className: 'small text-muted text-truncate', width: '10%' },
         ],
-        dom: '<"d-flex justify-content-between align-items-center m-3"l<"d-flex align-items-center gap-2"f>>t<"d-flex justify-content-between align-items-center m-3"ip>',
+        dom: '<"d-flex justify-content-between align-items-center m-3"l<"d-flex align-items-center gap-2"f>>' +
+             '<"table-scroll-container"t>' + 
+             '<"d-flex justify-content-between align-items-center m-3"ip>',
         language: {
             search: "",
             searchPlaceholder: "Search report...",

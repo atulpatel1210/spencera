@@ -22,25 +22,25 @@ class FinishController extends Controller
 
         return DataTables::of($query)
             ->addIndexColumn()
-            ->addColumn('actions', function(Finish $finish) {
-                $editUrl = route('finishes.edit', $finish->id);
-                $deleteUrl = route('finishes.destroy', $finish->id);
-                $csrf = csrf_field();
-                $method = method_field('DELETE');
+                ->addColumn('actions', function(Finish $finish) {
+                    $editUrl = route('finishes.edit', $finish->id);
+                    $deleteUrl = route('finishes.destroy', $finish->id);
+                    $csrf = csrf_field();
+                    $method = method_field('DELETE');
 
-                return "
-                    <a href='{$editUrl}' title='Edit' class='btn btn-sm btn-outline-primary rounded-circle'>
-                        <i class='bi bi-pencil'></i>
-                    </a>
-                    <form action='{$deleteUrl}' method='POST' class='d-inline' onsubmit=\"return confirm('Are you sure you want to delete this finish?')\" style='display:inline-block;'>
-                        {$csrf}
-                        {$method}
-                        <button type='submit' title='Delete' class='btn btn-sm btn-outline-danger rounded-circle'>
-                            <i class='bi bi-trash'></i>
-                        </button>
-                    </form>
-                ";
-            })
+                    return "
+                        <a href='{$editUrl}' title='Edit' class='btn-action text-primary'>
+                            <i class='fas fa-edit'></i>
+                        </a>
+                        <form action='{$deleteUrl}' method='POST' class='d-inline' onsubmit=\"return confirm('Are you sure you want to delete this finish?')\">
+                            {$csrf}
+                            {$method}
+                            <button type='submit' title='Delete' class='btn-action text-danger border-0 bg-transparent'>
+                                <i class='fas fa-trash-alt'></i>
+                            </button>
+                        </form>
+                    ";
+                })
             ->rawColumns(['actions'])
             ->toJson();
     }

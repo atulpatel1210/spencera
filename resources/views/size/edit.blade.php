@@ -7,10 +7,10 @@
             <div class="card shadow-lg border-0 rounded-4">
                 <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 fw-bold text-primary">
-                        <i class="bi bi-aspect-ratio me-2"></i> Edit Size
+                        <i class="fas fa-ruler-combined me-2"></i> Edit Size
                     </h5>
                     <a href="{{ route('sizes.index') }}" class="btn btn-outline-secondary rounded-pill shadow-sm px-4">
-                        <i class="bi bi-arrow-left me-1"></i> Back to List
+                        <i class="fas fa-arrow-left me-1"></i> Back to List
                     </a>
                 </div>
                 
@@ -22,7 +22,7 @@
                         <div class="mb-4">
                             <label class="form-label fw-semibold text-secondary small text-uppercase">Size Name <span class="text-danger">*</span></label>
                             <div class="input-group input-group-lg">
-                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-rulers"></i></span>
+                                <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-ruler-horizontal"></i></span>
                                 <input type="text" 
                                        class="form-control border-start-0 bg-light shadow-sm @error('size_name') is-invalid @enderror" 
                                        name="size_name"
@@ -36,11 +36,11 @@
                         </div>
 
                         <div class="d-flex justify-content-end gap-2 mt-5">
-                            <a href="{{ route('sizes.index') }}" class="btn btn-light border rounded-pill px-4 fw-medium text-secondary hover-bg-gray">
-                                <i class="bi bi-x-circle me-1"></i> Cancel
+                            <a href="{{ route('sizes.index') }}" class="btn btn-light border rounded-pill px-4 fw-medium text-secondary">
+                                <i class="fas fa-times-circle me-1"></i> Cancel
                             </a>
-                            <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm fw-bold transition-all">
-                                <i class="bi bi-check-lg me-1"></i> Update Size
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm fw-bold">
+                                <i class="fas fa-save me-1"></i> Update Size
                             </button>
                         </div>
                     </form>

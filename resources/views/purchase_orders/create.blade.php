@@ -7,10 +7,10 @@
             <div class="card-header bg-white py-3 px-4 border-bottom">
                 <div class="d-flex justify-content-between align-items-center">
                     <h4 class="mb-0 fw-bold text-primary display-6 fs-4">
-                        <i class="bi bi-cart-plus me-2"></i> Create New Order
+                        <i class="fas fa-shopping-cart me-2"></i> Create New Order
                     </h4>
                     <a href="{{ route('orders.index') }}" class="btn btn-outline-secondary rounded-pill shadow-sm px-4">
-                        <i class="bi bi-arrow-left me-1"></i> Back to List
+                        <i class="fas fa-arrow-left me-1"></i> Back to List
                     </a>
                 </div>
             </div>
@@ -200,8 +200,8 @@
 
                     <div class="d-flex justify-content-end gap-3 mt-5 pb-4">
                         <a href="{{ route('orders.index') }}" class="btn btn-light btn-lg px-4 border rounded-pill text-secondary fw-medium hover-bg-gray">Cancel</a>
-                        <button type="submit" class="btn btn-success btn-lg px-5 shadow fw-bold rounded-pill transition-all">
-                            <i class="bi bi-check2-circle me-2"></i> Create Order
+                        <button type="submit" class="btn btn-primary btn-lg px-5 shadow fw-bold rounded-pill">
+                            <i class="fas fa-save me-2"></i> Create Order
                         </button>
                     </div>
                 </form>
