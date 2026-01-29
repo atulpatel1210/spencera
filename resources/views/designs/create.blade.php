@@ -1,104 +1,124 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid px-4">
+<div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-12">
-            <div class="card shadow-lg border-0 rounded-4">
+        <div class="col-12 col-xl-10">
+            <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 fw-bold text-primary">
-                        <i class="bi bi-palette-fill me-2"></i> {{ isset($design) ? 'Edit' : 'Add New' }} Design
+                        <i class="fas fa-drafting-compass me-2"></i> {{ isset($design) ? 'Edit' : 'Add New' }} Design
                     </h5>
                     <a href="{{ route('designs.index') }}" class="btn btn-outline-secondary rounded-pill shadow-sm px-4">
-                        <i class="bi bi-arrow-left me-1"></i> Back to List
+                        <i class="fas fa-arrow-left me-1"></i> Back to List
                     </a>
                 </div>
-            <div class="card-body p-4 p-md-5">
-                <form action="{{ isset($design) ? route('designs.update', $design) : route('designs.store') }}" 
-                      method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
-                    @csrf
-                    @if(isset($design)) @method('PUT') @endif
+                <div class="card-body p-4 p-md-5">
+                    <form action="{{ isset($design) ? route('designs.update', $design) : route('designs.store') }}" 
+                          method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        @csrf
+                        @if(isset($design)) @method('PUT') @endif
 
-                    <div class="row g-4">
-                        {{-- Party Selection --}}
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold text-secondary small text-uppercase">Party Name <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-people"></i></span>
-                                <select name="party_id" id="party_id" class="form-select border-start-0 bg-light select2 @error('party_id') is-invalid @enderror" required>
-                                    <option value="">Select Party</option>
-                                    @foreach($parties as $party)
-                                        <option value="{{ $party->id }}" 
-                                            {{ old('party_id', $design->party_id ?? '') == $party->id ? 'selected' : '' }}>
-                                            {{ $party->party_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('party_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        <div class="row g-4">
+                            {{-- Party Selection --}}
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-uppercase">Party Name <span class="text-danger">*</span></label>
+                                <div class="input-group shadow-sm">
+                                    <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
+                                    <select name="party_id" id="party_id" class="form-select select2 @error('party_id') is-invalid @enderror" required>
+                                        <option value="">Select Party</option>
+                                        @foreach($parties as $party)
+                                            <option value="{{ $party->id }}" 
+                                                {{ old('party_id', $design->party_id ?? '') == $party->id ? 'selected' : '' }}>
+                                                {{ $party->party_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('party_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                </div>
                             </div>
-                        </div>
 
-                        {{-- Design Name --}}
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold text-secondary small text-uppercase">Design Name <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-tag"></i></span>
-                                <input type="text" name="name" value="{{ old('name', $design->name ?? '') }}"
-                                       class="form-control border-start-0 bg-light @error('name') is-invalid @enderror" placeholder="Enter design name" required>
-                                @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            {{-- Design Name --}}
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-uppercase">Design Name <span class="text-danger">*</span></label>
+                                <div class="input-group shadow-sm">
+                                    <span class="input-group-text"><i class="fas fa-signature"></i></span>
+                                    <input type="text" name="name" value="{{ old('name', $design->name ?? '') }}"
+                                           class="form-control @error('name') is-invalid @enderror" placeholder="Enter design name" required>
+                                    @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                </div>
                             </div>
-                        </div>
 
-                        {{-- Image Upload Section --}}
-                        <div class="col-12">
-                             <label class="form-label fw-semibold text-secondary small text-uppercase mb-3">Design Image</label>
-                             <div class="row">
-                                 <div class="col-md-8">
-                                    <div class="p-4 border border-2 border-dashed rounded-3 bg-light text-center position-relative hover-shadow transition-all" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
-                                        <input type="file" name="image" id="image" 
-                                                class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer @error('image') is-invalid @enderror" 
-                                                accept="image/*" onchange="previewImage(event)">
-                                        
-                                        <div class="text-center" id="uploadPlaceholder" style="{{ isset($design->image) ? 'display:none;' : '' }}">
-                                            <i class="bi bi-cloud-arrow-up text-primary" style="font-size: 3rem;"></i>
-                                            <p class="mb-1 fw-bold text-dark mt-2">Click or Drop Image Here</p>
-                                            <small class="text-muted">Supported formats: JPG, PNG, JPEG</small>
+                            {{-- Image Upload Section --}}
+                            <div class="col-12">
+                                 <label class="form-label fw-bold small text-uppercase mb-3">Design Image</label>
+                                 <div class="row g-4">
+                                     <div class="col-md-7">
+                                        <div class="upload-zone p-4 border border-2 border-dashed rounded-lg bg-light text-center position-relative transition-all" 
+                                             style="min-height: 250px; display: flex; align-items: center; justify-content: center;">
+                                            <input type="file" name="image" id="image" 
+                                                    class="position-absolute top-0 start-0 w-100 h-100 opacity-0 cursor-pointer @error('image') is-invalid @enderror" 
+                                                    accept="image/*" onchange="previewImage(event)">
+                                            
+                                            <div id="uploadPlaceholder" class="text-center" style="{{ isset($design->image) ? 'display:none;' : '' }}">
+                                                <div class="mb-3">
+                                                    <i class="fas fa-cloud-arrow-up text-primary" style="font-size: 3.5rem;"></i>
+                                                </div>
+                                                <h6 class="fw-bold text-dark">Click or Drag Image Here</h6>
+                                                <p class="small text-muted mb-0">High resolution JPG or PNG recommended</p>
+                                            </div>
+
+                                            <img id="imagePreview" 
+                                                    src="{{ isset($design->image) ? asset('storage/designs/'.$design->image) : '' }}" 
+                                                    class="img-fluid rounded shadow" 
+                                                    style="max-height: 220px; {{ isset($design->image) ? '' : 'display:none;' }}">
                                         </div>
-
-                                        <img id="imagePreview" 
-                                                src="{{ isset($design->image) ? asset('storage/designs/'.$design->image) : '' }}" 
-                                                class="img-fluid rounded shadow-sm" 
-                                                style="max-height: 180px; {{ isset($design->image) ? '' : 'display:none;' }}">
-                                    </div>
-                                    @error('image') <div class="d-block text-danger mt-1 small">{{ $message }}</div> @enderror
+                                        @error('image') <div class="d-block text-danger mt-2 small"><i class="fas fa-exclamation-circle me-1"></i> {{ $message }}</div> @enderror
+                                     </div>
+                                     <div class="col-md-5">
+                                         <div class="card bg-light border-0 h-100">
+                                             <div class="card-body d-flex align-items-center">
+                                                 <div class="text-muted small">
+                                                     <p class="mb-2 fw-bold text-dark"><i class="fas fa-lightbulb text-warning me-1"></i> Tips for best results:</p>
+                                                     <ul class="mb-0 ps-3">
+                                                         <li>Use a flat-lay photo of the design</li>
+                                                         <li>Ensure good lighting without glares</li>
+                                                         <li>Keep the file size under 2MB</li>
+                                                     </ul>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
                                  </div>
-                                 <div class="col-md-4 d-flex align-items-center justify-content-center text-muted text-center p-3">
-                                     <small><i class="bi bi-info-circle me-1"></i> Upload a clear image of the design pattern for better identification.</small>
-                                 </div>
-                             </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="border-top my-4"></div>
+                        <div class="border-top my-5"></div>
 
-                    <div class="d-flex justify-content-end gap-2">
-                        <a href="{{ route('designs.index') }}" class="btn btn-light border px-4 fw-medium">Cancel</a>
-                        <button type="submit" class="btn btn-primary px-5 fw-bold shadow-sm">
-                            <i class="bi bi-check-lg me-1"></i> {{ isset($design) ? 'Update Design' : 'Save Design' }}
-                        </button>
-                    </div>
-                </form>
+                        <div class="d-flex justify-content-end gap-3">
+                            <a href="{{ route('designs.index') }}" class="btn btn-light border px-4 rounded-pill">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-5 shadow-sm fw-bold rounded-pill">
+                                <i class="fas fa-save me-2"></i> {{ isset($design) ? 'Update Design' : 'Save Design' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <style>
-    .transition-all { transition: all 0.3s ease; }
-    .hover-shadow:hover { background-color: #fff !important; border-color: #0d6efd !important; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1); }
-    .cursor-pointer { cursor: pointer; }
+    .upload-zone {
+        border-color: #cbd5e1 !important;
+    }
+    .upload-zone:hover {
+        background-color: #f1f5f9 !important;
+        border-color: #ef7c1b !important;
+    }
 </style>
 @endsection
+
 @push('scripts')
 <script>
 $(document).ready(function() {
@@ -108,10 +128,20 @@ $(document).ready(function() {
         width: '100%'
     });
 });
+
 function previewImage(event) {
     const output = document.getElementById('imagePreview');
-    output.src = URL.createObjectURL(event.target.files[0]);
-    output.style.display = 'block';
+    const placeholder = document.getElementById('uploadPlaceholder');
+    
+    if (event.target.files.length > 0) {
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.style.display = 'block';
+        placeholder.style.display = 'none';
+        
+        output.onload = function() {
+            URL.revokeObjectURL(output.src); 
+        }
+    }
 }
 </script>
 @endpush

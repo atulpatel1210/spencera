@@ -94,6 +94,9 @@ class StockPalletController extends Controller
 
         return DataTables::of($query)
             ->addIndexColumn()
+            ->addColumn('po_number', function ($row) {
+                return "<span class='po-number'>{$row->po}</span>";
+            })
             ->editColumn('party_id', function ($row) {
                 return $row->partyDetail->party_name ?? '-';
             })
@@ -106,6 +109,7 @@ class StockPalletController extends Controller
             ->editColumn('finish_id', function ($row) {
                 return $row->finishDetail->finish_name ?? '-';
             })
+            ->rawColumns(['po_number'])
             ->make(true);
     }
 

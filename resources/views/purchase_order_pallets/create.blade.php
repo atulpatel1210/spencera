@@ -6,9 +6,9 @@
         <div class="col-12 col-xxl-11">
             <div class="card shadow-lg border-0 rounded-4">
                 <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-boxes me-2"></i> Add Purchase Order Pallets</h5>
+                    <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-boxes me-2"></i> Add Purchase Order Pallets</h5>
                     <a href="{{ route('purchase_order_pallets.index') }}" class="btn btn-outline-secondary rounded-pill shadow-sm px-4">
-                        <i class="bi bi-arrow-left me-1"></i> Back to List
+                        <i class="fas fa-arrow-left me-1"></i> Back to List
                     </a>
                 </div>
 
@@ -175,8 +175,8 @@
 
                         <div class="d-flex justify-content-end gap-3 mt-5 pb-4">
                             <a href="{{ route('purchase_order_pallets.index') }}" class="btn btn-light btn-lg px-4 border rounded-pill text-secondary fw-medium hover-bg-gray">Cancel</a>
-                            <button type="submit" class="btn btn-success btn-lg px-5 shadow fw-bold rounded-pill transition-all" id="submitBtn">
-                                <i class="bi bi-check2-circle me-2"></i> Save Pallets
+                            <button type="submit" class="btn btn-primary btn-lg px-5 shadow fw-bold rounded-pill" id="submitBtn">
+                                <i class="fas fa-save me-2"></i> Save Pallets
                             </button>
                         </div>
                     </form>

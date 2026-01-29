@@ -123,6 +123,9 @@ class PurchaseOrderController extends Controller
                     }
                     return 'N/A';
                 })
+                ->addColumn('po_number', function (PurchaseOrder $order) {
+                    return "<span class='po-number'>{$order->po}</span>";
+                })
                 ->addColumn('actions', function (PurchaseOrder $order) {
                     $viewUrl = route('orders.show', $order->id);
                     $editUrl = route('orders.edit', $order->id);
@@ -131,25 +134,27 @@ class PurchaseOrderController extends Controller
                     $csrf = csrf_field();
                     $method = method_field('DELETE');
                     return "
-                        <a href='{$viewUrl}' title='View' class='btn btn-sm btn-outline-secondary rounded-circle'>
-                            <i class='bi bi-eye'></i>
-                        </a>
-                        <a href='{$editUrl}' title='Edit' class='btn btn-sm btn-outline-primary rounded-circle'>
-                            <i class='bi bi-pencil'></i>
-                        </a>
-                        <a href='{$printUrl}' title='Print PO' target='_blank' class='btn btn-sm btn-outline-info rounded-circle'>
-                            <i class='bi bi-printer'></i>
-                        </a>
-                        <form action='{$deleteUrl}' method='POST' class='d-inline' onsubmit=\"return confirm('Are you sure you want to delete this order?')\" style='display:inline-block;'>
-                            {$csrf}
-                            {$method}
-                            <button type='submit' title='Delete' class='btn btn-sm btn-outline-danger rounded-circle'>
-                                <i class='bi bi-trash'></i>
-                            </button>
-                        </form>
+                        <div class='btn-group gap-1'>
+                            <a href='{$viewUrl}' title='View' class='btn-action text-info'>
+                                <i class='fas fa-eye'></i>
+                            </a>
+                            <a href='{$editUrl}' title='Edit' class='btn-action text-primary'>
+                                <i class='fas fa-edit'></i>
+                            </a>
+                            <a href='{$printUrl}' title='Print PO' target='_blank' class='btn-action text-success'>
+                                <i class='fas fa-print'></i>
+                            </a>
+                            <form action='{$deleteUrl}' method='POST' class='d-inline' onsubmit=\"return confirm('Are you sure you want to delete this order?')\">
+                                {$csrf}
+                                {$method}
+                                <button type='submit' title='Delete' class='btn-action text-danger border-0 bg-transparent'>
+                                    <i class='fas fa-trash-alt'></i>
+                                </button>
+                            </form>
+                        </div>
                     ";
                 })
-                ->rawColumns(['actions', 'box_image'])
+                ->rawColumns(['actions', 'box_image', 'po_number'])
                 ->toJson();
         } catch (Exception $e) {
             \Log::error("Yajra DataTables error in getOrdersData: " . $e->getMessage(), ['exception' => $e]);
@@ -327,8 +332,8 @@ class PurchaseOrderController extends Controller
 
             return DataTables::of($query)
                 ->addIndexColumn()
-                ->addColumn('purchase_order.po', function (PurchaseOrderItem $item) {
-                    return $item->orderMaster->po ?? 'N/A';
+                ->addColumn('po_number', function (PurchaseOrderItem $item) {
+                    return "<span class='po-number'>{$item->po}</span>";
                 })
                 ->addColumn('design_detail.name', function (PurchaseOrderItem $item) {
                     return $item->designDetail->name ?? 'N/A';
@@ -341,16 +346,16 @@ class PurchaseOrderController extends Controller
                 })
                 ->addColumn('actions', function (PurchaseOrderItem $item) {
                     $planningBtn = $item->pending_qty > 0
-                        ? "<button class='btn btn-sm btn-outline-info rounded-circle openModal' data-id='{$item->id}' data-type='planning' title='Planning'><i class='bi bi-calendar-check'></i></button>"
-                        : "<button class='btn btn-sm btn-outline-secondary rounded-circle disabled' disabled title='Planning'><i class='bi bi-calendar-check'></i></button>";
+                        ? "<button class='btn-action text-info openModal' data-id='{$item->id}' data-type='planning' title='Planning'><i class='fas fa-tasks'></i></button>"
+                        : "<button class='btn-action text-muted disabled' disabled title='Planning'><i class='fas fa-tasks'></i></button>";
 
                     $productionBtn = $item->planning_qty > 0
-                        ? "<button class='btn btn-sm btn-outline-primary rounded-circle openModal' data-id='{$item->id}' data-type='production' title='Production'><i class='bi bi-gear'></i></button>"
-                        : "<button class='btn btn-sm btn-outline-secondary rounded-circle disabled' disabled title='Production'><i class='bi bi-gear'></i></button>";
+                        ? "<button class='btn-action text-primary openModal' data-id='{$item->id}' data-type='production' title='Production'><i class='fas fa-industry'></i></button>"
+                        : "<button class='btn-action text-muted disabled' disabled title='Production'><i class='fas fa-industry'></i></button>";
 
                     return "<div class='btn-group gap-2'>{$planningBtn}{$productionBtn}</div>";
                 })
-                ->rawColumns(['actions'])
+                ->rawColumns(['actions', 'po_number'])
                 ->toJson();
         } catch (Exception $e) {
             \Log::error("Yajra DataTables error in getOrderItemData: " . $e->getMessage(), ['exception' => $e]);

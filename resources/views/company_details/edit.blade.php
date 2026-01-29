@@ -6,7 +6,7 @@
         <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
             <div class="card-header bg-white py-3 px-4 border-bottom">
                 <h4 class="mb-0 fw-bold text-primary display-6 fs-4">
-                    <i class="bi bi-building-gear me-2"></i> Company Details (Manufacturer)
+                    <i class="fas fa-building me-2"></i> Company Details (Manufacturer)
                 </h4>
             </div>
             
@@ -105,8 +105,8 @@
                     </div>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-4 border-top">
-                        <button type="submit" class="btn btn-primary btn-lg px-5 shadow-lg rounded-pill fw-bold hover-scale">
-                            <i class="bi bi-save me-2"></i> Update Details
+                        <button type="submit" class="btn btn-primary btn-lg px-5 shadow rounded-pill fw-bold">
+                            <i class="fas fa-save me-2"></i> Update Details
                         </button>
                     </div>
                 </form>

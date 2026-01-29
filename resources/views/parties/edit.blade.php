@@ -7,10 +7,10 @@
             <div class="card shadow-lg border-0 rounded-4">
                 <div class="card-header bg-white py-3 px-4 border-bottom d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 fw-bold text-primary">
-                        <i class="bi bi-pencil-square me-2"></i> Edit Party
+                        <i class="fas fa-edit me-2"></i> Edit Party
                     </h5>
                     <a href="{{ route('parties.index') }}" class="btn btn-outline-secondary rounded-pill shadow-sm px-4">
-                        <i class="bi bi-arrow-left me-1"></i> Back to List
+                        <i class="fas fa-arrow-left me-1"></i> Back to List
                     </a>
                 </div>
             
@@ -98,7 +98,7 @@
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-5 pt-3 border-top">
                         <a href="{{ route('parties.index') }}" class="btn btn-light btn-lg px-4 border fw-medium">Cancel</a>
                         <button type="submit" class="btn btn-primary btn-lg px-5 shadow fw-bold">
-                            <i class="bi bi-check-lg me-2"></i> Update Party
+                            <i class="fas fa-save me-2"></i> Update Party
                         </button>
                     </div>
                 </form>

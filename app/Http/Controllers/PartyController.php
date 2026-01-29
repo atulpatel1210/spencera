@@ -49,14 +49,14 @@ class PartyController extends Controller
                     $method = method_field('DELETE');
 
                     return "
-                        <a href='{$editUrl}' title='Edit' class='btn btn-sm btn-outline-primary rounded-circle'>
-                            <i class='bi bi-pencil'></i>
+                        <a href='{$editUrl}' title='Edit' class='btn-action text-primary'>
+                            <i class='fas fa-edit'></i>
                         </a>
-                        <form action='{$deleteUrl}' method='POST' class='d-inline' onsubmit=\"return confirm('Are you sure?')\" style='display:inline-block;'>
+                        <form action='{$deleteUrl}' method='POST' class='d-inline' onsubmit=\"return confirm('Are you sure?')\">
                             {$csrf}
                             {$method}
-                            <button type='submit' title='Delete' class='btn btn-sm btn-outline-danger rounded-circle'>
-                                <i class='bi bi-trash'></i>
+                            <button type='submit' title='Delete' class='btn-action text-danger border-0 bg-transparent'>
+                                <i class='fas fa-trash-alt'></i>
                             </button>
                         </form>
                     ";

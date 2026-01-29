@@ -33,6 +33,9 @@ class PurchaseOrderPalletController extends Controller
 
         return DataTables::of($query)
             ->addIndexColumn()
+            ->addColumn('po_number', function(PurchaseOrderPallet $pallet) {
+                return "<span class='po-number'>{$pallet->po}</span>";
+            })
             ->addColumn('design_detail.name', function(PurchaseOrderPallet $pallet) {
                 return $pallet->designDetail->name ?? 'N/A';
             })
@@ -42,6 +45,7 @@ class PurchaseOrderPalletController extends Controller
             ->addColumn('finish_detail.finish_name', function(PurchaseOrderPallet $pallet) {
                 return $pallet->finishDetail->finish_name ?? 'N/A';
             })
+            ->rawColumns(['po_number'])
             ->toJson();
     }
 
