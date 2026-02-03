@@ -80,12 +80,25 @@
 <script>
     $(document).ready(function() {
         function toggleSidebar() {
-            $('#sidebar-wrapper').toggleClass('show');
-            $('#sidebar-overlay').toggleClass('show');
-            $('body').toggleClass('overflow-hidden');
+            if ($(window).width() >= 992) {
+                $('#sidebar-wrapper').toggleClass('collapsed');
+            } else {
+                $('#sidebar-wrapper').toggleClass('show');
+                $('#sidebar-overlay').toggleClass('show');
+                $('body').toggleClass('overflow-hidden');
+            }
         }
 
         $('#sidebar-toggle, #sidebar-overlay, #sidebar-close').on('click', toggleSidebar);
+        
+        // Handle window resize to clean up states
+        $(window).on('resize', function() {
+            if ($(window).width() >= 992) {
+                $('#sidebar-overlay').removeClass('show');
+                $('body').removeClass('overflow-hidden');
+                $('#sidebar-wrapper').removeClass('show');
+            }
+        });
     });
 </script>
 

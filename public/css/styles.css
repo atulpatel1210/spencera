@@ -7,21 +7,33 @@
 }
 
 .sidebar-wrapper {
-    width: 260px;
+    width: 280px;
+    flex-shrink: 0;
     background-color: #000;
-    color: #fff;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1040;
 }
 
+/* Desktop Collapse: Using width for space and overflow to hide */
+.sidebar-wrapper.collapsed {
+    width: 0;
+    overflow: hidden;
+}
+
 .main-content-wrapper {
-    flex: 1;
+    flex-grow: 1;
     min-width: 0;
-    background-color: #f8f9fa;
-    transition: all 0.3s ease;
+    background-color: #f4f7fa;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ensure the header and main content always have a minimum width */
+.navbar {
+    width: 100%;
+    min-width: 320px;
 }
 
 main {
@@ -55,22 +67,25 @@ main {
     color: #fff;
     padding-bottom: 20px;
     height: 100vh;
-    position: sticky;
+    height: 100dvh;
+    width: 280px; /* Force internal width so it doesn't squash during transition */
+    position: fixed;
     top: 0;
+    left: 0;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    scrollbar-width: none;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hide actual sidebar content when wrapper is collapsed on desktop */
+.collapsed .sidebar {
+    transform: translateX(-100%);
 }
 
 .sidebar::-webkit-scrollbar {
-    width: 4px;
-}
-.sidebar::-webkit-scrollbar-track {
-    background: #000;
-}
-.sidebar::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 10px;
+    display: none;
 }
 
 .sidebar .logo {
@@ -247,19 +262,97 @@ main {
 .rounded-lg { border-radius: 12px !important; }
 .shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important; }
 
+/* Dashboard Premium Enhancements */
+:root {
+    --spencera-orange: #ef7c1b;
+    --luxury-black: #0f172a;
+    --soft-gray: #f8fafc;
+}
+
+.bg-gradient-orange { 
+    background: linear-gradient(135deg, var(--spencera-orange) 0%, #ff9d4d 100%) !important; 
+}
+
+.dash-card {
+    border-radius: 24px !important;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    border: 1px solid rgba(0,0,0,0.02) !important;
+    background: #fff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01) !important;
+}
+
+.dash-card:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02) !important;
+}
+
+.icon-box {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    transition: all 0.4s ease;
+}
+
+.dash-card:hover .icon-box {
+    transform: scale(1.1) rotate(8deg);
+}
+
+.welcome-banner {
+    border-radius: 30px !important;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+    border: none !important;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle pattern overlay for banner */
+.welcome-banner::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.welcome-banner h2 {
+    letter-spacing: -0.02em;
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #0f172a;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
 /* ========================================
    RESPONSIVE LOGIC
    ======================================== */
 @media (max-width: 991.98px) {
     .sidebar-wrapper {
         position: fixed;
-        left: -260px;
+        left: -280px;
         top: 0;
         bottom: 0;
+        width: 280px;
     }
 
     .sidebar-wrapper.show {
         left: 0;
+        margin-left: 0;
     }
 
     .main-content-wrapper {
@@ -268,8 +361,9 @@ main {
 }
 
 @media (min-width: 992px) {
+    /* Always show toggle button on desktop too */
     #sidebar-toggle {
-        display: none;
+        display: flex;
     }
 }
 
