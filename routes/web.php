@@ -15,7 +15,7 @@ use App\Http\Controllers\DispatchController;
 use App\Http\Controllers\StockPalletController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 // Dashboard
