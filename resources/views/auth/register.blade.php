@@ -38,8 +38,8 @@
     <div class="fixed inset-0 bg-black/40 z-0"></div>
 
     <div class="relative z-10 w-full max-w-4xl flex flex-col md:flex-row shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-3xl overflow-hidden glass-effect">
-        <!-- Left Side: Branding (NO BUTTONS HERE) -->
-        <div class="md:w-1/2 luxury-gradient flex flex-col justify-center items-center p-12 text-white">
+        <!-- Left Side: Branding (Hidden on mobile) -->
+        <div class="hidden md:flex md:w-1/2 luxury-gradient flex-col justify-center items-center p-12 text-white">
             <div class="mb-8 transform hover:scale-105 transition-transform duration-500">
                 <img src="https://spenceraceramica.com/images/logo/white.svg" alt="Spencera Logo" class="h-24">
             </div>
