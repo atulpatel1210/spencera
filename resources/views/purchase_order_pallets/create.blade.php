@@ -56,28 +56,28 @@
                                     New Pallet Entry
                                 </h6>
                                 <div class="row g-3 mb-4">
-                                    <div class="col-md-3">
+                                    <div class="col-sm-6 col-md-3">
                                         <label class="form-label fw-semibold small text-secondary">Design</label>
                                         <select id="design_id" class="form-select bg-light border-0">
                                             <option value="">Select</option>
                                         </select>
                                     </div>
 
-                                    <div class="col-md-3">
+                                    <div class="col-sm-6 col-md-3">
                                         <label class="form-label fw-semibold small text-secondary">Size</label>
                                         <select id="size_id" class="form-select bg-light border-0">
                                             <option value="">Select</option>
                                         </select>
                                     </div>
 
-                                    <div class="col-md-3">
+                                    <div class="col-sm-6 col-md-3">
                                         <label class="form-label fw-semibold small text-secondary">Finish</label>
                                         <select id="finish_id" class="form-select bg-light border-0">
                                             <option value="">Select</option>
                                         </select>
                                     </div>
                                     
-                                    <div class="col-md-3">
+                                    <div class="col-sm-6 col-md-3">
                                         <label class="form-label fw-semibold small text-secondary">Batch No</label>
                                         <select id="batch_id" class="form-select bg-light border-0">
                                             <option value="">Select</option>
@@ -95,37 +95,40 @@
                                     <label class="form-label fw-bold text-dark mb-3"><i class="bi bi-gear me-1"></i> Pallet Configuration</label>
                                     
                                     <div id="palletContainer">
-                                        <div class="row g-2 align-items-end pallet-row mb-3">
-                                            <div class="col-md-3">
-                                                <label class="small text-muted mb-1 text-uppercase fw-bold">Box / Pallet</label>
+                                        <div class="row g-3 align-items-center pallet-row mb-4 p-3 bg-white rounded-3 shadow-sm border border-light">
+                                            <div class="col-12 col-md-3">
+                                                <label class="small text-secondary mb-1 text-uppercase fw-bold">Box / Pallet</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-box"></i></span>
-                                                    <input type="number" class="form-control border-start-0 bg-white box_per_pallet" min="1" placeholder="0">
+                                                    <span class="input-group-text bg-light border-0"><i class="bi bi-box"></i></span>
+                                                    <input type="number" class="form-control border-0 bg-light box_per_pallet" min="1" placeholder="Enter boxes per pallet">
                                                 </div>
                                             </div>
-                                            <div class="col-md-3">
-                                                <label class="small text-muted mb-1 text-uppercase fw-bold">Total Pallet</label>
+                                            <div class="col-12 col-md-3">
+                                                <label class="small text-secondary mb-1 text-uppercase fw-bold">Total Pallets</label>
                                                  <div class="input-group">
-                                                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-layers"></i></span>
-                                                    <input type="number" class="form-control border-start-0 bg-white total_pallet" min="1" placeholder="0">
+                                                    <span class="input-group-text bg-light border-0"><i class="bi bi-layers"></i></span>
+                                                    <input type="number" class="form-control border-0 bg-light total_pallet" min="1" placeholder="Enter number of pallets">
                                                 </div>
                                             </div>
-                                            <div class="col-md-3">
-                                                <label class="small text-muted mb-1 text-uppercase fw-bold">Total Boxes</label>
-                                                <input type="number" class="form-control bg-transparent total_boxes border-0 fw-bold fs-5 text-dark" readonly placeholder="0">
+                                            <div class="col-12 col-md-3">
+                                                <label class="small text-secondary mb-1 text-uppercase fw-bold">Total Boxes</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text bg-primary-subtle border-0 text-primary"><i class="bi bi-calculator"></i></span>
+                                                    <input type="number" class="form-control bg-primary-subtle border-0 fw-bold total_boxes text-primary" readonly placeholder="0">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     
-                                    <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                                    <div class="mt-3 pt-3 border-top d-flex flex-column align-items-end gap-3">
+                                        <div class="section-total-container d-flex align-items-center bg-white px-3 py-2 rounded-3 shadow-sm border">
+                                            <span class="me-2 fw-bold text-secondary small text-uppercase">Section Total:</span>
+                                            <input type="text" id="total_qty" class="form-control form-control-sm w-auto fw-bold text-center border-0 bg-light text-primary fs-6" readonly value="0">
+                                        </div>
+                                        
                                         <button type="button" id="addMorePalletBtn" class="btn btn-outline-primary btn-sm rounded-pill px-3">
                                             <i class="bi bi-plus-circle me-1"></i> Add Configuration Row
                                         </button>
-                                        
-                                        <div class="d-flex align-items-center bg-white px-3 py-2 rounded-3 shadow-sm">
-                                            <span class="me-2 fw-bold text-secondary small text-uppercase">Section Total:</span>
-                                            <input type="text" id="total_qty" class="form-control form-control-sm w-auto fw-bold text-center border-0 bg-transparent text-primary fs-6" readonly value="0">
-                                        </div>
                                     </div>
                                 </div>
 
@@ -264,11 +267,12 @@
     })
 
     function calculateTotal() {
-        let sum = 0
-        $('.total_boxes').each(function() {
-            sum += Number($(this).val()) || 0
-        })
-        $('#total_qty').val(sum)
+        let sum = 0;
+        $('#palletContainer .total_boxes').each(function() {
+            let val = parseFloat($(this).val());
+            if (!isNaN(val)) sum += val;
+        });
+        $('#total_qty').val(sum);
     }
 
     $(document).on('click', '.add-more', function() { // Legacy class support
@@ -281,25 +285,31 @@
 
     function addPalletRow() {
         let row = `
-        <div class="row g-2 align-items-end pallet-row mb-3">
-            <div class="col-md-3">
-               <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-box"></i></span>
-                    <input type="number" class="form-control border-start-0 bg-white box_per_pallet" min="1" placeholder="0">
-                </div>
-            </div>
-            <div class="col-md-3">
+        <div class="row g-3 align-items-center pallet-row mb-4 p-3 bg-white rounded-3 shadow-sm border border-light">
+            <div class="col-12 col-md-3">
+                <label class="small text-secondary mb-1 text-uppercase fw-bold">Box / Pallet</label>
                 <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-layers"></i></span>
-                    <input type="number" class="form-control border-start-0 bg-white total_pallet" min="1" placeholder="0">
+                    <span class="input-group-text bg-light border-0"><i class="bi bi-box"></i></span>
+                    <input type="number" class="form-control border-0 bg-light box_per_pallet" min="1" placeholder="Enter boxes per pallet">
                 </div>
             </div>
-            <div class="col-md-3">
-                <input type="number" class="form-control bg-transparent total_boxes border-0 fw-bold fs-5 text-dark" readonly placeholder="0">
+            <div class="col-12 col-md-3">
+                <label class="small text-secondary mb-1 text-uppercase fw-bold">Total Pallets</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-0"><i class="bi bi-layers"></i></span>
+                    <input type="number" class="form-control border-0 bg-light total_pallet" min="1" placeholder="Enter number of pallets">
+                </div>
             </div>
-            <div class="col-md-3">
-                <button type="button" class="btn btn-outline-danger btn-sm remove-pallet w-100 rounded-pill">
-                    <i class="bi bi-trash"></i> Remove
+            <div class="col-12 col-md-3">
+                <label class="small text-secondary mb-1 text-uppercase fw-bold">Total Boxes</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-primary-subtle border-0 text-primary"><i class="bi bi-calculator"></i></span>
+                    <input type="number" class="form-control bg-primary-subtle border-0 fw-bold total_boxes text-primary" readonly placeholder="0">
+                </div>
+            </div>
+            <div class="col-12 col-md-3">
+                <button type="button" class="btn btn-outline-danger w-100 rounded-pill remove-pallet shadow-sm">
+                    <i class="bi bi-trash me-2"></i> Remove Configuration
                 </button>
             </div>
         </div>`

@@ -24,13 +24,21 @@
     <!-- Select2 4.1.0 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
     
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
     <link rel="stylesheet" href="{{ asset('css/dragdrop.css') }}">
     <style>
         body { 
-            background-color: #f8f9fa; 
+            background-color: #f6f8fb; 
             overflow-x: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #1e293b;
         }
+        .main-content-wrapper { background-color: #f6f8fb !important; }
     </style>
 </head>
 <body>
