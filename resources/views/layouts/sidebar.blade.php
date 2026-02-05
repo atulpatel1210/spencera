@@ -1,7 +1,7 @@
 <div class="sidebar d-flex flex-column h-100">
     <div class="d-flex align-items-center justify-content-between logo px-4">
-        <a href="{{ route('dashboard') }}" class="p-0 border-0 bg-transparent">
-            <img src="https://spenceraceramica.com/images/logo/white.svg" alt="Spencera Logo" style="height: 35px;">
+        <a href="{{ route('dashboard') }}" class="p-0 border-0 bg-transparent nav-brand-container">
+            <img src="https://spenceraceramica.com/images/logo/white.svg" alt="Spencera Logo" class="sidebar-logo">
         </a>
         <button class="btn btn-link text-white d-lg-none p-0" id="sidebar-close">
             <i class="fas fa-times fs-4"></i>

@@ -249,17 +249,18 @@
     <table class="description-table">
         <thead>
             <tr>
-                <th rowspan="2" width="9%">SIZE</th>
-                <th rowspan="2" width="15%">DESIGN</th>
+                <th rowspan="2" width="8%">SIZE</th>
+                <th rowspan="2" width="12%">DESIGN</th>
                 <th rowspan="2" width="7%">FINISH</th>
-                <th rowspan="2" width="20%">DESIGN PHOTO</th>
+                <th rowspan="2" width="12%">DESIGN PHOTO</th>
+                <th rowspan="2" width="10%">REMARK</th>
                 <th colspan="3" class="pallet-detail-header" width="30%">PALLET DETAIL</th>
                 <th rowspan="2" width="10%">TOTAL BOX</th>
             </tr>
             <tr class="pallet-detail-header">
                 <th width="10%">BOX/PALLET</th>
-                <th width="10%">TOTAL PALLET</th>
-                <th width="10%">QNTY (BOX)</th>
+                <th width="8%">TOTAL PALLET</th>
+                <th width="12%">QNTY (BOX)</th>
             </tr>
         </thead>
         <tbody>
@@ -297,10 +298,15 @@
                     {{-- DESIGN PHOTO (Null Check) --}}
                     <td rowspan="{{ $palletCount > 1 ? $palletCount : 1 }}" class="text-center">
                         @if ($design && $design->image)
-                            <img src="{{ asset('storage/designs/'.$design->image) }}" width="150" height="75">
+                            <img src="{{ asset('storage/designs/'.$design->image) }}" width="100" height="50">
                         @else
                             N/A
                         @endif
+                    </td>
+
+                    {{-- REMARK --}}
+                    <td rowspan="{{ $palletCount > 1 ? $palletCount : 1 }}" class="text-center small">
+                        {{ $item->remark ?? '-' }}
                     </td>
                     
                     {{-- PALLET DETAILS (First Row) --}}
@@ -333,7 +339,7 @@
             @endforeach
             
             <tr class="total-row">
-                <td colspan="7" class="text-right">GRAND TOTAL</td>
+                <td colspan="8" class="text-right">GRAND TOTAL</td>
                 <td class="text-right">
                     {{ number_format($grandTotalBox) }}
                 </td>
