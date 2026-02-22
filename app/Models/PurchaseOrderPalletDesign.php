@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class PurchaseOrderPalletDesign extends Model
 {
+    use \App\Traits\BelongsToCompany;
+
     use HasFactory;
 
     /**

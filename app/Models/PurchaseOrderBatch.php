@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class PurchaseOrderBatch extends Model
 {
+    use \App\Traits\BelongsToCompany;
+
     use HasFactory;
 
     protected $fillable = [

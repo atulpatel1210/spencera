@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pallet extends Model
 {
+    use \App\Traits\BelongsToCompany;
+
     use HasFactory;
 
     protected $fillable = [

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Finish extends Model
 {
+    use \App\Traits\BelongsToCompany;
+
     use HasFactory;
 
     protected $fillable = ['finish_name'];

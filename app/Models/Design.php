@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Design extends Model
 {
+    use \App\Traits\BelongsToCompany;
+
     use HasFactory;
 
     protected $fillable = ['name', 'party_id', 'image'];

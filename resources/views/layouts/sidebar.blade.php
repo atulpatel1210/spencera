@@ -13,6 +13,13 @@
         <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
             <i class="fas fa-chart-pie"></i> <span>Dashboard</span>
         </a>
+        <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}">
+            <i class="fas fa-users-cog"></i> <span>User Management</span>
+        </a>
+        <a href="{{ route('roles.index') }}" class="{{ request()->routeIs('roles.*') ? 'active' : '' }}">
+            <i class="fas fa-shield-alt"></i> <span>Role Setup</span>
+        </a>
+
         
         <div class="px-4 py-2 mt-3 text-uppercase text-white-50 small fw-bold tracking-wider" style="font-size: 0.65rem;">Inventory & CRM</div>
         <a href="{{ route('parties.index') }}" class="{{ request()->routeIs('parties.index') ? 'active' : '' }}">

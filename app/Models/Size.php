@@ -8,6 +8,8 @@ use App\Models\Finish;
 
 class Size extends Model
 {
+    use \App\Traits\BelongsToCompany;
+
     use HasFactory;
 
     protected $fillable = ['size_name'];

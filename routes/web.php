@@ -77,9 +77,15 @@ Route::resource('dispatches', DispatchController::class);
 Route::get('stock-pallets/report', [StockPalletController::class, 'showStockPalletReport'])->name('stock-pallets.report');
 Route::get('stock-pallets/report-data', [StockPalletController::class, 'reportData'])->name('stock-pallets.report.data');
 
-Route::get('company-details/edit', [CompanyDetailController::class, 'edit'])->name('company.edit');
+Route::get('company-details/edit', [\App\Http\Controllers\CompanyDetailController::class, 'edit'])->name('company.edit');
 Route::put('company-details', [CompanyDetailController::class, 'update'])->name('company.update');
 
+Route::get('users/data', [\App\Http\Controllers\UserController::class, 'getUsersData'])->name('users.data');
+Route::resource('users', \App\Http\Controllers\UserController::class)->middleware('auth');
+
+Route::get('roles/data', [\App\Http\Controllers\RoleController::class, 'getRolesData'])->name('roles.data');
+Route::post('roles/sync-permissions', [\App\Http\Controllers\PermissionController::class, 'syncPermissions'])->name('roles.sync-permissions')->middleware('auth');
+Route::resource('roles', \App\Http\Controllers\RoleController::class)->middleware('auth');
 
 // Profile management
 Route::middleware('auth')->group(function () {
