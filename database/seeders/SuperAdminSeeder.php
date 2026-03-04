@@ -14,9 +14,9 @@ class SuperAdminSeeder extends Seeder
     {
         $superAdminRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'Superadmin']);
         
-        // Give Superadmin all permissions via explicit permission assigning, or ideally they bypass it in middleware
-        $permissions = \Spatie\Permission\Models\Permission::all();
-        $superAdminRole->syncPermissions($permissions);
+        // Notes: Superadmin permissions are now handled implicitly via Gate::before 
+        // in AppServiceProvider. This prevents issues during fresh setups where
+        // the permissions table might be empty initially.
 
         $superAdmin = \App\Models\User::firstOrCreate(
             ['email' => 'superadmin@gmail.com'],
