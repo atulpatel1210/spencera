@@ -7,7 +7,7 @@
 }
 
 .sidebar-wrapper {
-    width: 280px;
+    width: 220px;
     flex-shrink: 0;
     background-color: #000;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -69,7 +69,7 @@ main {
     padding-bottom: 20px;
     height: 100vh;
     height: 100dvh;
-    width: 280px; 
+    width: 220px; 
     position: absolute; /* Changed from fixed to absolute to move with wrapper */
     top: 0;
     left: 0;
@@ -95,12 +95,12 @@ main {
 }
 
 .sidebar .logo {
-    padding: 30px 24px;
+    padding: 15px 15px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-logo {
-    height: 50px;
+    height: 35px;
     max-width: 100%;
     width: auto;
     object-fit: contain;
@@ -138,11 +138,11 @@ main {
     color: rgba(255, 255, 255, 0.6);
     display: flex;
     align-items: center;
-    padding: 12px 24px;
+    padding: 8px 15px;
     text-decoration: none;
     transition: all 0.25s ease;
     border-left: 4px solid transparent;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 500;
 }
 
@@ -205,9 +205,9 @@ main {
    ======================================== */
 .card {
     border: none;
-    border-radius: 16px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
-    margin-bottom: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    margin-bottom: 1.5rem;
     background-color: #fff;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -217,13 +217,13 @@ main {
 }
 
 .card-header {
-    border-radius: 16px 16px 0 0 !important;
+    border-radius: 12px 12px 0 0 !important;
 }
 
 .card-header {
     background-color: transparent !important;
     border-bottom: 1px solid #f8fafc !important;
-    padding: 1.5rem 2rem !important;
+    padding: 1rem 1.25rem !important;
 }
 
 @media (max-width: 575.98px) {
@@ -249,16 +249,16 @@ main {
     margin-bottom: 0;
     font-weight: 800;
     color: #0f172a;
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     letter-spacing: -0.025em;
 }
 
 .btn {
-    border-radius: 12px;
-    font-weight: 700;
-    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    padding: 0.45rem 1rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     letter-spacing: 0.01em;
 }
 
@@ -332,11 +332,11 @@ main {
 }
 
 .table tbody td {
-    padding: 1rem 1.25rem;
+    padding: 0.75rem 1rem;
     vertical-align: middle;
     color: #334155;
     border-bottom: 1px solid #f1f5f9;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 /* ========================================
@@ -381,12 +381,12 @@ main {
 }
 
 .icon-box {
-    width: 60px;
-    height: 60px;
+    width: 45px;
+    height: 45px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 18px;
+    border-radius: 12px;
     transition: all 0.4s ease;
 }
 
@@ -438,10 +438,10 @@ main {
 @media (max-width: 991.98px) {
     .sidebar-wrapper {
         position: fixed;
-        left: -280px;
+        left: -220px;
         top: 0;
         bottom: 0;
-        width: 280px;
+        width: 220px;
     }
 
     .sidebar-wrapper.show {
@@ -465,13 +465,13 @@ main {
 .dataTables_wrapper .dataTables_filter input,
 .dataTables_wrapper .dataTables_length select {
     border: 1px solid #e2e8f0 !important;
-    border-radius: 8px !important;
-    padding: 0.4rem 0.75rem !important;
-    font-size: 0.85rem !important;
+    border-radius: 6px !important;
+    padding: 0.3rem 0.6rem !important;
+    font-size: 0.8rem !important;
     color: #475569 !important;
     background-color: #fff !important;
     outline: none !important;
-    height: 38px !important; /* Fixed height for consistency */
+    height: 32px !important; /* Fixed height for consistency */
 }
 
 .dataTables_wrapper .dataTables_length select {
@@ -485,10 +485,10 @@ main {
 
 .select2-container--default .select2-selection--single {
     border: 1px solid #e2e8f0 !important;
-    border-radius: 10px !important;
-    padding: 0.5rem 1rem !important;
-    font-size: 0.9rem !important;
-    height: 42px !important;
+    border-radius: 8px !important;
+    padding: 0.35rem 0.75rem !important;
+    font-size: 0.85rem !important;
+    height: 36px !important;
     background-color: #fff !important;
     display: flex;
     align-items: center;
@@ -531,11 +531,12 @@ main {
 }
 
 .input-group-text {
-    border-radius: 10px;
+    border-radius: 8px;
     background-color: #f8fafc;
     border: 1px solid #e2e8f0;
     color: #64748b;
-    padding: 0 1rem;
+    padding: 0 0.75rem;
+    font-size: 0.85rem;
 }
 
 .input-group > .input-group-text:first-child {
@@ -743,9 +744,10 @@ footer small {
 /* Select2 Premium Styling */
 .select2-container--bootstrap-5 .select2-selection {
     border: 1px solid #dee2e6 !important;
-    border-radius: 8px !important;
-    min-height: 42px !important;
-    padding: 0.3rem 0.6rem !important;
+    border-radius: 6px !important;
+    min-height: 36px !important;
+    padding: 0.2rem 0.5rem !important;
+    font-size: 0.85rem !important;
     transition: all 0.2s ease !important;
 }
 

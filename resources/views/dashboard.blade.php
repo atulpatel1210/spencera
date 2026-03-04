@@ -7,15 +7,15 @@
         <div class="col-md-7">
             <div class="d-flex align-items-center">
                 <div class="flex-shrink-0 animate__animated animate__fadeIn">
-                    <div class="rounded-circle p-1 bg-gradient-orange shadow-lg" style="width: 85px; height: 85px;">
+                    <div class="rounded-circle p-1 bg-gradient-orange shadow-lg" style="width: 65px; height: 65px;">
                         <div class="bg-dark rounded-circle w-100 h-100 d-flex align-items-center justify-content-center border border-3 border-white/20">
-                            <span class="text-white fw-bold display-6">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                            <span class="text-white fw-bold fs-4">{{ substr(Auth::user()->name, 0, 1) }}</span>
                         </div>
                     </div>
                 </div>
                 <div class="ms-4">
                     <span class="badge bg-primary/10 text-primary px-3 py-1 rounded-pill small fw-bold mb-2">MANAGEMENT PORTAL</span>
-                    <h1 class="display-5 fw-extrabold text-dark mb-1 tracking-tight">Hello, {{ Auth::user()->name }} <span class="wave">👋</span></h1>
+                    <h1 class="fs-2 fw-extrabold text-dark mb-1 tracking-tight">Hello, {{ Auth::user()->name }} <span class="wave">👋</span></h1>
                     <p class="text-muted d-flex align-items-center mb-0">
                         <i class="fas fa-calendar-check me-2 text-primary"></i> <span class="fw-semibold text-gray-700">{{ date('l, d F Y') }}</span>
                     </p>
@@ -39,10 +39,10 @@
     {{-- Main Stats Grid --}}
     <div class="row g-4 mb-5">
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card dash-card h-100 p-4 border-0 shadow-sm transition-all hover-lift">
-                <div class="d-flex justify-content-between align-items-start mb-4">
-                    <div class="icon-box bg-primary-light">
-                        <i class="fas fa-users-viewfinder text-primary fs-3"></i>
+            <div class="card dash-card h-100 p-3 border-0 shadow-sm transition-all hover-lift">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="icon-box bg-primary-light" style="width: 45px; height: 45px;">
+                        <i class="fas fa-users-viewfinder text-primary fs-4"></i>
                     </div>
                     <div class="text-end">
                         <span class="text-success small fw-bold"><i class="fas fa-arrow-up me-1"></i>Live</span>
@@ -51,17 +51,17 @@
                 </div>
                 <h2 class="stat-value">{{ $stats['total_parties'] ?? 0 }}</h2>
                 <p class="stat-label">Total Partners</p>
-                <div class="progress mt-4 bg-gray-100" style="height: 5px;">
+                <div class="progress mt-3 bg-gray-100" style="height: 4px;">
                     <div class="progress-bar bg-primary rounded-pill" style="width: 100%;"></div>
                 </div>
             </div>
         </div>
 
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card dash-card h-100 p-4 border-0 shadow-sm transition-all hover-lift">
-                <div class="d-flex justify-content-between align-items-start mb-4">
-                    <div class="icon-box bg-info-light">
-                        <i class="fas fa-receipt text-info fs-3"></i>
+            <div class="card dash-card h-100 p-3 border-0 shadow-sm transition-all hover-lift">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="icon-box bg-info-light" style="width: 45px; height: 45px;">
+                        <i class="fas fa-receipt text-info fs-4"></i>
                     </div>
                     <div class="text-end">
                         <span class="text-info small fw-bold">Recent</span>
@@ -70,17 +70,17 @@
                 </div>
                 <h2 class="stat-value">{{ $stats['total_orders'] ?? 0 }}</h2>
                 <p class="stat-label">Purchase Orders</p>
-                <div class="progress mt-4 bg-gray-100" style="height: 5px;">
+                <div class="progress mt-3 bg-gray-100" style="height: 4px;">
                     <div class="progress-bar bg-info rounded-pill" style="width: 100%;"></div>
                 </div>
             </div>
         </div>
 
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card dash-card h-100 p-4 border-0 shadow-sm transition-all hover-lift">
-                <div class="d-flex justify-content-between align-items-start mb-4">
-                    <div class="icon-box bg-success-light">
-                        <i class="fas fa-truck-ramp-box text-success fs-3"></i>
+            <div class="card dash-card h-100 p-3 border-0 shadow-sm transition-all hover-lift">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="icon-box bg-success-light" style="width: 45px; height: 45px;">
+                        <i class="fas fa-truck-ramp-box text-success fs-4"></i>
                     </div>
                     <div class="text-end">
                         <span class="text-success small fw-bold">Verified</span>
@@ -89,17 +89,17 @@
                 </div>
                 <h2 class="stat-value">{{ $stats['total_dispatches'] ?? 0 }}</h2>
                 <p class="stat-label">Total Dispatches</p>
-                <div class="progress mt-4 bg-gray-100" style="height: 5px;">
+                <div class="progress mt-3 bg-gray-100" style="height: 4px;">
                     <div class="progress-bar bg-success rounded-pill" style="width: 100%;"></div>
                 </div>
             </div>
         </div>
 
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card dash-card h-100 p-4 border-0 shadow-sm transition-all hover-lift">
-                <div class="d-flex justify-content-between align-items-start mb-4">
-                    <div class="icon-box bg-warning-light">
-                        <i class="fas fa-boxes-stacked text-warning fs-3"></i>
+            <div class="card dash-card h-100 p-3 border-0 shadow-sm transition-all hover-lift">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="icon-box bg-warning-light" style="width: 45px; height: 45px;">
+                        <i class="fas fa-boxes-stacked text-warning fs-4"></i>
                     </div>
                     <div class="text-end">
                         <span class="text-warning small fw-bold">Inventory</span>
@@ -108,7 +108,7 @@
                 </div>
                 <h2 class="stat-value">{{ $stats['total_stock'] ?? 0 }}</h2>
                 <p class="stat-label">Stock Pallets</p>
-                <div class="progress mt-4 bg-gray-100" style="height: 5px;">
+                <div class="progress mt-3 bg-gray-100" style="height: 4px;">
                     <div class="progress-bar bg-warning rounded-pill" style="width: 100%;"></div>
                 </div>
             </div>
@@ -260,7 +260,7 @@
     }
     
     .smaller { font-size: 0.65rem; }
-    .stat-value { font-size: 2.25rem; font-weight: 800; letter-spacing: -0.02em; color: #0f172a; margin-bottom: 2px; }
+    .stat-value { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; color: #0f172a; margin-bottom: 2px; }
     .stat-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 0; }
 </style>
 @endsection

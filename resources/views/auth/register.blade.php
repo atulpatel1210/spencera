@@ -33,7 +33,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4 bg-auth">
+<body class="bg-gray-100 min-h-[100dvh] overflow-x-hidden flex items-center justify-center p-4 bg-auth">
     <!-- Overlay -->
     <div class="fixed inset-0 bg-black/40 z-0"></div>
 
