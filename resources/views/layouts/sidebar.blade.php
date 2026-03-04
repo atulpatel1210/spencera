@@ -13,46 +13,72 @@
         <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
             <i class="fas fa-chart-pie"></i> <span>Dashboard</span>
         </a>
+        @can('view users')
         <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'active' : '' }}">
             <i class="fas fa-users-cog"></i> <span>User Management</span>
         </a>
+        @endcan
+        @can('view roles')
         <a href="{{ route('roles.index') }}" class="{{ request()->routeIs('roles.*') ? 'active' : '' }}">
             <i class="fas fa-shield-alt"></i> <span>Role Setup</span>
         </a>
+        @endcan
 
         
+        @canany(['view parties', 'view designs', 'view finishes', 'view sizes'])
         <div class="px-4 py-2 mt-3 text-uppercase text-white-50 small fw-bold tracking-wider" style="font-size: 0.65rem;">Inventory & CRM</div>
+        @can('view parties')
         <a href="{{ route('parties.index') }}" class="{{ request()->routeIs('parties.index') ? 'active' : '' }}">
             <i class="fas fa-users-viewfinder"></i> <span>Party Management</span>
         </a>
+        @endcan
+        @can('view designs')
         <a href="{{ route('designs.index') }}" class="{{ request()->routeIs('designs.index') ? 'active' : '' }}">
             <i class="fas fa-palette"></i> <span>Design Studio</span>
         </a>
+        @endcan
+        @can('view finishes')
         <a href="{{ route('finishes.index') }}" class="{{ request()->routeIs('finishes.index') ? 'active' : '' }}">
             <i class="fas fa-wand-magic-sparkles"></i> <span>Finish Details</span>
         </a>
+        @endcan
+        @can('view sizes')
         <a href="{{ route('sizes.index') }}" class="{{ request()->routeIs('sizes.index') ? 'active' : '' }}">
             <i class="fas fa-vector-square"></i> <span>Size Specs</span>
         </a>
+        @endcan
+        @endcanany
         
+        @canany(['view orders', 'list purchase order item', 'view purchase order pallets', 'view dispatches'])
         <div class="px-4 py-2 mt-3 text-uppercase text-white-50 small fw-bold tracking-wider" style="font-size: 0.65rem;">Operations</div>
+        @can('view orders')
         <a href="{{ route('orders.index') }}" class="{{ request()->routeIs('orders.index') ? 'active' : '' }}">
             <i class="fas fa-receipt"></i> <span>Order List</span>
         </a>
+        @endcan
+        @can('list purchase order item')
         <a href="{{ route('purchase_order_item.list') }}" class="{{ request()->routeIs('purchase_order_item.list') ? 'active' : '' }}">
             <i class="fas fa-gears"></i> <span>Production & Planning</span>
         </a>
+        @endcan
+        @can('view purchase order pallets')
         <a href="{{ route('purchase_order_pallets.index') }}" class="{{ request()->routeIs('purchase_order_pallets.index') ? 'active' : '' }}">
             <i class="fas fa-box-open"></i> <span>Pallet Packing</span>
         </a>
+        @endcan
+        @can('view dispatches')
         <a href="{{ route('dispatches.index') }}" class="{{ request()->routeIs('dispatches.index') ? 'active' : '' }}">
             <i class="fas fa-truck-ramp-box"></i> <span>Dispatch Control</span>
         </a>
+        @endcan
+        @endcanany
         
+        @can('view stock-pallets')
         <div class="px-4 py-2 mt-3 text-uppercase text-white-50 small fw-bold tracking-wider" style="font-size: 0.65rem;">Analytics</div>
         <a href="{{ route('stock-pallets.report') }}" class="{{ request()->routeIs('stock-pallets.report') ? 'active' : '' }}">
             <i class="fas fa-file-invoice"></i> <span>Stock Reports</span>
         </a>
+        @endcan
     </div>
 
     <div class="sidebar-footer mt-auto p-3">
