@@ -18,7 +18,8 @@ class PurchaseOrder extends Model
         'party_id',
         'brand_name',
         'order_date',
-        'box_image'
+        'box_image',
+        'remark'
     ];
 
     public function orderItems(): HasMany

@@ -6,6 +6,11 @@
         <h4>Purchase Order Details</h4>
     </div>
     <div class="card-body">
+        @if($order->remark)
+            <div class="alert alert-info mb-4">
+                <strong>Order Remark:</strong> {{ $order->remark }}
+            </div>
+        @endif
         <h5>Order Items</h5>
         <div class="table-responsive">
             <table class="table table-bordered">

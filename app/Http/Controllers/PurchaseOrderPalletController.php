@@ -74,6 +74,15 @@ class PurchaseOrderPalletController extends Controller
     {
         $purchaseOrderId = $request->input('purchase_order_id');
         $orderItems = PurchaseOrderItem::with(['sizeDetail','designDetail','finishDetail','batchDetail'])->where('purchase_order_id', $purchaseOrderId)->get();
+        
+        foreach ($orderItems as $item) {
+            foreach ($item->batchDetail as $batch) {
+                $packedQty = PurchaseOrderPallet::where('batch_id', $batch->id)->sum('total_qty');
+                $batch->packed_qty = $packedQty;
+                $batch->remaining_qty = $batch->qty - $packedQty;
+            }
+        }
+        
         return response()->json($orderItems);
     }
 

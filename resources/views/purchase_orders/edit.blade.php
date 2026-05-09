@@ -81,6 +81,10 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <label for="order_remark" class="form-label fw-semibold text-secondary small text-uppercase">Order Remark</label>
+                                <textarea class="form-control form-control-lg shadow-sm" id="order_remark" name="remark" rows="5" placeholder="Optional remark for the entire order">{{ old('remark', $order->remark) }}</textarea>
+                            </div>
                         </div>
                     </div>
 

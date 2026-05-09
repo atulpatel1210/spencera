@@ -349,8 +349,8 @@
     
     <span class="strong-label">REMARKS:</span>
     <div class="remarks">
-        @if (count($allRemarks) > 0)
-            {{ implode('; ', array_unique($allRemarks)) }}
+        @if (!empty($order->remark))
+            <strong>Order Remark:</strong> {{ $order->remark }}
         @else
             <em style="color: #888;">No specific remarks for this order.</em>
         @endif

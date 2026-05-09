@@ -63,14 +63,14 @@
                                         </select>
                                     </div>
 
-                                    <div class="col-sm-6 col-md-3">
+                                    <div class="col-sm-6 col-md-2">
                                         <label class="form-label fw-semibold small text-secondary">Size</label>
                                         <select id="size_id" class="form-select bg-light border-0">
                                             <option value="">Select</option>
                                         </select>
                                     </div>
 
-                                    <div class="col-sm-6 col-md-3">
+                                    <div class="col-sm-6 col-md-2">
                                         <label class="form-label fw-semibold small text-secondary">Finish</label>
                                         <select id="finish_id" class="form-select bg-light border-0">
                                             <option value="">Select</option>
@@ -82,6 +82,12 @@
                                         <select id="batch_id" class="form-select bg-light border-0">
                                             <option value="">Select</option>
                                         </select>
+                                    </div>
+
+                                    <div class="col-sm-6 col-md-2">
+                                        <label class="form-label fw-semibold small text-secondary">Batch Qty</label>
+                                        <input type="text" id="batch_qty" class="form-control bg-light border-0 fw-bold text-primary" readonly value="0">
+                                        <div id="remaining_qty_text" class="text-muted fw-bold" style="font-size: 11px; margin-top: 2px;"></div>
                                     </div>
                                     
                                    <div class="col-md-12">
@@ -199,7 +205,7 @@
     let poItemsData = [];
     let palletIndex = 0;
 
-    function populateSelect($select, items, valueKey, textKey) {
+    function populateSelect($select, items, valueKey, textKey, qtyKey = null, remKey = null) {
         let added = []
         $select.html('<option value="">Select</option>')
         items.forEach(item => {
@@ -209,7 +215,9 @@
             if (!val || !txt) return
             if (added.includes(val)) return
             added.push(val)
-            $select.append(`<option value="${val}">${txt}</option>`)
+            let qtyAttr = qtyKey ? ` data-qty="${item[qtyKey]}"` : ''
+            let remAttr = remKey ? ` data-rem="${item[remKey]}"` : ''
+            $select.append(`<option value="${val}"${qtyAttr}${remAttr}>${txt}</option>`)
         })
     }
 
@@ -224,6 +232,8 @@
         $('#palletContainer').find('.pallet-row').not(':first').remove();
         $('#palletContainer').find('input').val('');
         $('#total_qty').val('0');
+        $('#batch_qty').val('0');
+        $('#remaining_qty_text').text('');
 
         if (!po_id) return
 
@@ -250,7 +260,7 @@
                 populateSelect($('#design_id'), designs, 'id', 'name')
                 populateSelect($('#size_id'), sizes, 'id', 'size_name')
                 populateSelect($('#finish_id'), finishes, 'id', 'finish_name')
-                populateSelect($('#batch_id'), batches, 'id', 'batch_no')
+                populateSelect($('#batch_id'), batches, 'id', 'batch_no', 'qty', 'remaining_qty')
             },
             complete: function() {
                  $('#design_id, #size_id, #finish_id, #batch_id').prop('disabled', false);
@@ -258,12 +268,52 @@
         })
     })
 
+    $('#batch_id').change(function() {
+        let opt = $(this).find('option:selected');
+        let qty = opt.data('qty') || 0;
+        $('#batch_qty').val(qty);
+        updateBatchRemainingDisplay();
+    });
+
+    function updateBatchRemainingDisplay() {
+        let batchId = $('#batch_id').val();
+        if (!batchId) {
+            $('#remaining_qty_text').text('');
+            return;
+        }
+
+        let opt = $('#batch_id option:selected');
+        let initialRem = parseFloat(opt.data('rem')) || 0;
+        
+        // Calculate local quantity for this batch in the table
+        let localQty = 0;
+        $('#hiddenInputsContainer div').each(function() {
+            let rowBatchId = $(this).find('input[name*="[batch_id]"]').val();
+            if (rowBatchId == batchId) {
+                localQty += parseFloat($(this).find('input[name*="[total_qty]"]').val()) || 0;
+            }
+        });
+
+        // ALSO subtract what is currently entered in the configuration rows above
+        let currentEntryQty = parseFloat($('#total_qty').val()) || 0;
+
+        let currentRem = initialRem - localQty - currentEntryQty;
+        $('#remaining_qty_text').text('Remaining: ' + currentRem);
+        
+        if (currentRem < 0) {
+            $('#remaining_qty_text').addClass('text-danger').removeClass('text-muted');
+        } else {
+            $('#remaining_qty_text').addClass('text-muted').removeClass('text-danger');
+        }
+    }
+
     $(document).on('input', '.box_per_pallet, .total_pallet', function() {
         let row = $(this).closest('.pallet-row')
         let box = parseFloat(row.find('.box_per_pallet').val()) || 0
         let pal = parseFloat(row.find('.total_pallet').val()) || 0
         row.find('.total_boxes').val(box * pal)
         calculateTotal()
+        updateBatchRemainingDisplay()
     })
 
     function calculateTotal() {
@@ -308,8 +358,9 @@
                 </div>
             </div>
             <div class="col-12 col-md-3">
-                <button type="button" class="btn btn-outline-danger w-100 rounded-pill remove-pallet shadow-sm">
-                    <i class="bi bi-trash me-2"></i> Remove Configuration
+                <label></label>
+                <button type="button" class="btn btn-danger d-block remove-pallet">
+                    <i class="bi bi-trash"></i>
                 </button>
             </div>
         </div>`
@@ -319,6 +370,7 @@
     $(document).on('click', '.remove-pallet', function() {
         $(this).closest('.pallet-row').remove()
         calculateTotal()
+        updateBatchRemainingDisplay()
     })
 
     $('#addRow').click(function() {
@@ -458,8 +510,8 @@
         // Reset input inputs
         $('#palletContainer').find('.pallet-row').not(':first').remove();
         $('#palletContainer').find('input').val('');
-        $('#total_qty').val('0');
         $('#remark').val('');
+        calculateTotal();
         
     });
 
@@ -473,6 +525,9 @@
         subRow.remove();
         // Remove hidden inputs
         $(`.hidden-group-${idx}`).remove();
+
+        // Update Remaining Display
+        updateBatchRemainingDisplay();
 
         // Check if sub-body is empty, if so remove main row
         if (subBody.children().length === 0) {

@@ -40,13 +40,14 @@ class PurchaseOrderController extends Controller
             'order_date' => 'required|date',
             'box_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'order_items' => 'required',
+            'remark' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
 
         try {
 
-            $data = $request->only('po', 'party_id', 'brand_name', 'order_date');
+            $data = $request->only('po', 'party_id', 'brand_name', 'order_date', 'remark');
 
             if ($request->hasFile('box_image')) {
                 $data['box_image'] = $request->file('box_image')->store('box_images', 'public');
@@ -223,12 +224,13 @@ class PurchaseOrderController extends Controller
             'order_date' => 'required|date',
             'box_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
             'order_items' => 'required|string',
+            'remark' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
 
         try {
-            $updateData = $request->only('po', 'party_id', 'brand_name', 'order_date');
+            $updateData = $request->only('po', 'party_id', 'brand_name', 'order_date', 'remark');
             if ($request->hasFile('box_image')) {
                 if ($order->box_image) {
                     Storage::disk('public')->delete('box_images/' . $order->box_image); 
