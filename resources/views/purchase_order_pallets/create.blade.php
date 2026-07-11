@@ -15,6 +15,17 @@
                 <div class="card-body p-4">
                     <form method="POST" action="{{ route('purchase_order_pallets.store') }}" id="palletForm" class="needs-validation" novalidate>
                         @csrf
+                        
+                        @if ($errors->any())
+                            <div class="alert alert-danger rounded-3 shadow-sm mb-4">
+                                <div class="fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>Please fix the following errors:</div>
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
 
                         {{-- PO SELECTION --}}
                         <div class="card border-0 shadow-sm bg-light rounded-4 mb-4">
@@ -51,10 +62,16 @@
                         {{-- Order Item Selection Box --}}
                         <div class="card border-0 shadow-sm rounded-4 mb-4 input-section border-start border-4 border-primary">
                             <div class="card-body p-4">
-                                <h6 class="fw-bold mb-4 text-primary d-flex align-items-center">
-                                    <span class="bg-primary-subtle text-primary rounded-circle p-2 me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;"><i class="bi bi-plus-lg fs-6"></i></span> 
-                                    New Pallet Entry
-                                </h6>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h6 class="fw-bold mb-0 d-flex align-items-center" style="color: #fd7e14;">
+            <span class="bg-primary-subtle rounded-circle p-2 me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; color: #fd7e14;"><i class="bi bi-plus-lg fs-6"></i></span> 
+            New Pallet Entry
+        </h6>
+        <div class="form-check form-switch fs-5">
+            <input class="form-check-input" type="checkbox" id="is_mix_pallet">
+            <label class="form-check-label fw-bold small text-secondary mt-1" for="is_mix_pallet">Is Mix Pallet?</label>
+        </div>
+    </div>
                                 <div class="row g-3 mb-4">
                                     <div class="col-sm-6 col-md-3">
                                         <label class="form-label fw-semibold small text-secondary">Design</label>
@@ -86,8 +103,28 @@
 
                                     <div class="col-sm-6 col-md-2">
                                         <label class="form-label fw-semibold small text-secondary">Batch Qty</label>
-                                        <input type="text" id="batch_qty" class="form-control bg-light border-0 fw-bold text-primary" readonly value="0">
+                                        <input type="text" id="batch_qty" class="form-control fw-bold" style="color: #fd7e14; border-color: #ffdeb3; background-color: #fff9f0;" readonly value="0">
                                         <div id="remaining_qty_text" class="text-muted fw-bold" style="font-size: 11px; margin-top: 2px;"></div>
+                                    </div>
+                                    
+                                    <div class="col-sm-6 col-md-2 mix-only" style="display: none;">
+                                        <label class="form-label fw-semibold small text-secondary">Box / Pallet</label>
+                                        <input type="number" id="mix_box_per_pallet" class="form-control bg-light border-0" placeholder="Box">
+                                    </div>
+                                    <div class="col-sm-6 col-md-2 mix-only" style="display: none;">
+                                        <label class="form-label fw-semibold small text-secondary">Total Pallets</label>
+                                        <input type="number" id="mix_total_pallet" class="form-control bg-light border-0" placeholder="Pallet">
+                                    </div>
+                                    <div class="col-sm-6 col-md-2 mix-only" style="display: none;">
+                                        <label class="form-label fw-semibold small text-secondary">Total Boxes</label>
+                                        <input type="number" id="mix_item_qty" class="form-control bg-primary-subtle border-0 fw-bold text-primary" readonly placeholder="0">
+                                    </div>
+                                    <div class="col-sm-6 col-md-2 mix-only" style="display: none;">
+                                        <div class="d-flex align-items-end h-100 pb-1">
+                                            <button type="button" class="btn btn-outline-primary w-100" id="addMixItemBtn">
+                                                <i class="bi bi-plus"></i> Add Item
+                                            </button>
+                                        </div>
                                     </div>
                                     
                                    <div class="col-md-12">
@@ -96,12 +133,38 @@
                                     </div>
                                 </div>
 
+                                {{-- Mix Items Table --}}
+                                <div class="mb-4 mix-only" style="display: none;">
+                                    <label class="form-label fw-bold text-dark mb-2">Mix Items List</label>
+                                    <div class="table-responsive border rounded-3 bg-white">
+                                        <table class="table table-sm table-hover mb-0">
+                                            <thead class="bg-light small text-muted text-uppercase fw-bold">
+                                                <tr>
+                                                    <th class="py-3 ps-3 border-0">Design</th>
+                                                    <th class="py-3 border-0">Size</th>
+                                                    <th class="py-3 border-0">Finish</th>
+                                                    <th class="py-3 border-0">Batch</th>
+                                                    <th class="py-3 border-0 text-center">Box/Pallet</th>
+                                                    <th class="py-3 border-0 text-center">Total Pallets</th>
+                                                    <th class="py-3 border-0 text-center">Total Boxes</th>
+                                                    <th class="py-3 pe-3 border-0 text-center">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="mixItemsBody">
+                                                <tr id="emptyMixRow">
+                                                    <td colspan="8" class="text-center text-muted py-4">No items added to mix.</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
                                 {{-- Pallet Configuration Sub-Section --}}
-                                <div class="bg-light p-4 rounded-4 border border-dashed">
+                                <div id="normalPalletSection" class="bg-white p-4 rounded-3 border">
                                     <label class="form-label fw-bold text-dark mb-3"><i class="bi bi-gear me-1"></i> Pallet Configuration</label>
                                     
                                     <div id="palletContainer">
-                                        <div class="row g-3 align-items-center pallet-row mb-4 p-3 bg-white rounded-3 shadow-sm border border-light">
+                                        <div class="row g-3 align-items-center pallet-row mb-3">
                                             <div class="col-12 col-md-3">
                                                 <label class="small text-secondary mb-1 text-uppercase fw-bold">Box / Pallet</label>
                                                 <div class="input-group">
@@ -126,13 +189,13 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="mt-3 pt-3 border-top d-flex flex-column align-items-end gap-3">
-                                        <div class="section-total-container d-flex align-items-center bg-white px-3 py-2 rounded-3 shadow-sm border">
-                                            <span class="me-2 fw-bold text-secondary small text-uppercase">Section Total:</span>
-                                            <input type="text" id="total_qty" class="form-control form-control-sm w-auto fw-bold text-center border-0 bg-light text-primary fs-6" readonly value="0">
+                                    <div class="mt-4 pt-3 border-top d-flex flex-column align-items-end gap-3">
+                                        <div class="d-flex align-items-center bg-white px-4 py-2 rounded-3 border border-light" style="min-width: 320px; justify-content: space-between;">
+                                            <span class="fw-bold text-secondary small text-uppercase">Section Total:</span>
+                                            <input type="text" id="total_qty" class="form-control form-control-sm w-auto fw-bold text-end border-0 bg-transparent fs-5" style="color: #fd7e14;" readonly value="0">
                                         </div>
                                         
-                                        <button type="button" id="addMorePalletBtn" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                        <button type="button" id="addMorePalletBtn" class="btn btn-outline-primary btn-sm rounded-pill px-4 py-2 fw-bold bg-white">
                                             <i class="bi bi-plus-circle me-1"></i> Add Configuration Row
                                         </button>
                                     </div>
@@ -149,33 +212,35 @@
                         </div>
 
                         {{-- Items Table --}}
-                        <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4">
-                            <div class="card-header bg-light py-3 px-4">
-                                <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-list-check me-2"></i> Pallets to Save</h6>
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <h5 class="fw-bold mb-1 text-dark"><i class="bi bi-list-check me-2"></i> Pallets to Save</h5>
+                                    <div class="text-muted small">Review and save pallet details before proceeding.</div>
+                                </div>
                             </div>
-                            <div class="table-responsive">
-                                <table class="table table-hover mb-0 align-middle">
-                                    <thead class="bg-white text-secondary small text-uppercase border-bottom">
-                                        <tr>
-                                            <th style="width: 15%" class="fw-semibold ps-4">Design</th>
-                                            <th style="width: 10%" class="fw-semibold">Size</th>
-                                            <th style="width: 10%" class="fw-semibold">Finish</th>
-                                            <th style="width: 10%" class="fw-semibold">Batch</th>
-                                            <th style="width: 15%" class="fw-semibold">Remark</th>
-                                            <th style="width: 40%" class="fw-semibold pe-4">Pallet Details</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="itemsTable">
-                                        <tr id="emptyRow">
-                                            <td colspan="6" class="text-center py-5 text-muted">
-                                                <div class="py-4">
-                                                    <i class="bi bi-inbox fs-1 d-block opacity-25 mb-2"></i>
-                                                    <span class="fw-medium">No pallets added yet. Use the form above to add items.</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            
+                            <div class="card border-0 bg-transparent shadow-none">
+                                <!-- Header Row -->
+                                <div class="d-flex text-secondary small text-uppercase fw-bold pb-3 border-bottom mb-3 px-2">
+                                    <div style="width: 23%" class="ps-2">Design</div>
+                                    <div style="width: 12%">Size</div>
+                                    <div style="width: 11%">Finish</div>
+                                    <div style="width: 12%">Batch</div>
+                                    <div style="width: 7%">Remark</div>
+                                    <div style="width: 35%" class="text-center">Pallet Details</div>
+                                </div>
+                                
+                                <div id="itemsTable" class="d-flex flex-column gap-3">
+                                    <div id="emptyRow" class="card border border-light shadow-sm bg-white rounded-3">
+                                        <div class="card-body text-center py-5 text-muted">
+                                            <div class="py-4">
+                                                <i class="bi bi-inbox fs-1 d-block opacity-25 mb-2"></i>
+                                                <span class="fw-medium">No pallets added yet. Use the form above to add items.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -204,6 +269,136 @@
 <script>
     let poItemsData = [];
     let palletIndex = 0;
+    let mixItems = [];
+
+    $('#is_mix_pallet').change(function() {
+        if ($(this).is(':checked')) {
+            $('.mix-only').show();
+            $('#normalPalletSection').hide(); 
+        } else {
+            $('.mix-only').hide();
+            $('#normalPalletSection').show();
+        }
+    });
+
+    $(document).on('input', '#mix_box_per_pallet, #mix_total_pallet', function() {
+        let box = parseFloat($('#mix_box_per_pallet').val()) || 0;
+        let pal = parseFloat($('#mix_total_pallet').val()) || 0;
+        $('#mix_item_qty').val(box * pal);
+        updateBatchRemainingDisplay();
+    });
+
+    function getAddedBatchQuantity(batchIdToCheck) {
+        let qty = 0;
+        $('#hiddenInputsContainer div').each(function() {
+            let designQtyJson = $(this).find('[name*="[design_quantities]"]').val();
+            if (designQtyJson) {
+                try {
+                    let arr = JSON.parse(designQtyJson);
+                    arr.forEach(item => {
+                        if (item.batch_id == batchIdToCheck) {
+                            qty += parseFloat(item.quantity) || 0;
+                        }
+                    });
+                } catch(e) {}
+            }
+        });
+        return qty;
+    }
+
+    $('#addMixItemBtn').click(function() {
+        let designId = $('#design_id').val();
+        let sizeId = $('#size_id').val();
+        let finishId = $('#finish_id').val();
+        let batchId = $('#batch_id').val();
+        
+        let box = parseFloat($('#mix_box_per_pallet').val()) || 0;
+        let pal = parseFloat($('#mix_total_pallet').val()) || 0;
+        let qty = parseFloat($('#mix_item_qty').val()) || 0;
+
+        if(!designId || !sizeId || !finishId || !batchId) {
+            alert('Please select Design, Size, Finish and Batch.');
+            return;
+        }
+
+        if (box <= 0 || pal <= 0 || qty <= 0) {
+            alert('Please enter valid Box/Pallet and Total Pallets.');
+            return;
+        }
+
+        let opt = $('#batch_id option:selected');
+        let initialRem = parseFloat(opt.data('rem')) || 0;
+        
+        let localQty = getAddedBatchQuantity(batchId);
+        
+        mixItems.forEach(mi => {
+            if (mi.batchId == batchId) localQty += mi.qty;
+        });
+
+        if (qty > (initialRem - localQty)) {
+            alert('Quantity exceeds remaining batch quantity.');
+            return;
+        }
+
+        let designTxt = $('#design_id option:selected').text();
+        let sizeTxt = $('#size_id option:selected').text();
+        let finishTxt = $('#finish_id option:selected').text();
+        let batchTxt = $('#batch_id option:selected').text();
+
+        let matchedItem = poItemsData.find(i => 
+            i.design_id == designId && 
+            i.size_id == sizeId && 
+            i.finish_id == finishId
+        );
+
+        if (!matchedItem) {
+            alert('This combination does not match any Item in the selected PO.');
+            return;
+        }
+
+        mixItems.push({
+            designId, sizeId, finishId, batchId, itemId: matchedItem.id,
+            designTxt, sizeTxt, finishTxt, batchTxt,
+            box, pal, qty
+        });
+
+        renderMixItems();
+
+        $('#batch_id').val('').trigger('change');
+        $('#mix_box_per_pallet, #mix_total_pallet, #mix_item_qty').val('');
+    });
+
+    function renderMixItems() {
+        let tbody = $('#mixItemsBody');
+        tbody.empty();
+        
+        if (mixItems.length === 0) {
+            tbody.append('<tr id="emptyMixRow"><td colspan="8" class="text-center text-muted py-4">No items added to mix.</td></tr>');
+            return;
+        }
+
+        mixItems.forEach((mi, index) => {
+            tbody.append(`
+                <tr>
+                    <td class="ps-3 py-3">${mi.designTxt}</td>
+                    <td class="py-3">${mi.sizeTxt}</td>
+                    <td class="py-3">${mi.finishTxt}</td>
+                    <td class="py-3"><span class="badge bg-secondary-subtle text-secondary border border-secondary">${mi.batchTxt}</span></td>
+                    <td class="text-center py-3">${mi.box}</td>
+                    <td class="text-center py-3">${mi.pal}</td>
+                    <td class="text-center fw-bold text-success py-3">${mi.qty}</td>
+                    <td class="text-center pe-3 py-3">
+                        <button type="button" class="btn btn-outline-danger btn-sm py-0 px-1 border-0" onclick="removeMixItem(${index})"><i class="bi bi-x"></i></button>
+                    </td>
+                </tr>
+            `);
+        });
+    }
+
+    window.removeMixItem = function(index) {
+        mixItems.splice(index, 1);
+        renderMixItems();
+    }
 
     function populateSelect($select, items, valueKey, textKey, qtyKey = null, remKey = null) {
         let added = []
@@ -221,12 +416,140 @@
         })
     }
 
+    function clearSelect($select) {
+        $select.html('<option value="">Select</option>').val('');
+    }
+
+    function updateDesignOptions() {
+        let designs = [];
+        poItemsData.forEach(item => {
+            if (item.design_detail) {
+                designs.push(item.design_detail);
+            }
+        });
+        
+        populateSelect($('#design_id'), designs, 'id', 'name');
+        
+        let options = $('#design_id option').not('[value=""]');
+        if (options.length === 1) {
+            $('#design_id').val(options.val()).trigger('change');
+        } else {
+            $('#design_id').val('');
+            clearSelect($('#size_id'));
+            clearSelect($('#finish_id'));
+            clearSelect($('#batch_id'));
+            $('#batch_qty').val('0');
+            $('#remaining_qty_text').text('');
+        }
+    }
+
+    $('#design_id').change(function() {
+        let designId = $(this).val();
+        if (!designId) {
+            clearSelect($('#size_id'));
+            clearSelect($('#finish_id'));
+            clearSelect($('#batch_id'));
+            $('#batch_qty').val('0');
+            $('#remaining_qty_text').text('');
+            return;
+        }
+
+        let filteredItems = poItemsData.filter(item => item.design_id == designId);
+        let sizes = [];
+        filteredItems.forEach(item => {
+            if (item.size_detail && !Array.isArray(item.size_detail)) {
+                sizes.push(item.size_detail);
+            }
+        });
+
+        populateSelect($('#size_id'), sizes, 'id', 'size_name');
+
+        let options = $('#size_id option').not('[value=""]');
+        if (options.length === 1) {
+            $('#size_id').val(options.val()).trigger('change');
+        } else {
+            clearSelect($('#finish_id'));
+            clearSelect($('#batch_id'));
+            $('#batch_qty').val('0');
+            $('#remaining_qty_text').text('');
+        }
+    });
+
+    $('#size_id').change(function() {
+        let designId = $('#design_id').val();
+        let sizeId = $(this).val();
+        if (!designId || !sizeId) {
+            clearSelect($('#finish_id'));
+            clearSelect($('#batch_id'));
+            $('#batch_qty').val('0');
+            $('#remaining_qty_text').text('');
+            return;
+        }
+
+        let filteredItems = poItemsData.filter(item => item.design_id == designId && item.size_id == sizeId);
+        let finishes = [];
+        filteredItems.forEach(item => {
+            if (item.finish_detail) {
+                finishes.push(item.finish_detail);
+            }
+        });
+
+        populateSelect($('#finish_id'), finishes, 'id', 'finish_name');
+
+        let options = $('#finish_id option').not('[value=""]');
+        if (options.length === 1) {
+            $('#finish_id').val(options.val()).trigger('change');
+        } else {
+            clearSelect($('#batch_id'));
+            $('#batch_qty').val('0');
+            $('#remaining_qty_text').text('');
+        }
+    });
+
+    $('#finish_id').change(function() {
+        let designId = $('#design_id').val();
+        let sizeId = $('#size_id').val();
+        let finishId = $(this).val();
+
+        if (!designId || !sizeId || !finishId) {
+            clearSelect($('#batch_id'));
+            $('#batch_qty').val('0');
+            $('#remaining_qty_text').text('');
+            return;
+        }
+
+        let filteredItems = poItemsData.filter(item => 
+            item.design_id == designId && 
+            item.size_id == sizeId && 
+            item.finish_id == finishId
+        );
+
+        let batches = [];
+        filteredItems.forEach(item => {
+            if (item.batch_detail && Array.isArray(item.batch_detail)) {
+                item.batch_detail.forEach(b => batches.push(b));
+            }
+        });
+
+        populateSelect($('#batch_id'), batches, 'id', 'batch_no', 'qty', 'remaining_qty');
+
+        let options = $('#batch_id option').not('[value=""]');
+        if (options.length === 1) {
+            $('#batch_id').val(options.val()).trigger('change');
+        } else {
+            $('#batch_qty').val('0');
+            $('#remaining_qty_text').text('');
+        }
+    });
+
     $('#purchase_order_id').change(function() {
         let po_id = $(this).val()
-        populateSelect($('#design_id'), [], '', '')
-        populateSelect($('#size_id'), [], '', '')
-        populateSelect($('#finish_id'), [], '', '')
-        populateSelect($('#batch_id'), [], '', '')
+        
+        clearSelect($('#design_id'));
+        clearSelect($('#size_id'));
+        clearSelect($('#finish_id'));
+        clearSelect($('#batch_id'));
+        
         poItemsData = [];
         // Clear inputs on PO change
         $('#palletContainer').find('.pallet-row').not(':first').remove();
@@ -241,26 +564,16 @@
             url: '/get-order?purchase_order_id=' + po_id,
             type: 'GET',
             beforeSend: function() {
-                // Optional: show loader
                 $('#design_id, #size_id, #finish_id, #batch_id').prop('disabled', true);
             },
             success: function(res) {
                 poItemsData = res; 
-                let designs = [], sizes = [], finishes = [], batches = []
-
-                res.forEach(item => {
-                    if (item.design_detail) designs.push(item.design_detail)
-                    if (item.size_detail && !Array.isArray(item.size_detail)) sizes.push(item.size_detail)
-                    if (item.finish_detail) finishes.push(item.finish_detail)
-                    if (item.batch_detail && Array.isArray(item.batch_detail)) {
-                         item.batch_detail.forEach(b => batches.push(b));
-                    }
-                })
-
-                populateSelect($('#design_id'), designs, 'id', 'name')
-                populateSelect($('#size_id'), sizes, 'id', 'size_name')
-                populateSelect($('#finish_id'), finishes, 'id', 'finish_name')
-                populateSelect($('#batch_id'), batches, 'id', 'batch_no', 'qty', 'remaining_qty')
+                updateDesignOptions();
+                
+                if (typeof window.isRestoring !== 'undefined' && window.isRestoring) {
+                    restoreOldPallets();
+                    window.isRestoring = false;
+                }
             },
             complete: function() {
                  $('#design_id, #size_id, #finish_id, #batch_id').prop('disabled', false);
@@ -286,24 +599,30 @@
         let initialRem = parseFloat(opt.data('rem')) || 0;
         
         // Calculate local quantity for this batch in the table
-        let localQty = 0;
-        $('#hiddenInputsContainer div').each(function() {
-            let rowBatchId = $(this).find('input[name*="[batch_id]"]').val();
-            if (rowBatchId == batchId) {
-                localQty += parseFloat($(this).find('input[name*="[total_qty]"]').val()) || 0;
-            }
+        let localQty = getAddedBatchQuantity(batchId);
+        
+        // Also subtract what's currently in mix list
+        mixItems.forEach(mi => {
+            if (mi.batchId == batchId) localQty += mi.qty;
         });
 
         // ALSO subtract what is currently entered in the configuration rows above
-        let currentEntryQty = parseFloat($('#total_qty').val()) || 0;
+        let currentEntryQty = 0;
+        if (!$('#is_mix_pallet').is(':checked')) {
+            currentEntryQty = parseFloat($('#total_qty').val()) || 0;
+        } else {
+            currentEntryQty = parseFloat($('#mix_item_qty').val()) || 0;
+        }
 
         let currentRem = initialRem - localQty - currentEntryQty;
         $('#remaining_qty_text').text('Remaining: ' + currentRem);
         
         if (currentRem < 0) {
             $('#remaining_qty_text').addClass('text-danger').removeClass('text-muted');
+            $('#batch_qty').removeClass('text-warning').addClass('text-danger');
         } else {
             $('#remaining_qty_text').addClass('text-muted').removeClass('text-danger');
+            $('#batch_qty').removeClass('text-danger').addClass('text-warning');
         }
     }
 
@@ -374,7 +693,8 @@
     })
 
     $('#addRow').click(function() {
-        // Validation
+        let isMix = $('#is_mix_pallet').is(':checked');
+        
         let designId = $('#design_id').val();
         let sizeId = $('#size_id').val();
         let finishId = $('#finish_id').val();
@@ -383,109 +703,256 @@
         let poId = $('#purchase_order_id').val();
         let remarkVal = $('#remark').val() || '';
 
-        if(!designId || !sizeId || !finishId || !batchId) {
-            alert('Please select Design, Size, Finish and Batch.');
-            return;
+        if (!isMix) {
+            if(!designId || !sizeId || !finishId || !batchId) {
+                alert('Please select Design, Size, Finish and Batch.');
+                return;
+            }
+        } else {
+            if (mixItems.length === 0) {
+                alert('Please add at least one item to the mix.');
+                return;
+            }
         }
         
-        // Ensure at least one pallet row has data
         let hasData = false;
-        $('.pallet-row').each(function() {
-            let box = $(this).find('.box_per_pallet').val();
-            let pal = $(this).find('.total_pallet').val();
-            if(box > 0 && pal > 0) hasData = true;
-        });
-        
-        if(!hasData) {
-             alert('Please enter at least one Box/Pallet and Total Pallet quantity.');
-             return;
+        let singleTot = 0;
+        let mainRowsToProcess = [];
+
+        if (!isMix) {
+            $('.pallet-row').each(function() {
+                let box = parseFloat($(this).find('.box_per_pallet').val());
+                let pal = parseFloat($(this).find('.total_pallet').val());
+                if(box > 0 && pal > 0) {
+                    hasData = true;
+                    singleTot = parseInt($(this).find('.total_boxes').val());
+                    mainRowsToProcess.push({box, pal, tot: singleTot});
+                }
+            });
+            
+            if(!hasData) {
+                 alert('Please enter at least one Box/Pallet and Total Pallet quantity.');
+                 return;
+            }
+            
+            let opt = $('#batch_id option:selected');
+            let initialRem = parseFloat(opt.data('rem')) || 0;
+            let localQty = getAddedBatchQuantity(batchId);
+            
+            let totalToAdd = 0;
+            mainRowsToProcess.forEach(r => totalToAdd += r.tot);
+            
+            if (totalToAdd > (initialRem - localQty)) {
+                alert('Total quantity exceeds remaining batch quantity.');
+                return;
+            }
         }
 
-        let designTxt = $('#design_id option:selected').text();
-        let sizeTxt = $('#size_id option:selected').text();
-        let finishTxt = $('#finish_id option:selected').text();
-        let batchTxt = $('#batch_id option:selected').text();
+        let mainDesignTxt, mainSizeTxt, mainFinishTxt, mainBatchTxt;
+        let designQtyArr = [];
+        let matchedItem = null;
+        let groupKey = isMix ? 'MIX-' + Date.now() : `${designId}-${sizeId}-${finishId}-${batchId}-${remarkVal.replace(/\s+/g, '_')}`;
 
-        // Unique Group Key
-        let groupKey = `${designId}-${sizeId}-${finishId}-${batchId}-${remarkVal.replace(/\s+/g, '_')}`;
+        if (isMix) {
+            let firstItem = mixItems[0];
+            designId = firstItem.designId;
+            sizeId = firstItem.sizeId;
+            finishId = firstItem.finishId;
+            batchId = firstItem.batchId;
+            
+            let sumMixBoxes = 0;
+            mixItems.forEach(mi => {
+                designQtyArr.push({
+                    design_id: mi.designId,
+                    size_id: mi.sizeId,
+                    finish_id: mi.finishId,
+                    batch_id: mi.batchId,
+                    purchase_order_item_id: mi.itemId,
+                    quantity: mi.qty,
+                    pallet_size: mi.box,
+                    pallet_no: mi.pal,
+                    total_qty: mi.qty
+                });
+                sumMixBoxes += mi.qty;
+            });
+            
+            matchedItem = poItemsData.find(i => i.id == firstItem.itemId);
+            
+            // For Mix, we just process ONE main configuration which contains all mix items inside design_quantities
+            mainRowsToProcess.push({box: 0, pal: 0, tot: sumMixBoxes});
+        } else {
+            let mainDesignTxt = $('#design_id option:selected').text();
+            let mainSizeTxt = $('#size_id option:selected').text();
+            let mainFinishTxt = $('#finish_id option:selected').text();
+            let mainBatchTxt = $('#batch_id option:selected').text();
+            
+            matchedItem = poItemsData.find(i => 
+                i.design_id == designId && 
+                i.size_id == sizeId && 
+                i.finish_id == finishId
+            );
 
-        // Find Order Item ID
-        let matchedItem = poItemsData.find(i => 
-            i.design_id == designId && 
-            i.size_id == sizeId && 
-            i.finish_id == finishId
-        );
-
-        if (!matchedItem) {
-            alert('This combination (Design/Size/Finish) does not match any Item in the selected PO.');
-            return;
+            if (!matchedItem) {
+                alert('This combination (Design/Size/Finish) does not match any Item in the selected PO.');
+                return;
+            }
         }
 
-        // Hide empty state row
         $('#emptyRow').hide();
 
-        $('.pallet-row').each(function() {
-            let row = $(this);
-            let box = row.find('.box_per_pallet').val();
-            let pal = row.find('.total_pallet').val();
-            let tot = row.find('.total_boxes').val();
+        mainRowsToProcess.forEach(config => {
+            let box = config.box;
+            let pal = config.pal;
+            let tot = config.tot;
 
-            if (!box || !pal || box <= 0 || pal <= 0) return;
-
-            // Generate JSON for design quantities
-            let designQtyObj = {};
-            designQtyObj[designId] = {
-                quantity: tot,
-                size_id: sizeId,
-                finish_id: finishId
-            };
-            let designQtyJson = JSON.stringify(designQtyObj);
-
-            // Check if Main Row exists
-            let mainRow = $(`tr[data-group-key="${groupKey}"]`);
+            if (!isMix) {
+                designQtyArr = [{
+                    design_id: designId,
+                    size_id: sizeId,
+                    finish_id: finishId,
+                    batch_id: batchId,
+                    purchase_order_item_id: matchedItem.id,
+                    quantity: tot,
+                    pallet_size: box,
+                    pallet_no: pal,
+                    total_qty: tot
+                }];
+            }
+            
+            let designQtyJson = JSON.stringify(designQtyArr);
+            let mainRow = $(`div[data-group-key="${groupKey}"]`);
             
             if (mainRow.length === 0) {
-                // Create New Main Row
+                let itemsToRender = isMix ? mixItems : [];
+
                 let newMainRow = `
-                <tr data-group-key="${groupKey}" class="align-middle border-bottom">
-                    <td class="fw-medium ps-4 text-dark">${designTxt}</td>
-                    <td>${sizeTxt}</td>
-                    <td>${finishTxt}</td>
-                    <td><span class="badge bg-secondary-subtle text-secondary border border-secondary">${batchTxt}</span></td>
-                    <td class="text-muted small"><em>${remarkVal}</em></td>
-                    <td class="p-3 pe-4">
-                        <div class="card border-0 shadow-sm">
-                        <table class="table table-bordered table-sm mb-0 rounded overflow-hidden">
-                            <thead class="bg-dark text-white small text-uppercase">
-                                <tr>
-                                    <th style="width:25%" class="py-2">Box/Pallet</th>
-                                    <th style="width:25%" class="py-2">Total Pallet</th>
-                                    <th style="width:30%" class="py-2">Total Boxes</th>
-                                    <th style="width:20%" class="py-2">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody class="sub-body bg-white text-center">
-                            </tbody>
-                        </table>
+                <div class="card border border-light rounded-3 shadow-sm overflow-hidden bg-white mb-3" data-group-key="${groupKey}">
+                    ${isMix ? `
+                    <div class="bg-success-subtle text-success fw-bold px-4 py-2 border-bottom d-flex align-items-center">
+                        <div class="bg-success text-white rounded p-1 me-2 d-flex align-items-center justify-content-center"><i class="bi bi-boxes" style="font-size: 1.1rem; line-height: 1;"></i></div>
+                        MIX PALLET
+                    </div>
+                    ` : ''}
+                    
+                    <div class="card-body p-0">
+                        <!-- Sub-table headers (only on the right) -->
+                        <div class="d-flex align-items-stretch border-bottom bg-white">
+                            <div style="width: 65%;"></div>
+                            <div class="d-flex text-muted small fw-bold text-center bg-white border-start" style="width: 35%; font-size: 0.75rem;">
+                                <div class="flex-fill py-2 border-end" style="width: 25%">BOX/PALLET</div>
+                                <div class="flex-fill py-2 border-end" style="width: 25%">TOTAL PALLET</div>
+                                <div class="flex-fill py-2 border-end" style="width: 30%">TOTAL BOXES</div>
+                                <div class="flex-fill py-2" style="width: 20%">ACTION</div>
+                            </div>
                         </div>
-                    </td>
-                </tr>`;
+
+                        <!-- Rows Container -->
+                        <div class="item-rows-container">
+                            ${isMix ? itemsToRender.map((mi, idx, arr) => `
+                            <div class="d-flex align-items-stretch ${idx < arr.length - 1 ? 'border-bottom' : ''}">
+                                <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 23%;">
+                                    <span class="fw-bold text-dark me-2">${idx + 1}.</span>
+                                    <span class="fw-bold text-dark text-truncate">${mi.designTxt}</span>
+                                    <span class="text-muted ms-1 small text-nowrap">(${mi.qty} box)</span>
+                                </div>
+                                <div class="px-2 py-3 d-flex align-items-center border-end text-wrap" style="width: 12%;">
+                                    ${mi.sizeTxt}
+                                </div>
+                                <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 11%;">
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 text-truncate" style="max-width: 100%;">${mi.finishTxt}</span>
+                                </div>
+                                <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 12%;">
+                                    ${mi.batchTxt !== '-' && mi.batchTxt !== 'N/A' && mi.batchTxt !== '' ? `<span class="badge bg-secondary-subtle text-secondary border border-secondary rounded-pill px-2 text-truncate" style="max-width: 100%;">${mi.batchTxt}</span>` : '-'}
+                                </div>
+                                <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 7%;">
+                                    <span class="text-muted small text-truncate"><em>${idx === 0 ? (remarkVal || '-') : '-'}</em></span>
+                                </div>
+                                
+                                <!-- Pallet Details (Right Side) -->
+                                <div class="d-flex text-center align-items-stretch" style="width: 35%;">
+                                    <div class="flex-fill p-3 border-end d-flex align-items-center justify-content-center" style="width: 25%">${mi.box}</div>
+                                    <div class="flex-fill p-3 border-end d-flex align-items-center justify-content-center" style="width: 25%">${mi.pal}</div>
+                                    <div class="flex-fill p-3 border-end text-success fw-bold d-flex align-items-center justify-content-center" style="width: 30%">${mi.qty}</div>
+                                    <div class="flex-fill p-3 d-flex align-items-center justify-content-center text-muted small" style="width: 20%">
+                                        Mix Item
+                                    </div>
+                                </div>
+                            </div>
+                            `).join('') : ''}
+                        </div>
+
+                        <!-- Total row (Only for mix pallets) -->
+                        ${isMix ? `
+                        <div class="d-flex align-items-stretch border-top bg-light">
+                            <div style="width: 65%;"></div>
+                            <div class="d-flex text-center align-items-stretch" style="width: 35%;">
+                                <div class="flex-fill p-3 border-end d-flex align-items-center justify-content-end" style="width: 80%">
+                                    <div class="bg-success-subtle text-success p-1 rounded me-2 d-flex align-items-center justify-content-center"><i class="bi bi-boxes" style="font-size: 0.9rem;"></i></div>
+                                    <span class="fw-bold me-2 text-dark">Total Mix Boxes:</span>
+                                    <span class="fw-bold text-success fs-5">${tot}</span>
+                                </div>
+                                <div class="flex-fill p-3 d-flex align-items-center justify-content-center" style="width: 20%">
+                                    <button type="button" class="btn btn-outline-danger btn-sm p-1 px-2 remove-row text-danger border-0 bg-transparent" title="Remove Mix" data-index="${palletIndex}"><i class="bi bi-x-lg"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+                `;
                 $('#itemsTable').append(newMainRow);
-                mainRow = $(`tr[data-group-key="${groupKey}"]`);
+                mainRow = $(`div[data-group-key="${groupKey}"]`);
             }
 
-            // Append Pallet Sub-Row
-            let subRow = `
-            <tr>
-                <td class="py-2">${box}</td>
-                <td class="py-2">${pal}</td>
-                <td class="fw-bold text-success py-2">${tot}</td>
-                <td class="py-2"><button type="button" class="btn btn-outline-danger btn-sm p-1 px-2 remove-row rounded-circle border-0" title="Remove" data-index="${palletIndex}"><i class="bi bi-x-lg"></i></button></td>
-            </tr>`;
-            
-            mainRow.find('.sub-body').append(subRow);
+            if (!isMix) {
+                // Ensure previous rows have border-bottom if we are adding a new one
+                mainRow.find('.item-rows-container > div').addClass('border-bottom');
+                
+                let isFirstRow = mainRow.find('.item-rows-container > div').length === 0;
+                let designTxt = $('#design_id option:selected').text();
+                let sizeTxt = $('#size_id option:selected').text();
+                let finishTxt = $('#finish_id option:selected').text();
+                let batchTxt = $('#batch_id option:selected').text();
 
-            // Hidden Inputs
+                let normalRow = `
+                <div class="d-flex align-items-stretch pallet-item-row" data-row-index="${palletIndex}">
+                    <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 23%;">
+                        ${isFirstRow ? `
+                        <div class="bg-primary-subtle text-primary p-2 rounded me-2 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-box"></i>
+                        </div>
+                        <span class="fw-bold text-dark text-truncate">${designTxt}</span>
+                        ` : ''}
+                    </div>
+                    <div class="px-2 py-3 d-flex align-items-center border-end text-wrap" style="width: 12%;">
+                        ${isFirstRow ? sizeTxt : ''}
+                    </div>
+                    <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 11%;">
+                        ${isFirstRow ? `<span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 text-truncate" style="max-width: 100%;">${finishTxt}</span>` : ''}
+                    </div>
+                    <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 12%;">
+                        ${isFirstRow ? (batchTxt !== '-' && batchTxt !== 'N/A' && batchTxt !== '' ? `<span class="badge bg-secondary-subtle text-secondary border border-secondary rounded-pill px-2 text-truncate" style="max-width: 100%;">${batchTxt}</span>` : '-') : ''}
+                    </div>
+                    <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 7%;">
+                        ${isFirstRow ? `<span class="text-muted small text-truncate"><em>${remarkVal || '-'}</em></span>` : ''}
+                    </div>
+                    
+                    <!-- Pallet Details (Right Side) -->
+                    <div class="d-flex text-center align-items-stretch" style="width: 35%;">
+                        <div class="flex-fill p-3 border-end d-flex align-items-center justify-content-center" style="width: 25%">${box}</div>
+                        <div class="flex-fill p-3 border-end d-flex align-items-center justify-content-center" style="width: 25%">${pal}</div>
+                        <div class="flex-fill p-3 border-end text-success fw-bold d-flex align-items-center justify-content-center" style="width: 30%">${tot}</div>
+                        <div class="flex-fill p-3 d-flex align-items-center justify-content-center" style="width: 20%">
+                            <button type="button" class="btn btn-outline-danger btn-sm p-1 px-2 remove-row rounded-circle border-0" title="Remove" data-index="${palletIndex}"><i class="bi bi-x-lg"></i></button>
+                        </div>
+                    </div>
+                </div>
+                `;
+                mainRow.find('.item-rows-container').append(normalRow);
+            }
+            
+            let isMixVal = isMix ? 1 : 0;
+
             let inputs = `
             <div class="hidden-group-${palletIndex}">
                 <input type="hidden" name="pallets[${palletIndex}][purchase_order_id]" value="${poId}">
@@ -494,6 +961,7 @@
                 <input type="hidden" name="pallets[${palletIndex}][size_id]" value="${sizeId}">
                 <input type="hidden" name="pallets[${palletIndex}][finish_id]" value="${finishId}">
                 <input type="hidden" name="pallets[${palletIndex}][batch_id]" value="${batchId}">
+                <input type="hidden" name="pallets[${palletIndex}][is_mix_pallet]" value="${isMixVal}">
                 <input type="hidden" name="pallets[${palletIndex}][pallet_size]" value="${box}">
                 <input type="hidden" name="pallets[${palletIndex}][pallet_no]" value="${pal}"> 
                 <input type="hidden" name="pallets[${palletIndex}][total_qty]" value="${tot}">
@@ -507,10 +975,16 @@
             palletIndex++;
         });
 
-        // Reset input inputs
         $('#palletContainer').find('.pallet-row').not(':first').remove();
         $('#palletContainer').find('input').val('');
         $('#remark').val('');
+        
+        if (isMix) {
+            mixItems = [];
+            renderMixItems();
+            $('#is_mix_pallet').prop('checked', false).trigger('change');
+        }
+        
         calculateTotal();
         
     });
@@ -518,26 +992,39 @@
     $(document).on('click', '.remove-row', function() {
         let idx = $(this).data('index');
         
-        let subRow = $(this).closest('tr');
-        let subBody = subRow.closest('.sub-body');
+        let card = $(this).closest('.card[data-group-key]');
         
-        // Remove visual row
-        subRow.remove();
-        // Remove hidden inputs
-        $(`.hidden-group-${idx}`).remove();
+        if ($(this).attr('title') === 'Remove Mix') {
+            // Remove the whole mix card
+            card.remove();
+            $(`[class^="hidden-group-"]`).filter(function() {
+                return $(this).closest(`div.hidden-group-${idx}`).length > 0 || $(this).hasClass(`hidden-group-${idx}`);
+            }).remove();
+        } else {
+            // Remove normal pallet row
+            let row = $(this).closest('.pallet-item-row');
+            row.remove();
+            $(`.hidden-group-${idx}`).remove();
+            
+            // If card is empty, remove it
+            let container = card.find('.item-rows-container');
+            if (container.children().length === 0) {
+                card.remove();
+            } else {
+                // Remove border-bottom from the last child
+                container.children().last().removeClass('border-bottom');
+            }
+        }
 
         // Update Remaining Display
         updateBatchRemainingDisplay();
 
-        // Check if sub-body is empty, if so remove main row
-        if (subBody.children().length === 0) {
-            subBody.closest('table').closest('div').closest('td').closest('tr').remove();
-            
-            // Show empty state if no rows left
-            if($('#itemsTable tr').not('#emptyRow').length === 0) {
-                $('#emptyRow').show();
-            }
+        // Check if main container is empty
+        if ($('#itemsTable').children('.card[data-group-key]').length === 0) {
+            $('#emptyRow').show();
         }
+        
+        calculateTotal();
     });
     
     $('#palletForm').submit(function(e){
@@ -547,5 +1034,204 @@
             alert('Please add at least one pallet to the table before saving.');
         }
     });
+    
+    // RESTORE OLD DATA
+    let oldPalletsData = {!! json_encode(old('pallets', [])) !!};
+    let oldPoId = "{{ old('purchase_order_id') }}";
+    window.isRestoring = false;
+
+    if (oldPoId && oldPalletsData && Object.keys(oldPalletsData).length > 0) {
+        window.isRestoring = true;
+        // Wait for DOM to finish then trigger PO change
+        setTimeout(() => {
+            $('#purchase_order_id').val(oldPoId).trigger('change');
+        }, 100);
+    }
+    
+    function restoreOldPallets() {
+        if (!oldPalletsData || Object.keys(oldPalletsData).length === 0) return;
+        $('#emptyRow').hide();
+        
+        let oldPalletsArray = Object.values(oldPalletsData);
+        
+        oldPalletsArray.forEach(pallet => {
+            let isMix = pallet.is_mix_pallet == "1";
+            let poText = pallet.po || '';
+            let poId = pallet.purchase_order_id;
+            let remarkVal = pallet.remark || '';
+            let designQtyJson = pallet.design_quantities || '[]';
+            
+            let designQtyArr = [];
+            try { designQtyArr = JSON.parse(designQtyJson); } catch(e) {}
+            if (designQtyArr.length === 0) return;
+            
+            let firstItem = designQtyArr[0];
+            let groupKey = isMix ? 'MIX-' + Date.now() + Math.random() : `${firstItem.design_id}-${firstItem.size_id}-${firstItem.finish_id}-${firstItem.batch_id}-${remarkVal.replace(/\s+/g, '_')}`;
+            
+            let itemsToRender = [];
+            if (isMix) {
+                designQtyArr.forEach(mi => {
+                    let matched = poItemsData.find(i => i.id == mi.purchase_order_item_id);
+                    if (matched) {
+                        itemsToRender.push({
+                            designTxt: matched.design_detail ? matched.design_detail.name : '-',
+                            sizeTxt: matched.size_detail ? matched.size_detail.size_name : '-',
+                            finishTxt: matched.finish_detail ? matched.finish_detail.finish_name : '-',
+                            batchTxt: matched.batch_detail ? (matched.batch_detail.find(b => b.id == mi.batch_id)?.batch_no || '-') : '-',
+                            box: mi.pallet_size,
+                            pal: mi.pallet_no,
+                            qty: mi.quantity
+                        });
+                    }
+                });
+            } else {
+                let matched = poItemsData.find(i => i.id == firstItem.purchase_order_item_id);
+                if (matched) {
+                    itemsToRender.push({
+                        designTxt: matched.design_detail ? matched.design_detail.name : '-',
+                        sizeTxt: matched.size_detail ? matched.size_detail.size_name : '-',
+                        finishTxt: matched.finish_detail ? matched.finish_detail.finish_name : '-',
+                        batchTxt: matched.batch_detail ? (matched.batch_detail.find(b => b.id == firstItem.batch_id)?.batch_no || '-') : '-',
+                        box: pallet.pallet_size,
+                        pal: pallet.pallet_no,
+                        qty: pallet.total_qty
+                    });
+                }
+            }
+            
+            if (itemsToRender.length === 0) return;
+
+            let mainRow = $(`div[data-group-key="${groupKey}"]`);
+            if (mainRow.length === 0) {
+                let newMainRow = `
+                <div class="card border border-light rounded-3 shadow-sm overflow-hidden bg-white mb-3" data-group-key="${groupKey}">
+                    ${isMix ? `
+                    <div class="bg-success-subtle text-success fw-bold px-4 py-2 border-bottom d-flex align-items-center">
+                        <div class="bg-success text-white rounded p-1 me-2 d-flex align-items-center justify-content-center"><i class="bi bi-boxes" style="font-size: 1.1rem; line-height: 1;"></i></div>
+                        MIX PALLET
+                    </div>
+                    ` : ''}
+                    
+                    <div class="card-body p-0">
+                        <div class="d-flex align-items-stretch border-bottom bg-white">
+                            <div style="width: 65%;"></div>
+                            <div class="d-flex text-muted small fw-bold text-center bg-white border-start" style="width: 35%; font-size: 0.75rem;">
+                                <div class="flex-fill py-2 border-end" style="width: 25%">BOX/PALLET</div>
+                                <div class="flex-fill py-2 border-end" style="width: 25%">TOTAL PALLET</div>
+                                <div class="flex-fill py-2 border-end" style="width: 30%">TOTAL BOXES</div>
+                                <div class="flex-fill py-2" style="width: 20%">ACTION</div>
+                            </div>
+                        </div>
+                        <div class="item-rows-container">
+                            ${isMix ? itemsToRender.map((mi, idx, arr) => `
+                            <div class="d-flex align-items-stretch ${idx < arr.length - 1 ? 'border-bottom' : ''}">
+                                <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 23%;">
+                                    <span class="fw-bold text-dark me-2">${idx + 1}.</span>
+                                    <span class="fw-bold text-dark text-truncate">${mi.designTxt}</span>
+                                    <span class="text-muted ms-1 small text-nowrap">(${mi.qty} box)</span>
+                                </div>
+                                <div class="px-2 py-3 d-flex align-items-center border-end text-wrap" style="width: 12%;">${mi.sizeTxt}</div>
+                                <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 11%;">
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 text-truncate" style="max-width: 100%;">${mi.finishTxt}</span>
+                                </div>
+                                <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 12%;">
+                                    ${mi.batchTxt !== '-' && mi.batchTxt !== 'N/A' && mi.batchTxt !== '' ? `<span class="badge bg-secondary-subtle text-secondary border border-secondary rounded-pill px-2 text-truncate" style="max-width: 100%;">${mi.batchTxt}</span>` : '-'}
+                                </div>
+                                <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 7%;">
+                                    <span class="text-muted small text-truncate"><em>${idx === 0 ? (remarkVal || '-') : '-'}</em></span>
+                                </div>
+                                <div class="d-flex text-center align-items-stretch" style="width: 35%;">
+                                    <div class="flex-fill p-3 border-end d-flex align-items-center justify-content-center" style="width: 25%">${mi.box}</div>
+                                    <div class="flex-fill p-3 border-end d-flex align-items-center justify-content-center" style="width: 25%">${mi.pal}</div>
+                                    <div class="flex-fill p-3 border-end text-success fw-bold d-flex align-items-center justify-content-center" style="width: 30%">${mi.qty}</div>
+                                    <div class="flex-fill p-3 d-flex align-items-center justify-content-center text-muted small" style="width: 20%">Mix Item</div>
+                                </div>
+                            </div>
+                            `).join('') : ''}
+                        </div>
+                        ${isMix ? `
+                        <div class="d-flex align-items-stretch border-top bg-light">
+                            <div style="width: 65%;"></div>
+                            <div class="d-flex text-center align-items-stretch" style="width: 35%;">
+                                <div class="flex-fill p-3 border-end d-flex align-items-center justify-content-end" style="width: 80%">
+                                    <div class="bg-success-subtle text-success p-1 rounded me-2 d-flex align-items-center justify-content-center"><i class="bi bi-boxes" style="font-size: 0.9rem;"></i></div>
+                                    <span class="fw-bold me-2 text-dark">Total Mix Boxes:</span>
+                                    <span class="fw-bold text-success fs-5">${pallet.total_qty}</span>
+                                </div>
+                                <div class="flex-fill p-3 d-flex align-items-center justify-content-center" style="width: 20%">
+                                    <button type="button" class="btn btn-outline-danger btn-sm p-1 px-2 remove-row text-danger border-0 bg-transparent" title="Remove Mix" data-index="${palletIndex}"><i class="bi bi-x-lg"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+                `;
+                $('#itemsTable').append(newMainRow);
+                mainRow = $(`div[data-group-key="${groupKey}"]`);
+            }
+            
+            if (!isMix) {
+                mainRow.find('.item-rows-container > div').addClass('border-bottom');
+                let isFirstRow = mainRow.find('.item-rows-container > div').length === 0;
+                let mi = itemsToRender[0];
+                
+                let normalRow = `
+                <div class="d-flex align-items-stretch pallet-item-row" data-row-index="${palletIndex}">
+                    <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 23%;">
+                        ${isFirstRow ? `
+                        <div class="bg-primary-subtle text-primary p-2 rounded me-2 d-flex align-items-center justify-content-center"><i class="bi bi-box"></i></div>
+                        <span class="fw-bold text-dark text-truncate">${mi.designTxt}</span>
+                        ` : ''}
+                    </div>
+                    <div class="px-2 py-3 d-flex align-items-center border-end text-wrap" style="width: 12%;">${isFirstRow ? mi.sizeTxt : ''}</div>
+                    <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 11%;">
+                        ${isFirstRow ? `<span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 text-truncate" style="max-width: 100%;">${mi.finishTxt}</span>` : ''}
+                    </div>
+                    <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 12%;">
+                        ${isFirstRow ? (mi.batchTxt !== '-' && mi.batchTxt !== 'N/A' && mi.batchTxt !== '' ? `<span class="badge bg-secondary-subtle text-secondary border border-secondary rounded-pill px-2 text-truncate" style="max-width: 100%;">${mi.batchTxt}</span>` : '-') : ''}
+                    </div>
+                    <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 7%;">
+                        ${isFirstRow ? `<span class="text-muted small text-truncate"><em>${remarkVal || '-'}</em></span>` : ''}
+                    </div>
+                    <div class="d-flex text-center align-items-stretch" style="width: 35%;">
+                        <div class="flex-fill p-3 border-end d-flex align-items-center justify-content-center" style="width: 25%">${mi.box}</div>
+                        <div class="flex-fill p-3 border-end d-flex align-items-center justify-content-center" style="width: 25%">${mi.pal}</div>
+                        <div class="flex-fill p-3 border-end text-success fw-bold d-flex align-items-center justify-content-center" style="width: 30%">${mi.qty}</div>
+                        <div class="flex-fill p-3 d-flex align-items-center justify-content-center" style="width: 20%">
+                            <button type="button" class="btn btn-outline-danger btn-sm p-1 px-2 remove-row rounded-circle border-0" title="Remove" data-index="${palletIndex}"><i class="bi bi-x-lg"></i></button>
+                        </div>
+                    </div>
+                </div>
+                `;
+                mainRow.find('.item-rows-container').append(normalRow);
+            }
+            
+            let isMixVal = isMix ? 1 : 0;
+            let inputs = `
+            <div class="hidden-group-${palletIndex}">
+                <input type="hidden" name="pallets[${palletIndex}][purchase_order_id]" value="${poId}">
+                <input type="hidden" name="pallets[${palletIndex}][purchase_order_item_id]" value="${firstItem.purchase_order_item_id}">
+                <input type="hidden" name="pallets[${palletIndex}][design_id]" value="${firstItem.design_id}">
+                <input type="hidden" name="pallets[${palletIndex}][size_id]" value="${firstItem.size_id}">
+                <input type="hidden" name="pallets[${palletIndex}][finish_id]" value="${firstItem.finish_id}">
+                <input type="hidden" name="pallets[${palletIndex}][batch_id]" value="${firstItem.batch_id}">
+                <input type="hidden" name="pallets[${palletIndex}][is_mix_pallet]" value="${isMixVal}">
+                <input type="hidden" name="pallets[${palletIndex}][pallet_size]" value="${pallet.pallet_size}">
+                <input type="hidden" name="pallets[${palletIndex}][pallet_no]" value="${pallet.pallet_no}"> 
+                <input type="hidden" name="pallets[${palletIndex}][total_qty]" value="${pallet.total_qty}">
+                <input type="hidden" name="pallets[${palletIndex}][po]" value="${poText}">
+                <input type="hidden" name="pallets[${palletIndex}][remark]" value="${remarkVal}">
+                <textarea style="display:none" name="pallets[${palletIndex}][design_quantities]">${designQtyJson}</textarea>
+            </div>
+            `;
+            $('#hiddenInputsContainer').append(inputs);
+            
+            palletIndex++;
+        });
+        
+        calculateTotal();
+        updateBatchRemainingDisplay();
+    }
 </script>
 @endpush

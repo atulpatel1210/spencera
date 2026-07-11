@@ -33,6 +33,7 @@
                                     <th>Design</th>
                                     <th>Size</th>
                                     <th>Finish</th>
+                                    <th>Batch</th>
                                     <th class="text-center">Pallet Size</th>
                                     <th class="text-center">Pallet No</th>
                                     <th class="text-center">Total Qty</th>
@@ -71,6 +72,7 @@ $(function() {
             { data: 'design_detail.name', name: 'design_detail.name', className: 'fw-semibold' },
             { data: 'size_detail.size_name', name: 'size_detail.size_name' },
             { data: 'finish_detail.finish_name', name: 'finish_detail.finish_name' },
+            { data: 'batch_no', name: 'batch_no' },
             { data: 'pallet_size', name: 'pallet_size', className: 'text-center' },
             { data: 'pallet_no', name: 'pallet_no', className: 'text-center' },
             { data: 'total_qty', name: 'total_qty', className: 'text-center fw-bold text-success' },

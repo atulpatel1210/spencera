@@ -25,10 +25,15 @@ class PurchaseOrderPalletDesign extends Model
      */
     protected $fillable = [
         'purchase_order_pallet_id',
+        'purchase_order_item_id',
         'design_id',
         'size_id',
         'finish_id',
+        'batch_id',
         'quantity',
+        'pallet_size',
+        'pallet_no',
+        'total_qty',
     ];
 
     /**
@@ -61,5 +66,10 @@ class PurchaseOrderPalletDesign extends Model
     public function finish()
     {
         return $this->belongsTo(Finish::class, 'finish_id');
+    }
+
+    public function batch()
+    {
+        return $this->belongsTo(PurchaseOrderBatch::class, 'batch_id');
     }
 }

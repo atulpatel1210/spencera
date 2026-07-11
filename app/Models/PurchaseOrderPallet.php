@@ -20,6 +20,7 @@ class PurchaseOrderPallet extends Model
         'size_id',
         'finish_id',
         'batch_id',
+        'is_mix_pallet',
         'party_id',
         'pallet_size',
         'pallet_no',
@@ -56,6 +57,11 @@ class PurchaseOrderPallet extends Model
     public function finishDetail(): BelongsTo
     {
         return $this->belongsTo(Finish::class, 'finish_id', 'id');
+    }
+
+    public function purchaseOrderPalletDesigns()
+    {
+        return $this->hasMany(PurchaseOrderPalletDesign::class, 'purchase_order_pallet_id', 'id')->with(['design', 'size', 'finish']);
     }
 
     // public function batchDetail(): HasMany
