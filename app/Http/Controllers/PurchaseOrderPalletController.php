@@ -9,6 +9,7 @@ use App\Models\PurchaseOrderBatch;
 use App\Models\PurchaseOrderItem;
 use App\Models\PurchaseOrderPallet;
 use App\Models\Size;
+use App\Models\StockPallet;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\PurchaseOrderPalletDesign; // Using your provided model name
@@ -371,6 +372,62 @@ class PurchaseOrderPalletController extends Controller
                         'finish_id' => (int)$finishId,
                         'batch_id' => $batchId ? (int)$batchId : null,
                     ]);
+                }
+
+                // Update Stock
+                if (isset($palletData['is_mix_pallet']) && $palletData['is_mix_pallet'] == 1) {
+                    // For mix pallet, we can add each design quantity to stock
+                    foreach ($decodedDesigns as $detail) {
+                        $stock = StockPallet::firstOrNew([
+                            'party_id' => $partyId,
+                            'purchase_order_id' => $request->purchase_order_id,
+                            'purchase_order_item_id' => $detail['purchase_order_item_id'] ?? $palletData['purchase_order_item_id'],
+                            'design_id' => $detail['design_id'],
+                            'size_id' => $detail['size_id'],
+                            'finish_id' => $detail['finish_id'],
+                            'batch_id' => $detail['batch_id'] ?? null,
+                            'pallet_size' => $palletData['pallet_size'],
+                        ]);
+                        $stock->po = $palletData['po'];
+                        // Since it's a mix pallet, pallet count per item is fractional, we might just store 0 or full for display, 
+                        // but Dispatch expects pallet_no. If we set pallet_no = 0, dispatch won't work by pallet for mixed items.
+                        // For now we add pallet_no for the main item, or 0.
+                        $stock->pallet_no = ($stock->pallet_no ?? 0);
+                        $stock->current_qty = ($stock->current_qty ?? 0) + $detail['quantity'];
+                        $stock->save();
+                    }
+                    
+                    // Also create a stock entry for the mix pallet itself to allow dispatching the physical pallet
+                    $mixStock = StockPallet::firstOrNew([
+                        'party_id' => $partyId,
+                        'purchase_order_id' => $request->purchase_order_id,
+                        'purchase_order_item_id' => $palletData['purchase_order_item_id'],
+                        'design_id' => $palletData['design_id'],
+                        'size_id' => $palletData['size_id'],
+                        'finish_id' => $palletData['finish_id'],
+                        'batch_id' => $palletData['batch_id'],
+                        'pallet_size' => $palletData['pallet_size'],
+                    ]);
+                    $mixStock->po = $palletData['po'];
+                    $mixStock->pallet_no = ($mixStock->pallet_no ?? 0) + $palletData['pallet_no'];
+                    // The qty is tracked in individual items above, but the physical pallet count is tracked here.
+                    $mixStock->current_qty = ($mixStock->current_qty ?? 0) + $palletData['total_qty'];
+                    $mixStock->save();
+                } else {
+                    $stock = StockPallet::firstOrNew([
+                        'party_id' => $partyId,
+                        'purchase_order_id' => $request->purchase_order_id,
+                        'purchase_order_item_id' => $palletData['purchase_order_item_id'],
+                        'design_id' => $palletData['design_id'],
+                        'size_id' => $palletData['size_id'],
+                        'finish_id' => $palletData['finish_id'],
+                        'batch_id' => $palletData['batch_id'],
+                        'pallet_size' => $palletData['pallet_size'],
+                    ]);
+                    $stock->po = $palletData['po'];
+                    $stock->pallet_no = ($stock->pallet_no ?? 0) + $palletData['pallet_no'];
+                    $stock->current_qty = ($stock->current_qty ?? 0) + $palletData['total_qty'];
+                    $stock->save();
                 }
             }
 

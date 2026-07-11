@@ -208,6 +208,9 @@
                         $.each(data.orderItems, function (i, item) {
                             $('#po').append(`<option value="${item.id}" data-po="${item.po}">${item.po}</option>`);
                         });
+                        if(data.orderItems.length === 1) {
+                            $('#po').val(data.orderItems[0].id).trigger('change');
+                        }
                     }
                 });
             }
@@ -229,6 +232,9 @@
                         $.each(data.orderItems, function (i, item) {
                             $('#design').append(`<option value="${item.id}">${item.name}</option>`);
                         });
+                        if(data.orderItems.length === 1) {
+                            $('#design').val(data.orderItems[0].id).trigger('change');
+                        }
                     }
                 });
             }
@@ -251,6 +257,9 @@
                         $.each(data.orderItems, function (i, item) {
                             $('#size').append(`<option value="${item.id}">${item.size_name}</option>`);
                         });
+                        if(data.orderItems.length === 1) {
+                            $('#size').val(data.orderItems[0].id).trigger('change');
+                        }
                     }
                 });
             }
@@ -274,6 +283,9 @@
                         $.each(data.orderItems, function (i, item) {
                             $('#finish').append(`<option value="${item.id}">${item.finish_name}</option>`);
                         });
+                        if(data.orderItems.length === 1) {
+                            $('#finish').val(data.orderItems[0].id).trigger('change');
+                        }
                     }
                 });
             }
@@ -299,6 +311,9 @@
                             var name = item.production_qty+'-'+item.design_detail.name;
                             $('#order_item').append(`<option value="${item.id}">${name}</option>`);
                         });
+                        if(data.orderItems.length === 1) {
+                            $('#order_item').val(data.orderItems[0].id).trigger('change');
+                        }
                     }
                 });
             }
@@ -321,6 +336,9 @@
                         $.each(data, function (i, item) {
                             $('#batch').append(`<option value="${item.id}">${item.batch_no}</option>`);
                         });
+                        if(data.length === 1) {
+                            $('#batch').val(data[0].id).trigger('change');
+                        }
                     }
                 });
             }
@@ -348,6 +366,9 @@
                             var name = `Size: ${item.pallet_size} | Available Pallets: ${item.pallet_no}`;
                             $('#pallet').append(`<option value="${item.id}" data-size="${item.pallet_size}" data-available="${item.pallet_no}">${name}</option>`);
                         });
+                        if(data.length === 1) {
+                            $('#pallet').val(data[0].id).trigger('change');
+                        }
                     }
                 });
             }
