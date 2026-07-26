@@ -261,7 +261,6 @@ class DispatchController extends Controller
         $batchId = $request->input('batch_id');
 
         $query = StockPallet::where('purchase_order_id', $purchaseOrderId)
-                                ->where('pallet_no', '>', 0)
                                 ->with(['designDetail', 'sizeDetail', 'finishDetail']);
 
         if ($partyId) {

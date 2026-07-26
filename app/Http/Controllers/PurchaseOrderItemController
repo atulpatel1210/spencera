@@ -154,6 +154,7 @@ class PurchaseOrderItemController extends Controller
 
             if ($batch) {
                 $batch->qty += $qty;
+                $batch->remaining_qty += $qty;
                 $batch->save();
             } else {
                 PurchaseOrderBatch::create([
@@ -161,6 +162,7 @@ class PurchaseOrderItemController extends Controller
                     'purchase_order_item_id' => $item->id,
                     'batch_no' => $batchNo,
                     'qty' => $qty,
+                    'remaining_qty' => $qty,
                 ]);
             }
         }

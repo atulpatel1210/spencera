@@ -16,6 +16,7 @@ class PurchaseOrderBatch extends Model
         'purchase_order_item_id',
         'batch_no',
         'qty',
+        'remaining_qty',
         'party_id',
         'location',
     ];

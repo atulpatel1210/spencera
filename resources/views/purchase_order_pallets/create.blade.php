@@ -761,6 +761,8 @@
             batchId = firstItem.batchId;
             
             let sumMixBoxes = 0;
+            let mixPalletSize = 0;
+            let mixPalletNo = mixItems.length > 0 ? parseFloat(mixItems[0].pal) || 0 : 0;
             mixItems.forEach(mi => {
                 designQtyArr.push({
                     design_id: mi.designId,
@@ -774,12 +776,13 @@
                     total_qty: mi.qty
                 });
                 sumMixBoxes += mi.qty;
+                mixPalletSize += parseFloat(mi.box) || 0;
             });
             
             matchedItem = poItemsData.find(i => i.id == firstItem.itemId);
             
-            // For Mix, we just process ONE main configuration which contains all mix items inside design_quantities
-            mainRowsToProcess.push({box: 0, pal: 0, tot: sumMixBoxes});
+            // For Mix, we process ONE main configuration which contains all mix items inside design_quantities
+            mainRowsToProcess.push({box: mixPalletSize, pal: mixPalletNo, tot: sumMixBoxes});
         } else {
             let mainDesignTxt = $('#design_id option:selected').text();
             let mainSizeTxt = $('#size_id option:selected').text();

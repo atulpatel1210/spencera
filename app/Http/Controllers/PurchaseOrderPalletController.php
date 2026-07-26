@@ -153,9 +153,8 @@ class PurchaseOrderPalletController extends Controller
         
         foreach ($orderItems as $item) {
             foreach ($item->batchDetail as $batch) {
-                $packedQty = \App\Models\PurchaseOrderPalletDesign::where('batch_id', $batch->id)->sum('total_qty');
+                $packedQty = \App\Models\PurchaseOrderPalletDesign::where('batch_id', $batch->id)->sum('quantity');
                 $batch->packed_qty = $packedQty;
-                $batch->remaining_qty = $batch->qty - $packedQty;
             }
         }
         
@@ -271,7 +270,7 @@ class PurchaseOrderPalletController extends Controller
                 if (!$batch) continue;
                 
                 // Sum existing PurchaseOrderPalletDesign quantities for this batch
-                $existingQty = \App\Models\PurchaseOrderPalletDesign::where('batch_id', $batchId)->sum('total_qty');
+                $existingQty = \App\Models\PurchaseOrderPalletDesign::where('batch_id', $batchId)->sum('quantity');
                 
                 if (($existingQty + $incomingQty) > $batch->qty) {
                      $item = $batch->purchaseOrderItem;
@@ -281,6 +280,9 @@ class PurchaseOrderPalletController extends Controller
                         'pallets' => "Quantity limit exceeded for Design: {$designName}, Batch: {$batchName}. Limit: {$batch->qty}, Existing: $existingQty, Attempting to add: $incomingQty."
                     ]);
                 }
+                
+                $batch->remaining_qty -= $incomingQty;
+                $batch->save();
             }
 
             foreach ($request->pallets as $index => $palletData) {

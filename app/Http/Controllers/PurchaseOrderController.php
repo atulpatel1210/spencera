@@ -446,6 +446,7 @@ class PurchaseOrderController extends Controller
 
             if ($batch) {
                 $batch->qty += $qty;
+                $batch->remaining_qty += $qty;
                 if ($request->filled('location')) {
                     $batch->location = $request->location;
                 }
@@ -456,6 +457,7 @@ class PurchaseOrderController extends Controller
                     'purchase_order_item_id' => $item->id,
                     'batch_no' => $batchNo,
                     'qty' => $qty,
+                    'remaining_qty' => $qty,
                     'party_id' => $item->party_id,
                     'location' => $request->location ?? null,
                 ]);
