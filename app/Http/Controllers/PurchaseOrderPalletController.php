@@ -399,22 +399,22 @@ class PurchaseOrderPalletController extends Controller
                         $stock->save();
                     }
                     
-                    // Also create a stock entry for the mix pallet itself to allow dispatching the physical pallet
-                    $mixStock = StockPallet::firstOrNew([
-                        'party_id' => $partyId,
-                        'purchase_order_id' => $request->purchase_order_id,
-                        'purchase_order_item_id' => $palletData['purchase_order_item_id'],
-                        'design_id' => $palletData['design_id'],
-                        'size_id' => $palletData['size_id'],
-                        'finish_id' => $palletData['finish_id'],
-                        'batch_id' => $palletData['batch_id'],
-                        'pallet_size' => $palletData['pallet_size'],
-                    ]);
-                    $mixStock->po = $palletData['po'];
-                    $mixStock->pallet_no = ($mixStock->pallet_no ?? 0) + $palletData['pallet_no'];
-                    // The qty is tracked in individual items above, but the physical pallet count is tracked here.
-                    $mixStock->current_qty = ($mixStock->current_qty ?? 0) + $palletData['total_qty'];
-                    $mixStock->save();
+                    // // Also create a stock entry for the mix pallet itself to allow dispatching the physical pallet
+                    // $mixStock = StockPallet::firstOrNew([
+                    //     'party_id' => $partyId,
+                    //     'purchase_order_id' => $request->purchase_order_id,
+                    //     'purchase_order_item_id' => $palletData['purchase_order_item_id'],
+                    //     'design_id' => $palletData['design_id'],
+                    //     'size_id' => $palletData['size_id'],
+                    //     'finish_id' => $palletData['finish_id'],
+                    //     'batch_id' => $palletData['batch_id'],
+                    //     'pallet_size' => $palletData['pallet_size'],
+                    // ]);
+                    // $mixStock->po = $palletData['po'];
+                    // $mixStock->pallet_no = ($mixStock->pallet_no ?? 0) + $palletData['pallet_no'];
+                    // // The qty is tracked in individual items above, but the physical pallet count is tracked here.
+                    // $mixStock->current_qty = ($mixStock->current_qty ?? 0) + $palletData['total_qty'];
+                    // $mixStock->save();
                 } else {
                     $stock = StockPallet::firstOrNew([
                         'party_id' => $partyId,

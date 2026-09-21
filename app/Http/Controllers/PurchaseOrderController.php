@@ -420,16 +420,16 @@ class PurchaseOrderController extends Controller
 
         $qty = (int) $request->quantity;
 
-        if (strtolower($type) == 'planning' && $qty > $item->pending_qty) {
-            return response()->json([
-                'success' => false,
-                'errors' => ['quantity' => ['Planning quantity cannot exceed pending quantity']]
-            ], 422);
-        }
+        // if (strtolower($type) == 'planning' && $qty > $item->pending_qty) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'errors' => ['quantity' => ['Planning quantity cannot exceed pending quantity']]
+        //     ], 422);
+        // }
         if($type == 'production'){
             $item->planning_qty = $item->planning_qty - $qty;
-            $item->short_qty = $item->short_qty - $qty;
             $item->production_qty = $qty + $item->production_qty;
+            $item->short_qty = $item->production_qty - $item->order_qty;
         } else {
             $item->pending_qty = $item->pending_qty - $qty;
             $item->planning_qty = $qty + $item->planning_qty;

@@ -222,13 +222,18 @@
                             
                             <div class="card border-0 bg-transparent shadow-none">
                                 <!-- Header Row -->
-                                <div class="d-flex text-secondary small text-uppercase fw-bold pb-3 border-bottom mb-3 px-2">
+                                <div class="d-flex text-secondary small text-uppercase fw-bold pb-3 border-bottom mb-3 px-2 align-items-center">
                                     <div style="width: 23%" class="ps-2">Design</div>
                                     <div style="width: 12%">Size</div>
                                     <div style="width: 11%">Finish</div>
                                     <div style="width: 12%">Batch</div>
                                     <div style="width: 7%">Remark</div>
-                                    <div style="width: 35%" class="text-center">Pallet Details</div>
+                                    <div style="width: 35%" class="d-flex text-center">
+                                        <div style="width: 25%">Box/Pallet</div>
+                                        <div style="width: 25%">Total Pallet</div>
+                                        <div style="width: 30%">Total Boxes</div>
+                                        <div style="width: 20%">Action</div>
+                                    </div>
                                 </div>
                                 
                                 <div id="itemsTable" class="d-flex flex-column gap-3">
@@ -838,50 +843,57 @@
                     ` : ''}
                     
                     <div class="card-body p-0">
-                        <!-- Sub-table headers (only on the right) -->
-                        <div class="d-flex align-items-stretch border-bottom bg-white">
-                            <div style="width: 65%;"></div>
-                            <div class="d-flex text-muted small fw-bold text-center bg-white border-start" style="width: 35%; font-size: 0.75rem;">
-                                <div class="flex-fill py-2 border-end" style="width: 25%">BOX/PALLET</div>
-                                <div class="flex-fill py-2 border-end" style="width: 25%">TOTAL PALLET</div>
-                                <div class="flex-fill py-2 border-end" style="width: 30%">TOTAL BOXES</div>
-                                <div class="flex-fill py-2" style="width: 20%">ACTION</div>
-                            </div>
-                        </div>
 
                         <!-- Rows Container -->
                         <div class="item-rows-container">
-                            ${isMix ? itemsToRender.map((mi, idx, arr) => `
-                            <div class="d-flex align-items-stretch ${idx < arr.length - 1 ? 'border-bottom' : ''}">
-                                <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 23%;">
-                                    <span class="fw-bold text-dark me-2">${idx + 1}.</span>
-                                    <span class="fw-bold text-dark text-truncate">${mi.designTxt}</span>
-                                    <span class="text-muted ms-1 small text-nowrap">(${mi.qty} box)</span>
-                                </div>
-                                <div class="px-2 py-3 d-flex align-items-center border-end text-wrap" style="width: 12%;">
-                                    ${mi.sizeTxt}
-                                </div>
-                                <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 11%;">
-                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 text-truncate" style="max-width: 100%;">${mi.finishTxt}</span>
-                                </div>
-                                <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 12%;">
-                                    ${mi.batchTxt !== '-' && mi.batchTxt !== 'N/A' && mi.batchTxt !== '' ? `<span class="badge bg-secondary-subtle text-secondary border border-secondary rounded-pill px-2 text-truncate" style="max-width: 100%;">${mi.batchTxt}</span>` : '-'}
-                                </div>
-                                <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 7%;">
-                                    <span class="text-muted small text-truncate"><em>${idx === 0 ? (remarkVal || '-') : '-'}</em></span>
-                                </div>
-                                
-                                <!-- Pallet Details (Right Side) -->
-                                <div class="d-flex text-center align-items-stretch" style="width: 35%;">
-                                    <div class="flex-fill p-3 border-end d-flex align-items-center justify-content-center" style="width: 25%">${mi.box}</div>
-                                    <div class="flex-fill p-3 border-end d-flex align-items-center justify-content-center" style="width: 25%">${mi.pal}</div>
-                                    <div class="flex-fill p-3 border-end text-success fw-bold d-flex align-items-center justify-content-center" style="width: 30%">${mi.qty}</div>
-                                    <div class="flex-fill p-3 d-flex align-items-center justify-content-center text-muted small" style="width: 20%">
-                                        Mix Item
-                                    </div>
-                                </div>
-                            </div>
-                            `).join('') : ''}
+                            ${isMix ? `
+                            <table class="w-100 m-0" style="table-layout: fixed; border-collapse: collapse;">
+                                <tbody>
+                                    ${itemsToRender.map((mi, idx, arr) => `
+                                    <tr class="${idx < arr.length - 1 ? 'border-bottom' : ''}">
+                                        <td class="px-2 py-3 align-middle border-end" style="width: 23%;">
+                                            <div class="d-flex align-items-center">
+                                                <span class="fw-bold text-dark me-2">${idx + 1}.</span>
+                                                <span class="fw-bold text-dark text-truncate">${mi.designTxt}</span>
+                                                <span class="text-muted ms-1 small text-nowrap">(${mi.qty} box)</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-2 py-3 align-middle border-end text-wrap" style="width: 12%;">
+                                            ${mi.sizeTxt}
+                                        </td>
+                                        <td class="px-2 py-3 align-middle border-end" style="width: 11%;">
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 text-truncate" style="max-width: 100%;">${mi.finishTxt}</span>
+                                        </td>
+                                        <td class="px-2 py-3 align-middle border-end" style="width: 12%;">
+                                            ${mi.batchTxt !== '-' && mi.batchTxt !== 'N/A' && mi.batchTxt !== '' ? `<span class="badge bg-secondary-subtle text-secondary border border-secondary rounded-pill px-2 text-truncate" style="max-width: 100%;">${mi.batchTxt}</span>` : '-'}
+                                        </td>
+                                        <td class="px-2 py-3 align-middle border-end" style="width: 7%;">
+                                            <span class="text-muted small text-truncate"><em>${idx === 0 ? (remarkVal || '-') : '-'}</em></span>
+                                        </td>
+                                        
+                                        <!-- Pallet Details (Right Side) -->
+                                        <td class="p-3 align-middle text-center border-end" style="width: 8.75%;">
+                                            ${mi.box}
+                                        </td>
+                                        
+                                        ${idx === 0 ? `
+                                        <td class="p-3 align-middle text-center border-end" style="width: 8.75%;" rowspan="${arr.length}">
+                                            ${mi.pal}
+                                        </td>
+                                        ` : ''}
+                                        
+                                        <td class="p-3 align-middle text-center border-end text-success fw-bold" style="width: 10.5%;">
+                                            ${mi.qty}
+                                        </td>
+                                        
+                                        <td class="p-3 align-middle text-center text-muted small" style="width: 7%;">
+                                            Mix Item
+                                        </td>
+                                    </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                            ` : ''}
                         </div>
 
                         <!-- Total row (Only for mix pallets) -->
@@ -1116,41 +1128,55 @@
                     ` : ''}
                     
                     <div class="card-body p-0">
-                        <div class="d-flex align-items-stretch border-bottom bg-white">
-                            <div style="width: 65%;"></div>
-                            <div class="d-flex text-muted small fw-bold text-center bg-white border-start" style="width: 35%; font-size: 0.75rem;">
-                                <div class="flex-fill py-2 border-end" style="width: 25%">BOX/PALLET</div>
-                                <div class="flex-fill py-2 border-end" style="width: 25%">TOTAL PALLET</div>
-                                <div class="flex-fill py-2 border-end" style="width: 30%">TOTAL BOXES</div>
-                                <div class="flex-fill py-2" style="width: 20%">ACTION</div>
-                            </div>
-                        </div>
                         <div class="item-rows-container">
-                            ${isMix ? itemsToRender.map((mi, idx, arr) => `
-                            <div class="d-flex align-items-stretch ${idx < arr.length - 1 ? 'border-bottom' : ''}">
-                                <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 23%;">
-                                    <span class="fw-bold text-dark me-2">${idx + 1}.</span>
-                                    <span class="fw-bold text-dark text-truncate">${mi.designTxt}</span>
-                                    <span class="text-muted ms-1 small text-nowrap">(${mi.qty} box)</span>
-                                </div>
-                                <div class="px-2 py-3 d-flex align-items-center border-end text-wrap" style="width: 12%;">${mi.sizeTxt}</div>
-                                <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 11%;">
-                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 text-truncate" style="max-width: 100%;">${mi.finishTxt}</span>
-                                </div>
-                                <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 12%;">
-                                    ${mi.batchTxt !== '-' && mi.batchTxt !== 'N/A' && mi.batchTxt !== '' ? `<span class="badge bg-secondary-subtle text-secondary border border-secondary rounded-pill px-2 text-truncate" style="max-width: 100%;">${mi.batchTxt}</span>` : '-'}
-                                </div>
-                                <div class="px-2 py-3 d-flex align-items-center border-end" style="width: 7%;">
-                                    <span class="text-muted small text-truncate"><em>${idx === 0 ? (remarkVal || '-') : '-'}</em></span>
-                                </div>
-                                <div class="d-flex text-center align-items-stretch" style="width: 35%;">
-                                    <div class="flex-fill p-3 border-end d-flex align-items-center justify-content-center" style="width: 25%">${mi.box}</div>
-                                    <div class="flex-fill p-3 border-end d-flex align-items-center justify-content-center" style="width: 25%">${mi.pal}</div>
-                                    <div class="flex-fill p-3 border-end text-success fw-bold d-flex align-items-center justify-content-center" style="width: 30%">${mi.qty}</div>
-                                    <div class="flex-fill p-3 d-flex align-items-center justify-content-center text-muted small" style="width: 20%">Mix Item</div>
-                                </div>
-                            </div>
-                            `).join('') : ''}
+                            ${isMix ? `
+                            <table class="w-100 m-0" style="table-layout: fixed; border-collapse: collapse;">
+                                <tbody>
+                                    ${itemsToRender.map((mi, idx, arr) => `
+                                    <tr class="${idx < arr.length - 1 ? 'border-bottom' : ''}">
+                                        <td class="px-2 py-3 align-middle border-end" style="width: 23%;">
+                                            <div class="d-flex align-items-center">
+                                                <span class="fw-bold text-dark me-2">${idx + 1}.</span>
+                                                <span class="fw-bold text-dark text-truncate">${mi.designTxt}</span>
+                                                <span class="text-muted ms-1 small text-nowrap">(${mi.qty} box)</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-2 py-3 align-middle border-end text-wrap" style="width: 12%;">
+                                            ${mi.sizeTxt}
+                                        </td>
+                                        <td class="px-2 py-3 align-middle border-end" style="width: 11%;">
+                                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 text-truncate" style="max-width: 100%;">${mi.finishTxt}</span>
+                                        </td>
+                                        <td class="px-2 py-3 align-middle border-end" style="width: 12%;">
+                                            ${mi.batchTxt !== '-' && mi.batchTxt !== 'N/A' && mi.batchTxt !== '' ? `<span class="badge bg-secondary-subtle text-secondary border border-secondary rounded-pill px-2 text-truncate" style="max-width: 100%;">${mi.batchTxt}</span>` : '-'}
+                                        </td>
+                                        <td class="px-2 py-3 align-middle border-end" style="width: 7%;">
+                                            <span class="text-muted small text-truncate"><em>${idx === 0 ? (remarkVal || '-') : '-'}</em></span>
+                                        </td>
+                                        
+                                        <!-- Pallet Details (Right Side) -->
+                                        <td class="p-3 align-middle text-center border-end" style="width: 8.75%;">
+                                            ${mi.box}
+                                        </td>
+                                        
+                                        ${idx === 0 ? `
+                                        <td class="p-3 align-middle text-center border-end" style="width: 8.75%;" rowspan="${arr.length}">
+                                            ${mi.pal}
+                                        </td>
+                                        ` : ''}
+                                        
+                                        <td class="p-3 align-middle text-center border-end text-success fw-bold" style="width: 10.5%;">
+                                            ${mi.qty}
+                                        </td>
+                                        
+                                        <td class="p-3 align-middle text-center text-muted small" style="width: 7%;">
+                                            Mix Item
+                                        </td>
+                                    </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                            ` : ''}
                         </div>
                         ${isMix ? `
                         <div class="d-flex align-items-stretch border-top bg-light">
