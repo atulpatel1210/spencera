@@ -21,12 +21,12 @@ class DesignController extends Controller
 
     public function getDesignsData()
     {
-        $query = Design::with('party')->select(['id', 'name', 'party_id', 'image']);
+        $query = Design::with('parties')->select(['id', 'name', 'image']);
 
         return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('party_name', function(Design $design) {
-                return $design->party->party_name ?? '-';
+                return $design->parties->pluck('party_name')->implode(', ') ?: '-';
             })
             ->addColumn('image', function(Design $design) {
                 if ($design->image && Storage::disk('public')->exists('designs/'.$design->image)) {
@@ -66,22 +66,22 @@ class DesignController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'party_id' => 'required|exists:parties,id',
-            'name' => [
-                'required',
-                Rule::unique('designs')->where(fn($q) => $q->where('party_id', $request->party_id)),
-            ],
+            'party_id' => 'required|array',
+            'party_id.*' => 'exists:parties,id',
+            'name' => 'required|string|max:255',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $data = $request->only('name', 'party_id');
+        $data = $request->only('name');
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('designs', 'public');
             $data['image'] = basename($data['image']);
         }
 
-        Design::create($data);
+        $design = Design::create($data);
+        $design->parties()->sync($request->party_id);
+        
         return redirect()->route('designs.index')->with('success', 'Design added successfully.');
     }
 
@@ -94,16 +94,13 @@ class DesignController extends Controller
     public function update(Request $request, Design $design)
     {
         $request->validate([
-            'party_id' => 'required|exists:parties,id',
-            'name' => [
-                'required',
-                Rule::unique('designs')->where(fn($q) => $q->where('party_id', $request->party_id))
-                    ->ignore($design->id),
-            ],
+            'party_id' => 'required|array',
+            'party_id.*' => 'exists:parties,id',
+            'name' => 'required|string|max:255',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $data = $request->only('name', 'party_id');
+        $data = $request->only('name');
 
         if ($request->hasFile('image')) {
             if ($design->image && Storage::disk('public')->exists('designs/' . $design->image)) {
@@ -117,6 +114,8 @@ class DesignController extends Controller
         }
 
         $design->update($data);
+        $design->parties()->sync($request->party_id);
+        
         return redirect()->route('designs.index')->with('success', 'Design updated successfully.');
     }
 
@@ -153,7 +152,9 @@ class DesignController extends Controller
 
     public function getDesignByParty(Request $request)
     {
-        $designs = Design::where('party_id', $request->party_id)
+        $designs = Design::whereHas('parties', function($q) use ($request) {
+                $q->where('parties.id', $request->party_id);
+            })
             ->select('id', 'name')
             ->orderBy('name')
             ->get();

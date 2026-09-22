@@ -157,7 +157,7 @@ class PurchaseOrderItemController extends Controller
                 $batch->remaining_qty += $qty;
                 $batch->save();
             } else {
-                PurchaseOrderBatch::create([
+                $batch = PurchaseOrderBatch::create([
                     'purchase_order_id' => $item->purchase_order_id,
                     'purchase_order_item_id' => $item->id,
                     'batch_no' => $batchNo,
@@ -165,6 +165,23 @@ class PurchaseOrderItemController extends Controller
                     'remaining_qty' => $qty,
                 ]);
             }
+            
+            $item->load('purchaseOrder');
+            $stock = \App\Models\StockPallet::firstOrNew([
+                'party_id' => $item->purchaseOrder->party_id,
+                'purchase_order_id' => $item->purchase_order_id,
+                'purchase_order_item_id' => $item->id,
+                'design_id' => $item->design_id,
+                'size_id' => $item->size_id,
+                'finish_id' => $item->finish_id,
+                'batch_id' => $batch->id,
+                'pallet_size' => 0, // Loose box implies no pallet
+            ]);
+            $stock->po = $item->purchaseOrder->po;
+            $stock->pallet_no = $stock->pallet_no ?? 0;
+            $stock->loos_box = ($stock->loos_box ?? 0) + $qty;
+            $stock->current_qty = ($stock->current_qty ?? 0) + $qty;
+            $stock->save();
         }
         return response()->json(['success' => true]);
     }

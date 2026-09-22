@@ -26,7 +26,7 @@
                                 <div class="row g-3">
                                     <div class="col-md-4">
                                         <label for="party_id" class="form-label fw-semibold small text-secondary">Party</label>
-                                        <select class="form-select border-0 shadow-sm @error('party_id') is-invalid @enderror" id="party_id" name="party_id" required>
+                                        <select class="form-select border-0 shadow-sm @error('party_id') is-invalid @enderror form-select-sm" id="party_id" name="party_id" required>
                                             <option value="">Select Party</option>
                                             @foreach ($parties as $party)
                                                 <option value="{{ $party->id }}" {{ old('party_id', $dispatch->party_id) == $party->id ? 'selected' : '' }}>{{ $party->party_name }}</option>
@@ -38,7 +38,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label for="purchase_order_id" class="form-label fw-semibold small text-secondary">Purchase Order</label>
-                                        <select class="form-select border-0 shadow-sm @error('purchase_order_id') is-invalid @enderror" id="purchase_order_id" name="purchase_order_id" required>
+                                        <select class="form-select border-0 shadow-sm @error('purchase_order_id') is-invalid @enderror form-select-sm" id="purchase_order_id" name="purchase_order_id" required>
                                             <option value="">Select Purchase Order</option>
                                             @foreach ($purchaseOrders as $po)
                                                 <option value="{{ $po->id }}" {{ old('purchase_order_id', $dispatch->purchase_order_id) == $po->id ? 'selected' : '' }}>{{ $po->po }}</option>
@@ -50,7 +50,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label for="purchase_order_item_id" class="form-label fw-semibold small text-secondary">Order Item (Design/Size/Finish)</label>
-                                        <select class="form-select border-0 shadow-sm @error('purchase_order_item_id') is-invalid @enderror" id="purchase_order_item_id" name="purchase_order_item_id" required>
+                                        <select class="form-select border-0 shadow-sm @error('purchase_order_item_id') is-invalid @enderror form-select-sm" id="purchase_order_item_id" name="purchase_order_item_id" required>
                                             <option value="">Select Order Item</option>
                                             @foreach($purchaseOrderItems as $item)
                                                 <option value="{{ $item->id }}" {{ old('purchase_order_item_id', $dispatch->purchase_order_item_id) == $item->id ? 'selected' : '' }}>
@@ -64,7 +64,7 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label for="batch_id" class="form-label fw-semibold small text-secondary">Batch No</label>
-                                        <select class="form-select border-0 shadow-sm @error('batch_id') is-invalid @enderror" id="batch_id" name="batch_id">
+                                        <select class="form-select border-0 shadow-sm @error('batch_id') is-invalid @enderror form-select-sm" id="batch_id" name="batch_id">
                                             <option value="">Select Batch (Optional)</option>
                                             @foreach($batches as $batch)
                                                 <option value="{{ $batch->id }}" {{ old('batch_id', $dispatch->batch_id) == $batch->id ? 'selected' : '' }}>{{ $batch->batch_no }}</option>
@@ -76,7 +76,7 @@
                                     </div>
                                      <div class="col-md-4">
                                         <label for="pallet_id" class="form-label fw-semibold small text-secondary">Pallet No (Available Qty)</label>
-                                        <select class="form-select border-0 shadow-sm @error('pallet_id') is-invalid @enderror" id="pallet_id" name="pallet_id" required>
+                                        <select class="form-select border-0 shadow-sm @error('pallet_id') is-invalid @enderror form-select-sm" id="pallet_id" name="pallet_id" required>
                                             <option value="">Select Pallet</option>
                                             @foreach($stockPallets as $pallet)
                                                 <option value="{{ $pallet->id }}" {{ old('pallet_id', $dispatch->pallet_id) == $pallet->id ? 'selected' : '' }} data-current-qty="{{ $pallet->current_qty }}">
@@ -102,35 +102,35 @@
                                 <div class="row g-4">
                                     <div class="col-md-4">
                                         <label for="dispatched_qty" class="form-label fw-semibold small text-secondary">Dispatched Quantity</label>
-                                        <input type="number" class="form-control shadow-sm @error('dispatched_qty') is-invalid @enderror" id="dispatched_qty" name="dispatched_qty" value="{{ old('dispatched_qty', $dispatch->dispatched_qty) }}" required min="1" placeholder="Enter quantity">
+                                        <input type="number" class="form-control shadow-sm @error('dispatched_qty') is-invalid @enderror form-control-sm" id="dispatched_qty" name="dispatched_qty" value="{{ old('dispatched_qty', $dispatch->dispatched_qty) }}" required min="1" placeholder="Enter quantity">
                                         @error('dispatched_qty')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-4">
                                         <label for="dispatch_date" class="form-label fw-semibold small text-secondary">Dispatch Date</label>
-                                        <input type="date" class="form-control shadow-sm @error('dispatch_date') is-invalid @enderror" id="dispatch_date" name="dispatch_date" value="{{ old('dispatch_date', $dispatch->dispatch_date) }}" required>
+                                        <input type="date" class="form-control shadow-sm @error('dispatch_date') is-invalid @enderror form-control-sm" id="dispatch_date" name="dispatch_date" value="{{ old('dispatch_date', $dispatch->dispatch_date) }}" required>
                                         @error('dispatch_date')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-4">
                                         <label for="vehicle_no" class="form-label fw-semibold small text-secondary">Vehicle No</label>
-                                        <input type="text" class="form-control shadow-sm @error('vehicle_no') is-invalid @enderror" id="vehicle_no" name="vehicle_no" value="{{ old('vehicle_no', $dispatch->vehicle_no) }}" placeholder="Enter vehicle number">
+                                        <input type="text" class="form-control shadow-sm @error('vehicle_no') is-invalid @enderror form-control-sm" id="vehicle_no" name="vehicle_no" value="{{ old('vehicle_no', $dispatch->vehicle_no) }}" placeholder="Enter vehicle number">
                                         @error('vehicle_no')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-4">
                                         <label for="container_no" class="form-label fw-semibold small text-secondary">Container No</label>
-                                        <input type="text" class="form-control shadow-sm @error('container_no') is-invalid @enderror" id="container_no" name="container_no" value="{{ old('container_no', $dispatch->container_no) }}" placeholder="Enter container number">
+                                        <input type="text" class="form-control shadow-sm @error('container_no') is-invalid @enderror form-control-sm" id="container_no" name="container_no" value="{{ old('container_no', $dispatch->container_no) }}" placeholder="Enter container number">
                                         @error('container_no')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-12">
                                         <label for="remark" class="form-label fw-semibold small text-secondary">Remark</label>
-                                        <textarea class="form-control shadow-sm @error('remark') is-invalid @enderror" id="remark" name="remark" rows="2" placeholder="Optional notes...">{{ old('remark', $dispatch->remark) }}</textarea>
+                                        <textarea class="form-control shadow-sm @error('remark') is-invalid @enderror form-control-sm" id="remark" name="remark" rows="2" placeholder="Optional notes...">{{ old('remark', $dispatch->remark) }}</textarea>
                                         @error('remark')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror

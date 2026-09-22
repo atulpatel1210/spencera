@@ -24,27 +24,27 @@
                         <div class="row g-4 mb-4">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold text-secondary small text-uppercase">Name <span class="text-danger">*</span></label>
-                                <div class="input-group">
+                                <div class="input-group input-group-sm">
                                     <span class="input-group-text border-end-0 bg-white"><i class="fas fa-user text-muted"></i></span>
-                                    <input type="text" name="name" class="form-control border-start-0 @error('name') is-invalid @enderror" value="{{ old('name', $user->name) }}" placeholder="Enter full name" required>
+                                    <input type="text" name="name" class="form-control border-start-0 @error('name') is-invalid @enderror form-control-sm" value="{{ old('name', $user->name) }}" placeholder="Enter full name" required>
                                     @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold text-secondary small text-uppercase">Email <span class="text-danger">*</span></label>
-                                <div class="input-group">
+                                <div class="input-group input-group-sm">
                                     <span class="input-group-text border-end-0 bg-white"><i class="fas fa-envelope text-muted"></i></span>
-                                    <input type="email" name="email" class="form-control border-start-0 @error('email') is-invalid @enderror" value="{{ old('email', $user->email) }}" placeholder="Enter email address" required>
+                                    <input type="email" name="email" class="form-control border-start-0 @error('email') is-invalid @enderror form-control-sm" value="{{ old('email', $user->email) }}" placeholder="Enter email address" required>
                                     @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold text-secondary small text-uppercase">Password <small class="text-muted fw-normal text-none text-lowercase">(Leave blank to keep current)</small></label>
-                                <div class="input-group">
+                                <div class="input-group input-group-sm">
                                     <span class="input-group-text border-end-0 bg-white"><i class="fas fa-lock text-muted"></i></span>
-                                    <input type="password" name="password" class="form-control border-start-0 @error('password') is-invalid @enderror" placeholder="Update password">
+                                    <input type="password" name="password" class="form-control border-start-0 @error('password') is-invalid @enderror form-control-sm" placeholder="Update password">
                                     @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                             </div>
@@ -54,7 +54,7 @@
                         <div class="row g-4 mb-4">
                             <div class="col-md-12">
                                 <label class="form-label fw-semibold text-secondary small text-uppercase">Assign Roles <span class="text-danger">*</span></label>
-                                <select name="roles[]" class="form-select select2 @error('roles') is-invalid @enderror" multiple required style="width: 100%;">
+                                <select name="roles[]" class="form-select select2 @error('roles') is-invalid @enderror form-select-sm" multiple required style="width: 100%;">
                                     @foreach($roles as $role)
                                         <option value="{{ $role }}" {{ array_key_exists($role, $userRole) ? 'selected' : '' }}>{{ $role }}</option>
                                     @endforeach

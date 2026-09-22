@@ -33,14 +33,14 @@
                         <div class="row g-4">
                             <div class="col-md-6 col-lg-3">
                                 <label for="po" class="form-label fw-semibold text-secondary small text-uppercase">PO Number <span class="text-danger">*</span></label>
-                                <div class="input-group input-group-lg shadow-sm">
+                                <div class="input-group input-group-lg shadow-sm input-group-sm">
                                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-hash"></i></span>
-                                    <input type="text" class="form-control border-start-0 bg-white" id="po" name="po" required value="{{ old('po', $order->po) }}">
+                                    <input type="text" class="form-control border-start-0 bg-white form-control-sm" id="po" name="po" required value="{{ old('po', $order->po) }}">
                                 </div>
                             </div>
                             <div class="col-md-6 col-lg-3">
                                 <label for="party_id" class="form-label fw-semibold text-secondary small text-uppercase">Party Name <span class="text-danger">*</span></label>
-                                <select class="form-select form-select-lg select2 shadow-sm" id="party_id" name="party_id" required>
+                                <select class="form-select form-select-lg select2 shadow-sm form-select-sm" id="party_id" name="party_id" required>
                                     <option value="">Select Party</option>
                                     @foreach ($parties as $p)
                                     <option value="{{ $p->id }}" {{ old('party_id', $order->party_id) == $p->id ? 'selected' : '' }}>
@@ -51,16 +51,16 @@
                             </div>
                             <div class="col-md-6 col-lg-3">
                                 <label for="brand_name" class="form-label fw-semibold text-secondary small text-uppercase">Brand Name</label>
-                                <div class="input-group input-group-lg shadow-sm">
+                                <div class="input-group input-group-lg shadow-sm input-group-sm">
                                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-tag"></i></span>
-                                    <input type="text" class="form-control border-start-0 bg-white" id="brand_name" name="brand_name" placeholder="Enter Brand" value="{{ old('brand_name', $order->brand_name) }}">
+                                    <input type="text" class="form-control border-start-0 bg-white form-control-sm" id="brand_name" name="brand_name" placeholder="Enter Brand" value="{{ old('brand_name', $order->brand_name) }}">
                                 </div>
                             </div>
                             <div class="col-md-6 col-lg-3">
                                 <label for="order_date" class="form-label fw-semibold text-secondary small text-uppercase">Order Date <span class="text-danger">*</span></label>
-                                <div class="input-group input-group-lg shadow-sm">
+                                <div class="input-group input-group-lg shadow-sm input-group-sm">
                                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-calendar-event"></i></span>
-                                    <input type="date" class="form-control border-start-0 bg-white" id="order_date" name="order_date" value="{{ old('order_date', \Carbon\Carbon::parse($order->order_date)->format('Y-m-d')) }}" required>
+                                    <input type="date" class="form-control border-start-0 bg-white form-control-sm" id="order_date" name="order_date" value="{{ old('order_date', \Carbon\Carbon::parse($order->order_date)->format('Y-m-d')) }}" required>
                                 </div>
                             </div>
                         </div>
@@ -83,7 +83,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label for="order_remark" class="form-label fw-semibold text-secondary small text-uppercase">Order Remark</label>
-                                <textarea class="form-control form-control-lg shadow-sm" id="order_remark" name="remark" rows="5" placeholder="Optional remark for the entire order">{{ old('remark', $order->remark) }}</textarea>
+                                <textarea class="form-control form-control-lg shadow-sm form-control-sm" id="order_remark" name="remark" rows="5" placeholder="Optional remark for the entire order">{{ old('remark', $order->remark) }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -102,13 +102,13 @@
                         <div class="row g-3 mb-4">
                             <div class="col-md-3">
                                 <label class="form-label fw-semibold text-muted small">Design</label>
-                                <select class="form-select form-select-lg shadow-sm bg-light border-0" id="design_id">
+                                <select class="form-select form-select-lg shadow-sm bg-light border-0 form-select-sm" id="design_id">
                                     <option value="">Select</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-semibold text-muted small">Size</label>
-                                <select class="form-select form-select-lg shadow-sm bg-light border-0" id="size_id">
+                                <select class="form-select form-select-lg shadow-sm bg-light border-0 form-select-sm" id="size_id">
                                     <option value="">Select</option>
                                     @foreach ($sizes as $s)
                                     <option value="{{ $s->id }}">{{ $s->size_name }}</option>
@@ -117,7 +117,7 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label fw-semibold text-muted small">Finish</label>
-                                <select class="form-select form-select-lg shadow-sm bg-light border-0" id="finish_id">
+                                <select class="form-select form-select-lg shadow-sm bg-light border-0 form-select-sm" id="finish_id">
                                     <option value="">Select</option>
                                     @foreach ($finishes as $f)
                                     <option value="{{ $f->id }}">{{ $f->finish_name }}</option>
@@ -126,11 +126,11 @@
                             </div>
                              <div class="col-md-3">
                                 <label class="form-label fw-semibold text-muted small">Remark</label>
-                                <input type="text" class="form-control form-control-lg shadow-sm bg-light border-0" id="remark" placeholder="Optional remark">
+                                <input type="text" class="form-control form-control-lg shadow-sm bg-light border-0 form-control-sm" id="remark" placeholder="Optional remark">
                             </div>
                             <div class="col-12">
                                 <label class="form-label fw-semibold text-muted small">Total Order Qty</label>
-                                <input type="number" class="form-control form-control-lg shadow-sm bg-white border border-primary font-monospace fw-bold text-primary" id="order_qty" min="1" value="" placeholder="Calculated from pallets..." readonly>
+                                <input type="number" class="form-control form-control-lg shadow-sm bg-white border border-primary font-monospace fw-bold text-primary form-control-sm" id="order_qty" min="1" value="" placeholder="Calculated from pallets..." readonly>
                             </div>
                         </div>
 
@@ -142,19 +142,19 @@
                                 <div class="row g-2 pallet-row mb-2 align-items-center">
                                     <div class="col-md-3">
                                         <div class="form-floating">
-                                            <input type="number" class="form-control box_pallet bg-white border-0 shadow-sm" oninput="calculatePalletRowTotal(this);" placeholder="0">
+                                            <input type="number" class="form-control box_pallet bg-white border-0 shadow-sm form-control-sm" oninput="calculatePalletRowTotal(this);" placeholder="0">
                                             <label>Box / Pallet</label>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                          <div class="form-floating">
-                                            <input type="number" class="form-control total_pallet bg-white border-0 shadow-sm" oninput="calculatePalletRowTotal(this);" placeholder="0">
+                                            <input type="number" class="form-control total_pallet bg-white border-0 shadow-sm form-control-sm" oninput="calculatePalletRowTotal(this);" placeholder="0">
                                             <label>Total Pallet</label>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                          <div class="form-floating">
-                                            <input type="number" class="form-control total_boxe_pallets bg-secondary bg-opacity-10 border-0 fw-bold text-dark shadow-sm" placeholder="0" readonly>
+                                            <input type="number" class="form-control total_boxe_pallets bg-secondary bg-opacity-10 border-0 fw-bold text-dark shadow-sm form-control-sm" placeholder="0" readonly>
                                             <label>Total Boxes</label>
                                         </div>
                                     </div>
@@ -326,13 +326,13 @@
         const removeButtonHtml = isFirstRow ? '' : `<div class="col-md-2 d-flex align-items-center"><button type="button" class="btn btn-danger btn-sm removePallet">X</button></div>`;
         newRow.innerHTML = `
             <div class="col-md-3">
-                <input type="number" class="form-control box_pallet" oninput="calculatePalletRowTotal(this);" placeholder="Box Per Pallet" value="${boxPalletValue}" min="1">
+                <input type="number" class="form-control box_pallet form-control-sm" oninput="calculatePalletRowTotal(this);" placeholder="Box Per Pallet" value="${boxPalletValue}" min="1">
             </div>
             <div class="col-md-3">
-                <input type="number" class="form-control total_pallet" oninput="calculatePalletRowTotal(this);" placeholder="Total Pallet" value="${totalPalletValue}" min="1">
+                <input type="number" class="form-control total_pallet form-control-sm" oninput="calculatePalletRowTotal(this);" placeholder="Total Pallet" value="${totalPalletValue}" min="1">
             </div>
             <div class="col-md-3">
-                <input type="number" class="form-control total_boxe_pallets" placeholder="Total Boxes (Pallet)" value="${totalBoxesValue}" readonly>
+                <input type="number" class="form-control total_boxe_pallets form-control-sm" placeholder="Total Boxes (Pallet)" value="${totalBoxesValue}" readonly>
             </div>
             <input type="hidden" class="pallet_id" value="${palletId}">
             ${removeButtonHtml}

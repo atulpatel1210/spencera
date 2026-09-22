@@ -60,6 +60,9 @@ Route::get('/purchase-order-pallets/index', [PurchaseOrderPalletController::clas
 Route::get('purchase-order-pallets/data', [PurchaseOrderPalletController::class, 'getPalletsData'])->name('purchase_order_pallets.data');
 Route::get('/purchase-order-pallets/create', [PurchaseOrderPalletController::class, 'create'])->name('purchase_order_pallets.create');
 Route::post('/purchase-order-pallets', [PurchaseOrderPalletController::class, 'store'])->name('purchase_order_pallets.store');
+Route::get('/purchase-order-pallets/{pallet}/edit', [PurchaseOrderPalletController::class, 'edit'])->name('purchase_order_pallets.edit');
+Route::put('/purchase-order-pallets/{pallet}', [PurchaseOrderPalletController::class, 'update'])->name('purchase_order_pallets.update');
+Route::delete('/purchase-order-pallets/{pallet}', [PurchaseOrderPalletController::class, 'destroy'])->name('purchase_order_pallets.destroy');
 Route::get('/get-order', [PurchaseOrderPalletController::class, 'getOrder']);
 Route::get('/get-order-items', [PurchaseOrderPalletController::class, 'getOrderItems']);
 Route::get('/get-batches', [PurchaseOrderPalletController::class, 'getBatches']);

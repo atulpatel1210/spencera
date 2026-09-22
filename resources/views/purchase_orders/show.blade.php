@@ -82,17 +82,17 @@
                     <input type="hidden" name="type" id="type">
                     <div class="mb-3">
                         <label for="quantity" class="form-label">Quantity</label>
-                        <input type="number" class="form-control" name="quantity" id="quantity">
+                        <input type="number" class="form-control form-control-sm" name="quantity" id="quantity">
                         <div class="text-danger" id="errorMsg"></div>
                     </div>
                     <div class="mb-3" id="batch_no_section">
                         <label for="batch_no" class="form-label">Batch No</label>
-                        <input type="text" class="form-control" name="batch_no" id="batch_no">
+                        <input type="text" class="form-control form-control-sm" name="batch_no" id="batch_no">
                         <div class="text-danger" id="errorMsg"></div>
                     </div>
                     <div class="mb-3">
                         <label for="remark" class="form-label">Remark</label>
-                        <textarea class="form-control" id="remark" name="remark" rows="5"></textarea>
+                        <textarea class="form-control form-control-sm" id="remark" name="remark" rows="5"></textarea>
                         <div class="text-danger" id="errorMsg"></div>
                     </div>
                 </form>

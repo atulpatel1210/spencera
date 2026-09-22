@@ -212,7 +212,7 @@
 </div>
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
+    @import url('{{ asset("css/plus-jakarta-sans.css") }}');
     
     body { font-family: 'Plus Jakarta Sans', sans-serif !important; background-color: #f4f7fa; }
     .fw-extrabold { font-weight: 800; }

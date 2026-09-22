@@ -42,15 +42,15 @@
                                 <div class="row g-3">
                                     <div class="col-sm-6 col-md-4">
                                         <label for="dispatch_date" class="form-label fw-semibold small text-secondary">Dispatch Date <span class="text-danger">*</span></label>
-                                        <input type="date" class="form-control shadow-sm" id="global_dispatch_date" value="{{ date('Y-m-d') }}" required>
+                                        <input type="date" class="form-control shadow-sm form-control-sm" id="global_dispatch_date" value="{{ date('Y-m-d') }}" required>
                                     </div>
                                     <div class="col-sm-6 col-md-4">
                                         <label for="vehicle_no" class="form-label fw-semibold small text-secondary">Vehicle No <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control shadow-sm" id="global_vehicle_no" placeholder="e.g. GJ-01-XX-0000" required>
+                                        <input type="text" class="form-control shadow-sm form-control-sm" id="global_vehicle_no" placeholder="e.g. GJ-01-XX-0000" required>
                                     </div>
                                     <div class="col-sm-6 col-md-4">
                                         <label for="container_no" class="form-label fw-semibold small text-secondary">Container No <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control shadow-sm" id="global_container_no" placeholder="Enter container number" required>
+                                        <input type="text" class="form-control shadow-sm form-control-sm" id="global_container_no" placeholder="Enter container number" required>
                                     </div>
                                 </div>
                             </div>
@@ -63,7 +63,7 @@
                                 <div class="row g-3">
                                     <div class="col-sm-6 col-md-4">
                                         <label class="form-label fw-semibold small text-secondary">Party</label>
-                                        <select id="party" class="form-select border-0 shadow-sm">
+                                        <select id="party" class="form-select border-0 shadow-sm form-select-sm">
                                             <option value="">-- Select Party --</option>
                                             @foreach($parties as $party)
                                             <option value="{{ $party->id }}">{{ $party->party_name }}</option>
@@ -73,37 +73,37 @@
                     
                                     <div class="col-sm-6 col-md-4">
                                         <label class="form-label fw-semibold small text-secondary">Purchase Order</label>
-                                        <select id="po" class="form-select border-0 shadow-sm"></select>
+                                        <select id="po" class="form-select border-0 shadow-sm form-select-sm"></select>
                                     </div>
                                     
                                     <div class="col-sm-6 col-md-4">
                                         <label class="form-label fw-semibold small text-secondary">Design</label>
-                                        <select id="design" class="form-select border-0 shadow-sm"></select>
+                                        <select id="design" class="form-select border-0 shadow-sm form-select-sm"></select>
                                     </div>
                     
                                     <div class="col-sm-6 col-md-4">
                                         <label class="form-label fw-semibold small text-secondary">Size</label>
-                                        <select id="size" class="form-select border-0 shadow-sm"></select>
+                                        <select id="size" class="form-select border-0 shadow-sm form-select-sm"></select>
                                     </div>
                     
                                     <div class="col-sm-6 col-md-4">
                                         <label class="form-label fw-semibold small text-secondary">Finish</label>
-                                        <select id="finish" class="form-select border-0 shadow-sm"></select>
+                                        <select id="finish" class="form-select border-0 shadow-sm form-select-sm"></select>
                                     </div>
                     
                                     <div class="col-sm-6 col-md-4">
                                         <label class="form-label fw-semibold small text-secondary">Order Item</label>
-                                        <select id="order_item" class="form-select border-0 shadow-sm"></select>
+                                        <select id="order_item" class="form-select border-0 shadow-sm form-select-sm"></select>
                                     </div>
 
                                     <div class="col-sm-6 col-md-4">
                                         <label class="form-label fw-semibold small text-secondary">Batch</label>
-                                        <select id="batch" class="form-select border-0 shadow-sm"></select>
+                                        <select id="batch" class="form-select border-0 shadow-sm form-select-sm"></select>
                                     </div>
 
                                     <div class="col-sm-6 col-md-4">
                                         <label class="form-label fw-semibold small text-secondary">Pallet (Available Qty)</label>
-                                        <select id="pallet" class="form-select border-0 shadow-sm"></select>
+                                        <select id="pallet" class="form-select border-0 shadow-sm form-select-sm"></select>
                                     </div>
                                 </div>
                             </div>
@@ -119,18 +119,18 @@
                                 <div class="row g-3">
                                     <div class="col-sm-6 col-md-4">
                                         <label for="pallet_no" class="form-label fw-semibold small text-secondary">Dispatch Pallets Count</label>
-                                        <div class="input-group">
-                                            <input type="number" class="form-control shadow-sm" id="pallet_no" min="1" placeholder="Enter pallet no">
+                                        <div class="input-group input-group-sm">
+                                            <input type="number" class="form-control shadow-sm form-control-sm" id="pallet_no" min="1" placeholder="Enter pallet no">
                                             <span class="input-group-text bg-light border-0 small text-muted" id="available_indicator">Available: 0</span>
                                         </div>
                                     </div>
                                     <div class="col-sm-6 col-md-4">
                                         <label for="dispatched_qty" class="form-label fw-semibold small text-secondary">Total Box Quantity</label>
-                                        <input type="number" class="form-control shadow-sm bg-light" id="dispatched_qty" readonly placeholder="Calculated from pallets">
+                                        <input type="number" class="form-control shadow-sm bg-light form-control-sm" id="dispatched_qty" readonly placeholder="Calculated from pallets">
                                     </div>
                                     <div class="col-sm-12 col-md-4">
                                         <label for="remark" class="form-label fw-semibold small text-secondary">Remark (Optional)</label>
-                                        <input type="text" class="form-control shadow-sm" id="remark" placeholder="Notes for this item...">
+                                        <input type="text" class="form-control shadow-sm form-control-sm" id="remark" placeholder="Notes for this item...">
                                     </div>
                                 </div>
                                 <div class="text-end mt-4">

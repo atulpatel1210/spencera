@@ -32,4 +32,9 @@ class Party extends Model
     {
         return $this->belongsTo(Party::class, 'party_id', 'id');
     }
+
+    public function designs()
+    {
+        return $this->belongsToMany(Design::class, 'design_party');
+    }
 }

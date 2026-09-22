@@ -44,9 +44,9 @@
                         <div class="row g-4">
                             <div class="col-12">
                                 <label for="current_password" class="form-label small fw-bold text-uppercase tracking-wider">Current Password</label>
-                                <div class="input-group">
+                                <div class="input-group input-group-sm">
                                     <span class="input-group-text bg-light border-gray-100"><i class="fas fa-lock opacity-50"></i></span>
-                                    <input id="current_password" name="current_password" type="password" class="form-control border-gray-100 bg-gray-50 py-3" required autocomplete="current-password" placeholder="••••••••">
+                                    <input id="current_password" name="current_password" type="password" class="form-control border-gray-100 bg-gray-50 py-3 form-control-sm" required autocomplete="current-password" placeholder="••••••••">
                                 </div>
                                 @if($errors->updatePassword->has('current_password'))
                                     <div class="text-danger smaller fw-bold mt-2 italic">
@@ -57,9 +57,9 @@
 
                             <div class="col-md-6">
                                 <label for="password" class="form-label small fw-bold text-uppercase tracking-wider">New Password</label>
-                                <div class="input-group">
+                                <div class="input-group input-group-sm">
                                     <span class="input-group-text bg-light border-gray-100"><i class="fas fa-key opacity-50"></i></span>
-                                    <input id="password" name="password" type="password" class="form-control border-gray-100 bg-gray-50 py-3" required autocomplete="new-password" placeholder="New Password">
+                                    <input id="password" name="password" type="password" class="form-control border-gray-100 bg-gray-50 py-3 form-control-sm" required autocomplete="new-password" placeholder="New Password">
                                 </div>
                                 @if($errors->updatePassword->has('password'))
                                     <div class="text-danger smaller fw-bold mt-2 italic">
@@ -70,9 +70,9 @@
 
                             <div class="col-md-6">
                                 <label for="password_confirmation" class="form-label small fw-bold text-uppercase tracking-wider">Confirm New Password</label>
-                                <div class="input-group">
+                                <div class="input-group input-group-sm">
                                     <span class="input-group-text bg-light border-gray-100"><i class="fas fa-check-double opacity-50"></i></span>
-                                    <input id="password_confirmation" name="password_confirmation" type="password" class="form-control border-gray-100 bg-gray-50 py-3" required autocomplete="new-password" placeholder="Confirm New Password">
+                                    <input id="password_confirmation" name="password_confirmation" type="password" class="form-control border-gray-100 bg-gray-50 py-3 form-control-sm" required autocomplete="new-password" placeholder="Confirm New Password">
                                 </div>
                             </div>
 
@@ -106,9 +106,9 @@
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <label for="name" class="form-label small fw-bold text-uppercase tracking-wider">Full Name</label>
-                                <div class="input-group">
+                                <div class="input-group input-group-sm">
                                     <span class="input-group-text bg-light border-gray-100"><i class="fas fa-user opacity-50"></i></span>
-                                    <input id="name" name="name" type="text" class="form-control border-gray-100 bg-gray-50 py-3" value="{{ old('name', Auth::user()->name) }}" required autocomplete="name">
+                                    <input id="name" name="name" type="text" class="form-control border-gray-100 bg-gray-50 py-3 form-control-sm" value="{{ old('name', Auth::user()->name) }}" required autocomplete="name">
                                 </div>
                                 @error('name')
                                     <div class="text-danger smaller fw-bold mt-2 italic">{{ $message }}</div>
@@ -117,9 +117,9 @@
 
                             <div class="col-md-6">
                                 <label for="email" class="form-label small fw-bold text-uppercase tracking-wider">Email Address</label>
-                                <div class="input-group">
+                                <div class="input-group input-group-sm">
                                     <span class="input-group-text bg-light border-gray-100"><i class="fas fa-envelope opacity-50"></i></span>
-                                    <input id="email" name="email" type="email" class="form-control border-gray-100 bg-gray-50 py-3" value="{{ old('email', Auth::user()->email) }}" required autocomplete="username">
+                                    <input id="email" name="email" type="email" class="form-control border-gray-100 bg-gray-50 py-3 form-control-sm" value="{{ old('email', Auth::user()->email) }}" required autocomplete="username">
                                 </div>
                                 @error('email')
                                     <div class="text-danger smaller fw-bold mt-2 italic">{{ $message }}</div>
@@ -140,7 +140,7 @@
 </div>
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800&display=swap');
+    @import url('{{ asset("css/plus-jakarta-sans.css") }}');
     body { font-family: 'Plus Jakarta Sans', sans-serif !important; background-color: #f4f7fa; }
     .bg-primary-light { background-color: rgba(239, 124, 27, 0.08); }
     .bg-info-light { background-color: rgba(13, 202, 240, 0.08); }

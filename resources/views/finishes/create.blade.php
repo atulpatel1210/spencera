@@ -21,10 +21,10 @@
 
                         <div class="mb-4">
                             <label class="form-label fw-semibold text-secondary small text-uppercase">Finish Name <span class="text-danger">*</span></label>
-                            <div class="input-group input-group-lg">
+                            <div class="input-group input-group-lg input-group-sm">
                                 <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-tag"></i></span>
                                 <input type="text" 
-                                       class="form-control border-start-0 bg-light shadow-sm @error('finish_name') is-invalid @enderror" 
+                                       class="form-control border-start-0 bg-light shadow-sm @error('finish_name') is-invalid @enderror form-control-sm" 
                                        name="finish_name" 
                                        value="{{ old('finish_name', $finish->finish_name ?? '') }}" 
                                        placeholder="Enter finish name (e.g., Glossy, Matte)"

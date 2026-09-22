@@ -38,6 +38,7 @@
                                     <th class="text-center">Pallet No</th>
                                     <th class="text-center">Total Qty</th>
                                     <th>Remark</th>
+                                    <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
                         </table>
@@ -77,6 +78,7 @@ $(function() {
             { data: 'pallet_no', name: 'pallet_no', className: 'text-center' },
             { data: 'total_qty', name: 'total_qty', className: 'text-center fw-bold text-success' },
             { data: 'remark', name: 'remark', className: 'text-muted small' },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'text-end' }
         ]
     });
 });

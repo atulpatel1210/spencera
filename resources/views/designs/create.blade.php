@@ -23,28 +23,27 @@
                             {{-- Party Selection --}}
                             <div class="col-md-6">
                                 <label class="form-label fw-bold small text-uppercase">Party Name <span class="text-danger">*</span></label>
-                                <div class="input-group shadow-sm">
+                                <div class="input-group shadow-sm input-group-sm">
                                     <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
-                                    <select name="party_id" id="party_id" class="form-select select2 @error('party_id') is-invalid @enderror" required>
-                                        <option value="">Select Party</option>
+                                    <select name="party_id[]" id="party_id" class="form-select select2 @error('party_id') is-invalid @enderror form-select-sm" multiple="multiple" required>
                                         @foreach($parties as $party)
                                             <option value="{{ $party->id }}" 
-                                                {{ old('party_id', $design->party_id ?? '') == $party->id ? 'selected' : '' }}>
+                                                {{ in_array($party->id, old('party_id', isset($design) ? $design->parties->pluck('id')->toArray() : [])) ? 'selected' : '' }}>
                                                 {{ $party->party_name }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    @error('party_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                    @error('party_id') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                                 </div>
                             </div>
 
                             {{-- Design Name --}}
                             <div class="col-md-6">
                                 <label class="form-label fw-bold small text-uppercase">Design Name <span class="text-danger">*</span></label>
-                                <div class="input-group shadow-sm">
+                                <div class="input-group shadow-sm input-group-sm">
                                     <span class="input-group-text"><i class="fas fa-signature"></i></span>
                                     <input type="text" name="name" value="{{ old('name', $design->name ?? '') }}"
-                                           class="form-control @error('name') is-invalid @enderror" placeholder="Enter design name" required>
+                                           class="form-control @error('name') is-invalid @enderror form-control-sm" placeholder="Enter design name" required>
                                     @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                             </div>

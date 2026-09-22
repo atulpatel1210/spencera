@@ -23,6 +23,8 @@ class StockPallet extends Model
         'pallet_size',
         'pallet_no',
         'current_qty',
+        'is_mixed',
+        'loos_box',
         'remark',
     ];
 

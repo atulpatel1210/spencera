@@ -21,10 +21,10 @@
 
                         <div class="mb-4">
                             <label class="form-label fw-semibold text-secondary small text-uppercase">Size Name <span class="text-danger">*</span></label>
-                            <div class="input-group input-group-lg">
+                            <div class="input-group input-group-lg input-group-sm">
                                 <span class="input-group-text bg-light border-end-0 text-muted"><i class="fas fa-ruler-horizontal"></i></span>
                                 <input type="text" 
-                                       class="form-control border-start-0 bg-light shadow-sm @error('size_name') is-invalid @enderror" 
+                                       class="form-control border-start-0 bg-light shadow-sm @error('size_name') is-invalid @enderror form-control-sm" 
                                        name="size_name"
                                        id="size_name" 
                                        value="{{ old('size_name', $size->size_name) }}" 

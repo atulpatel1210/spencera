@@ -34,9 +34,9 @@
                                 <div class="row g-4">
                                     <div class="col-md-6">
                                         <label for="purchase_order_id" class="form-label fw-semibold text-secondary small text-uppercase">Purchase Order <span class="text-danger">*</span></label>
-                                        <div class="input-group">
+                                        <div class="input-group input-group-sm">
                                             <span class="input-group-text bg-white border-end-0"><i class="bi bi-cart"></i></span>
-                                            <select class="form-select border-start-0 bg-white" id="purchase_order_id" name="purchase_order_id" required>
+                                            <select class="form-select border-start-0 bg-white form-select-sm" id="purchase_order_id" name="purchase_order_id" required>
                                                 <option value="">Select Purchase Order</option>
                                                 @foreach ($purchaseOrders as $po)
                                                 <option value="{{ $po->id }}" data-po-number="{{ $po->po }}">{{ $po->po }}</option>
@@ -50,9 +50,9 @@
                                     
                                     <div class="col-md-3">
                                          <label for="packing_date" class="form-label fw-semibold text-secondary small text-uppercase">Packing Date <span class="text-danger">*</span></label>
-                                         <div class="input-group">
+                                         <div class="input-group input-group-sm">
                                             <span class="input-group-text bg-white border-end-0"><i class="bi bi-calendar"></i></span>
-                                            <input type="date" class="form-control border-start-0 bg-white" name="packing_date" value="{{ date('Y-m-d') }}" required>
+                                            <input type="date" class="form-control border-start-0 bg-white form-control-sm" name="packing_date" value="{{ date('Y-m-d') }}" required>
                                          </div>
                                     </div>
                                 </div>
@@ -75,49 +75,49 @@
                                 <div class="row g-3 mb-4">
                                     <div class="col-sm-6 col-md-3">
                                         <label class="form-label fw-semibold small text-secondary">Design</label>
-                                        <select id="design_id" class="form-select bg-light border-0">
+                                        <select id="design_id" class="form-select bg-light border-0 form-select-sm">
                                             <option value="">Select</option>
                                         </select>
                                     </div>
 
                                     <div class="col-sm-6 col-md-2">
                                         <label class="form-label fw-semibold small text-secondary">Size</label>
-                                        <select id="size_id" class="form-select bg-light border-0">
+                                        <select id="size_id" class="form-select bg-light border-0 form-select-sm">
                                             <option value="">Select</option>
                                         </select>
                                     </div>
 
                                     <div class="col-sm-6 col-md-2">
                                         <label class="form-label fw-semibold small text-secondary">Finish</label>
-                                        <select id="finish_id" class="form-select bg-light border-0">
+                                        <select id="finish_id" class="form-select bg-light border-0 form-select-sm">
                                             <option value="">Select</option>
                                         </select>
                                     </div>
                                     
                                     <div class="col-sm-6 col-md-3">
                                         <label class="form-label fw-semibold small text-secondary">Batch No</label>
-                                        <select id="batch_id" class="form-select bg-light border-0">
+                                        <select id="batch_id" class="form-select bg-light border-0 form-select-sm">
                                             <option value="">Select</option>
                                         </select>
                                     </div>
 
                                     <div class="col-sm-6 col-md-2">
                                         <label class="form-label fw-semibold small text-secondary">Batch Qty</label>
-                                        <input type="text" id="batch_qty" class="form-control fw-bold" style="color: #fd7e14; border-color: #ffdeb3; background-color: #fff9f0;" readonly value="0">
+                                        <input type="text" id="batch_qty" class="form-control fw-bold form-control-sm" style="color: #fd7e14; border-color: #ffdeb3; background-color: #fff9f0;" readonly value="0">
                                         <div id="remaining_qty_text" class="text-muted fw-bold" style="font-size: 11px; margin-top: 2px;"></div>
                                     </div>
                                     
                                     <div class="col-sm-6 col-md-2 mix-only" style="display: none;">
                                         <label class="form-label fw-semibold small text-secondary">Box / Pallet</label>
-                                        <input type="number" id="mix_box_per_pallet" class="form-control bg-light border-0" placeholder="Box">
+                                        <input type="number" id="mix_box_per_pallet" class="form-control bg-light border-0 form-control-sm" placeholder="Box">
                                     </div>
                                     <div class="col-sm-6 col-md-2 mix-only" style="display: none;">
                                         <label class="form-label fw-semibold small text-secondary">Total Pallets</label>
-                                        <input type="number" id="mix_total_pallet" class="form-control bg-light border-0" placeholder="Pallet">
+                                        <input type="number" id="mix_total_pallet" class="form-control bg-light border-0 form-control-sm" placeholder="Pallet">
                                     </div>
                                     <div class="col-sm-6 col-md-2 mix-only" style="display: none;">
                                         <label class="form-label fw-semibold small text-secondary">Total Boxes</label>
-                                        <input type="number" id="mix_item_qty" class="form-control bg-primary-subtle border-0 fw-bold text-primary" readonly placeholder="0">
+                                        <input type="number" id="mix_item_qty" class="form-control bg-primary-subtle border-0 fw-bold text-primary form-control-sm" readonly placeholder="0">
                                     </div>
                                     <div class="col-sm-6 col-md-2 mix-only" style="display: none;">
                                         <div class="d-flex align-items-end h-100 pb-1">
@@ -129,7 +129,7 @@
                                     
                                    <div class="col-md-12">
                                         <label class="form-label fw-semibold small text-secondary">Remark</label>
-                                        <input type="text" id="remark" class="form-control bg-light border-0" placeholder="Optional notes...">
+                                        <input type="text" id="remark" class="form-control bg-light border-0 form-control-sm" placeholder="Optional notes...">
                                     </div>
                                 </div>
 
@@ -167,23 +167,23 @@
                                         <div class="row g-3 align-items-center pallet-row mb-3">
                                             <div class="col-12 col-md-3">
                                                 <label class="small text-secondary mb-1 text-uppercase fw-bold">Box / Pallet</label>
-                                                <div class="input-group">
+                                                <div class="input-group input-group-sm">
                                                     <span class="input-group-text bg-light border-0"><i class="bi bi-box"></i></span>
-                                                    <input type="number" class="form-control border-0 bg-light box_per_pallet" min="1" placeholder="Enter boxes per pallet">
+                                                    <input type="number" class="form-control border-0 bg-light box_per_pallet form-control-sm" min="1" placeholder="Enter boxes per pallet">
                                                 </div>
                                             </div>
                                             <div class="col-12 col-md-3">
                                                 <label class="small text-secondary mb-1 text-uppercase fw-bold">Total Pallets</label>
-                                                 <div class="input-group">
+                                                 <div class="input-group input-group-sm">
                                                     <span class="input-group-text bg-light border-0"><i class="bi bi-layers"></i></span>
-                                                    <input type="number" class="form-control border-0 bg-light total_pallet" min="1" placeholder="Enter number of pallets">
+                                                    <input type="number" class="form-control border-0 bg-light total_pallet form-control-sm" min="1" placeholder="Enter number of pallets">
                                                 </div>
                                             </div>
                                             <div class="col-12 col-md-3">
                                                 <label class="small text-secondary mb-1 text-uppercase fw-bold">Total Boxes</label>
-                                                <div class="input-group">
+                                                <div class="input-group input-group-sm">
                                                     <span class="input-group-text bg-primary-subtle border-0 text-primary"><i class="bi bi-calculator"></i></span>
-                                                    <input type="number" class="form-control bg-primary-subtle border-0 fw-bold total_boxes text-primary" readonly placeholder="0">
+                                                    <input type="number" class="form-control bg-primary-subtle border-0 fw-bold total_boxes text-primary form-control-sm" readonly placeholder="0">
                                                 </div>
                                             </div>
                                         </div>
@@ -361,11 +361,24 @@
             return;
         }
 
-        mixItems.push({
-            designId, sizeId, finishId, batchId, itemId: matchedItem.id,
-            designTxt, sizeTxt, finishTxt, batchTxt,
-            box, pal, qty
-        });
+        let existingItemIndex = mixItems.findIndex(mi => 
+            mi.designId == designId && 
+            mi.sizeId == sizeId && 
+            mi.finishId == finishId && 
+            mi.batchId == batchId &&
+            mi.box == box
+        );
+
+        if (existingItemIndex !== -1) {
+            mixItems[existingItemIndex].pal += pal;
+            mixItems[existingItemIndex].qty += qty;
+        } else {
+            mixItems.push({
+                designId, sizeId, finishId, batchId, itemId: matchedItem.id,
+                designTxt, sizeTxt, finishTxt, batchTxt,
+                box, pal, qty
+            });
+        }
 
         renderMixItems();
 
@@ -662,23 +675,23 @@
         <div class="row g-3 align-items-center pallet-row mb-4 p-3 bg-white rounded-3 shadow-sm border border-light">
             <div class="col-12 col-md-3">
                 <label class="small text-secondary mb-1 text-uppercase fw-bold">Box / Pallet</label>
-                <div class="input-group">
+                <div class="input-group input-group-sm">
                     <span class="input-group-text bg-light border-0"><i class="bi bi-box"></i></span>
-                    <input type="number" class="form-control border-0 bg-light box_per_pallet" min="1" placeholder="Enter boxes per pallet">
+                    <input type="number" class="form-control border-0 bg-light box_per_pallet form-control-sm" min="1" placeholder="Enter boxes per pallet">
                 </div>
             </div>
             <div class="col-12 col-md-3">
                 <label class="small text-secondary mb-1 text-uppercase fw-bold">Total Pallets</label>
-                <div class="input-group">
+                <div class="input-group input-group-sm">
                     <span class="input-group-text bg-light border-0"><i class="bi bi-layers"></i></span>
-                    <input type="number" class="form-control border-0 bg-light total_pallet" min="1" placeholder="Enter number of pallets">
+                    <input type="number" class="form-control border-0 bg-light total_pallet form-control-sm" min="1" placeholder="Enter number of pallets">
                 </div>
             </div>
             <div class="col-12 col-md-3">
                 <label class="small text-secondary mb-1 text-uppercase fw-bold">Total Boxes</label>
-                <div class="input-group">
+                <div class="input-group input-group-sm">
                     <span class="input-group-text bg-primary-subtle border-0 text-primary"><i class="bi bi-calculator"></i></span>
-                    <input type="number" class="form-control bg-primary-subtle border-0 fw-bold total_boxes text-primary" readonly placeholder="0">
+                    <input type="number" class="form-control bg-primary-subtle border-0 fw-bold total_boxes text-primary form-control-sm" readonly placeholder="0">
                 </div>
             </div>
             <div class="col-12 col-md-3">

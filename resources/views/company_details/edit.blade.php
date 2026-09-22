@@ -28,36 +28,36 @@
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <label for="name" class="form-label fw-semibold text-secondary small text-uppercase">Company Name (Manufacturer) <span class="text-danger">*</span></label>
-                                <div class="input-group input-group-lg shadow-sm">
+                                <div class="input-group input-group-lg shadow-sm input-group-sm">
                                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-building"></i></span>
-                                    <input type="text" class="form-control border-start-0 bg-white" id="name" name="name" 
+                                    <input type="text" class="form-control border-start-0 bg-white form-control-sm" id="name" name="name" 
                                            value="{{ old('name', $company->name) }}" required placeholder="Enter Company Name">
                                 </div>
                                 @error('name')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="phone" class="form-label fw-semibold text-secondary small text-uppercase">Phone</label>
-                                <div class="input-group input-group-lg shadow-sm">
+                                <div class="input-group input-group-lg shadow-sm input-group-sm">
                                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-telephone"></i></span>
-                                    <input type="text" class="form-control border-start-0 bg-white" id="phone" name="phone" 
+                                    <input type="text" class="form-control border-start-0 bg-white form-control-sm" id="phone" name="phone" 
                                            value="{{ old('phone', $company->phone) }}" placeholder="Enter Phone Number">
                                 </div>
                                 @error('phone')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="pan_number" class="form-label fw-semibold text-secondary small text-uppercase">PAN Number</label>
-                                <div class="input-group input-group-lg shadow-sm">
+                                <div class="input-group input-group-lg shadow-sm input-group-sm">
                                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-card-heading"></i></span>
-                                    <input type="text" class="form-control border-start-0 bg-white" id="pan_number" name="pan_number" 
+                                    <input type="text" class="form-control border-start-0 bg-white form-control-sm" id="pan_number" name="pan_number" 
                                            value="{{ old('pan_number', $company->pan_number) }}" placeholder="Enter PAN Number">
                                 </div>
                                 @error('pan_number')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="gst_no" class="form-label fw-semibold text-secondary small text-uppercase">GST No.</label>
-                                <div class="input-group input-group-lg shadow-sm">
+                                <div class="input-group input-group-lg shadow-sm input-group-sm">
                                     <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-receipt"></i></span>
-                                    <input type="text" class="form-control border-start-0 bg-white" id="gst_no" name="gst_no" 
+                                    <input type="text" class="form-control border-start-0 bg-white form-control-sm" id="gst_no" name="gst_no" 
                                            value="{{ old('gst_no', $company->gst_no) }}" placeholder="Enter GST Number">
                                 </div>
                                 @error('gst_no')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
@@ -73,31 +73,31 @@
                         <div class="row g-4 bg-light p-4 rounded-4 border border-light-subtle">
                             <div class="col-md-6">
                                 <label for="address_line1" class="form-label fw-semibold text-secondary small text-uppercase">Address Line 1</label>
-                                <input type="text" class="form-control form-control-lg shadow-sm border-0 bg-white" id="address_line1" name="address_line1" 
+                                <input type="text" class="form-control form-control-lg shadow-sm border-0 bg-white form-control-sm" id="address_line1" name="address_line1" 
                                        value="{{ old('address_line1', $company->address_line1) }}" placeholder="Street Address, P.O. Box">
                                 @error('address_line1')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">
                                 <label for="address_line2" class="form-label fw-semibold text-secondary small text-uppercase">Address Line 2 (Optional)</label>
-                                <input type="text" class="form-control form-control-lg shadow-sm border-0 bg-white" id="address_line2" name="address_line2" 
+                                <input type="text" class="form-control form-control-lg shadow-sm border-0 bg-white form-control-sm" id="address_line2" name="address_line2" 
                                        value="{{ old('address_line2', $company->address_line2) }}" placeholder="Apartment, Suite, Unit, etc.">
                                 @error('address_line2')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-4">
                                 <label for="city" class="form-label fw-semibold text-secondary small text-uppercase">City <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control form-control-lg shadow-sm border-0 bg-white" id="city" name="city" 
+                                <input type="text" class="form-control form-control-lg shadow-sm border-0 bg-white form-control-sm" id="city" name="city" 
                                        value="{{ old('city', $company->city) }}" required placeholder="Enter City">
                                 @error('city')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-4">
                                 <label for="state" class="form-label fw-semibold text-secondary small text-uppercase">State <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control form-control-lg shadow-sm border-0 bg-white" id="state" name="state" 
+                                <input type="text" class="form-control form-control-lg shadow-sm border-0 bg-white form-control-sm" id="state" name="state" 
                                        value="{{ old('state', $company->state) }}" required placeholder="Enter State">
                                 @error('state')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-4">
                                 <label for="zip" class="form-label fw-semibold text-secondary small text-uppercase">ZIP Code</label>
-                                <input type="text" class="form-control form-control-lg shadow-sm border-0 bg-white" id="zip" name="zip" 
+                                <input type="text" class="form-control form-control-lg shadow-sm border-0 bg-white form-control-sm" id="zip" name="zip" 
                                        value="{{ old('zip', $company->zip) }}" placeholder="Enter ZIP Code">
                                 @error('zip')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>

@@ -62,40 +62,40 @@
                     
                     <div class="mb-4">
                         <label for="quantity" class="form-label small fw-bold text-uppercase">Quantity</label>
-                        <div class="input-group">
+                        <div class="input-group input-group-sm">
                             <span class="input-group-text"><i class="fas fa-calculator"></i></span>
-                            <input type="number" class="form-control" name="quantity" id="quantity" min="0" step="1" inputmode="numeric">
+                            <input type="number" class="form-control form-control-sm" name="quantity" id="quantity" min="0" step="1" inputmode="numeric">
                         </div>
                         <div class="text-danger small mt-1" id="quantity_error"></div>
                     </div>
 
                     <div id="batch_no_section" class="mb-4" style="display:none;">
                         <label for="batch_no" class="form-label small fw-bold text-uppercase">Batch No</label>
-                        <div class="input-group">
+                        <div class="input-group input-group-sm">
                             <span class="input-group-text"><i class="fas fa-barcode"></i></span>
-                            <input type="text" class="form-control" name="batch_no" id="batch_no">
+                            <input type="text" class="form-control form-control-sm" name="batch_no" id="batch_no">
                         </div>
                         <div class="text-danger small mt-1" id="batch_no_error"></div>
                     </div>
                     
                     <div class="mb-4">
                         <label for="date" class="form-label small fw-bold text-uppercase">Date</label>
-                         <div class="input-group">
+                         <div class="input-group input-group-sm">
                             <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                            <input type="date" class="form-control" name="date" id="date">
+                            <input type="date" class="form-control form-control-sm" name="date" id="date">
                         </div>
                         <div class="text-danger small mt-1" id="date_error"></div>
                     </div>
 
                     <div id="location_section" class="mb-4" style="display:none;">
                         <label for="location" class="form-label small fw-bold text-uppercase">Location</label>
-                        <textarea class="form-control" id="location" name="location" rows="2"></textarea>
+                        <textarea class="form-control form-control-sm" id="location" name="location" rows="2"></textarea>
                         <div class="text-danger small mt-1" id="location_error"></div>
                     </div>
 
                     <div class="mb-0">
                         <label for="remark" class="form-label small fw-bold text-uppercase">Remark</label>
-                        <textarea class="form-control" id="remark" name="remark" rows="2"></textarea>
+                        <textarea class="form-control form-control-sm" id="remark" name="remark" rows="2"></textarea>
                         <div class="text-danger small mt-1" id="remark_error"></div>
                     </div>
                 </form>

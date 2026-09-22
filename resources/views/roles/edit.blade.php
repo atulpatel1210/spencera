@@ -24,9 +24,9 @@
                         <div class="row g-4 mb-4">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold text-secondary small text-uppercase">Role Name <span class="text-danger">*</span></label>
-                                <div class="input-group">
+                                <div class="input-group input-group-sm">
                                     <span class="input-group-text border-end-0 bg-white"><i class="fas fa-tag text-muted"></i></span>
-                                    <input type="text" name="name" class="form-control border-start-0 @error('name') is-invalid @enderror" value="{{ old('name', $role->name) }}" placeholder="Enter role name" required>
+                                    <input type="text" name="name" class="form-control border-start-0 @error('name') is-invalid @enderror form-control-sm" value="{{ old('name', $role->name) }}" placeholder="Enter role name" required>
                                     @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                 </div>
                             </div>

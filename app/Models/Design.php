@@ -13,8 +13,8 @@ class Design extends Model
 
     protected $fillable = ['name', 'party_id', 'image'];
 
-    public function party()
+    public function parties()
     {
-        return $this->belongsTo(Party::class);
+        return $this->belongsToMany(Party::class, 'design_party');
     }
 }
